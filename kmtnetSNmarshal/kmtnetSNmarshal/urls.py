@@ -1,4 +1,4 @@
-"""kmtnetSNmarshall URL Configuration
+"""kmtnetSNmarshal URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.10/topics/http/urls/
@@ -19,5 +19,5 @@ from django.contrib import admin
 from django.conf.urls import include, url
 from django.contrib import admin
 
-urlpatterns = [url(r'^marshall/', include('marshall.urls')),
+urlpatterns = [url(r'^marshal/', include('marshal.urls')),
                url(r'^admin/', admin.site.urls)]

@@ -1,5 +1,5 @@
 from django.db import models
-import numpy as np
+from marshal.coordinates import great_circle_distance
 
 
 class Field(models.Model):
@@ -25,8 +25,15 @@ class Candidate(models.Model):
     quadrant = models.ForeignKey(Quadrant, on_delete=models.CASCADE)
     classification = models.ForeignKey(Classification, on_delete=models.CASCADE)
 
-    def is_same_target(self, ra, dec):
-        ra1_rad, dec1_rad = np.deg2rad([self.ra, self.dec])
-        ra2_rad, dec2_rad = np.deg2rad([ra, dec])
-        distance_rad = np.arccos(np.sin(dec1_rad) * np.sin(dec2_rad) + np.cos(dec1_rad) * np.cos(dec2_rad) * np.cos(ra2_rad - ra1_rad))
-        return np.rad2deg(distance_rad) < (1.0 / 3600.0)
+    def is_same_target(self, candidate):
+        """
+        Figure out if two candidates are the same.
+        :param candidate: candidate to compare
+        :return: bool: True if the candidates have the same position (within 1")
+
+        Notes
+        -----
+        We consider two targets to be the same if their positions are within 1" of each other.
+        """
+        return great_circle_distance(self.ra, self.dec,
+                                     candidate.ra, candidate.dec) < (1.0 / 3600.0)
