@@ -6,6 +6,6 @@ setup(name='ksnex',
       version=0.1,
       packages=['ksnex'],
       setup_requires=[],
-      install_requires=['numpy', 'astropy'],
+      install_requires=['numpy', 'astropy','django'],
       tests_require=[]
       )
