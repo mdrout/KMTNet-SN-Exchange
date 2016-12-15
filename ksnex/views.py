@@ -2,4 +2,4 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the KMT Net SN Project Marshal")
+    return HttpResponse("Hello, world. You're at the KMTNet-SN-Exchange")

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MarshalConfig(AppConfig):
-    name = 'marshal'
+class KSNExConfig(AppConfig):
+    name = 'ksnex'
