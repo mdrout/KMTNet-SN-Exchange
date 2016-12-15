@@ -32,7 +32,8 @@ before_install:
       conda update --yes conda;
       conda create --yes -n test python=$PYTHON_VERSION;
       source activate test;
-      conda install --yes numpy=$NUMPY_VERSION astropy django;
+      conda install --yes numpy=$NUMPY_VERSION astropy django ;
+      pip install coveralls
       fi
 install:
     - if [[ $LANG == python ]]; then python setup.py install; fi
