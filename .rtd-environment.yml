@@ -1,0 +1,6 @@
+name: ksnex
+
+dependencies:
+    - astropy
+    - matplotlib
+    - numpy
