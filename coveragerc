@@ -1,0 +1,9 @@
+[run]
+
+source = ksnex
+
+omit =
+
+   ksnex/tests*
+
+
