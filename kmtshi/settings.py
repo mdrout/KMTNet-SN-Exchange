@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'ksnex.apps.KSNExConfig',
+    'kmtshi.apps.kmtshiConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ksnex.urls'
+ROOT_URLCONF = 'kmtshi.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ksnex.wsgi.application'
+WSGI_APPLICATION = 'kmtshi.wsgi.application'
 
 
 # Database

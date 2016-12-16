@@ -1,9 +1,9 @@
 [run]
 
-source = ksnex
+source = kmtshi
 
 omit =
 
-   ksnex/tests*
+   kmtshi/tests*
 
 

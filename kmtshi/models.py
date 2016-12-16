@@ -1,5 +1,5 @@
 from django.db import models
-from ksnex.coordinates import great_circle_distance
+from kmtshi.coordinates import great_circle_distance
 
 
 class Field(models.Model):

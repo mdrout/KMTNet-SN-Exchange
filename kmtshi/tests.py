@@ -1,6 +1,6 @@
 from django.test import TestCase
 import numpy as np
-from ksnex.coordinates import great_circle_distance
+from kmtshi.coordinates import great_circle_distance
 from astropy.coordinates import SkyCoord
 from astropy import units
 
