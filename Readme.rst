@@ -1,7 +1,7 @@
 KMTSHI
 ======
 
-This repo contains the KMT Supernova Hunter Interface (KMTSHI).
+This repo contains the KMTNet Supernova Hunter's Interface (KMTSHI).
 
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
     :target: http://www.astropy.org
