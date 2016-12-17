@@ -32,7 +32,7 @@ before_install:
       conda update --yes conda;
       conda create --yes -n test python=$PYTHON_VERSION;
       source activate test;
-      conda install --yes numpy=$NUMPY_VERSION astropy django;
+      conda install --yes numpy=$NUMPY_VERSION astropy django, coverage;
       pip install coveralls;
       fi
 install:
@@ -41,5 +41,5 @@ script:
     - if [[ $LANG == python ]]; then $SETUP_CMD; fi
 
 after_success:
-    - if [[ $SETUP_CMD ==  'coverage run ./manage.py test']]; then coverage report; fi
-    - if [[ $SETUP_CMD ==  'coverage run ./manage.py test']]; then coveralls --rcfile='coveragerc'; fi
+    - if [[ $SETUP_CMD ==  'coverage run ./manage.py test' ]]; then coverage report; fi
+    - if [[ $SETUP_CMD ==  'coverage run ./manage.py test' ]]; then coveralls --rcfile=coveragerc; fi
