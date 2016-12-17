@@ -7,5 +7,5 @@ setup(name='kmtshi',
       packages=['kmtshi'],
       setup_requires=[],
       install_requires=['numpy', 'astropy', 'django'],
-      tests_require=['coverage', 'coveralls']
+      tests_require=[]
       )
