@@ -2,6 +2,7 @@
 db.sqlite3
 __pycache__
 migrations/*
+kmtshi/migrations/*
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]

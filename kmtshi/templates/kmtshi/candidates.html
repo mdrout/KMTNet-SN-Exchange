@@ -1,0 +1,9 @@
+{% if candidate_list %}
+    <ul>
+    {% for candidate in candidate_list %}
+        <li><a href="/{{ candidate.id }}/">{{ candidate.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No candidates need vetting.</p>
+{% endif %}
