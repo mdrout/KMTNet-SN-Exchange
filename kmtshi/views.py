@@ -1,6 +1,6 @@
 from django.http import HttpResponse,Http404
 from django.template import loader
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from kmtshi.models import Field,Quadrant,Classification,Candidate
 
 def index(request):
@@ -13,10 +13,5 @@ def candidates(request):
     return render(request, 'kmtshi/candidates.html', context)
 
 def detail(request, candidate_id):
-    try:
-        candidate=Candidate.objects.get(pk=candidate_id)
-    except Candidate.DoesNotExist:
-        raise Http404("This candidate does not exist")
+    candidate=get_object_or_404(Candidate, pk=candidate_id)
     return render(request, 'kmtshi/detail.html',{'candidate': candidate})
-    #response = "This is the kmtshi page for object %s."
-    #return HttpResponse(response % candidate_id)

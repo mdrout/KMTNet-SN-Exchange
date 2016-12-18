@@ -1,7 +1,7 @@
 {% if candidate_list %}
     <ul>
     {% for candidate in candidate_list %}
-        <li><a href="/{{ candidate.id }}/">{{ candidate.name }}</a></li>
+        <li><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
