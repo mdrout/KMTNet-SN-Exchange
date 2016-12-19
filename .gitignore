@@ -3,6 +3,8 @@ db.sqlite3
 __pycache__
 migrations/*
 kmtshi/migrations/*
+.DS_Store
+kmtshi/.DS_Store
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]
