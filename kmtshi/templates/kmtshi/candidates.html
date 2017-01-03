@@ -12,11 +12,6 @@
     <hr>
 
     {% if candidate_list %}
-        <!-- <ul>
-        {% for candidate in candidate_list %}
-            <li><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></li>
-        {% endfor %}
-        </ul> -->
         {% for candidate in candidate_list %}
             <div>
                 <h4><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></h4>
@@ -24,6 +19,7 @@
                 <p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
                 <p>Classification: {{candidate.classification}}
                 <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a></p>
+
             </div>
             <hr>
         {% endfor %}
