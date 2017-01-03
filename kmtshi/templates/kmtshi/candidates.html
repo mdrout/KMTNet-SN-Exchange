@@ -18,8 +18,10 @@
                 <p>FIELD: {{candidate.field}} {{candidate.quadrant}} </p>
                 <p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
                 <p>Classification: {{candidate.classification}}
-                <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a></p>
-
+                    {% if user.is_authenticated %}
+                    <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                    {% endif %}
+                </p>
             </div>
             <hr>
         {% endfor %}

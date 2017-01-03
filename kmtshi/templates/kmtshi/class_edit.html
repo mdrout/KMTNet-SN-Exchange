@@ -11,10 +11,12 @@
         <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
         <hr>
         <hr>
+        {% if user.is_authenticated %}
         <h3> Edit Classification for {{ candidate }} </h3>
         <form method="POST" class="post-form">{% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="save btn btn-default">Save</button>
         </form>
+        {% endif %}
     </body>
 </html>
