@@ -1,8 +1,25 @@
-<h1> This is the kmtshi page for  {{ candidate }} </h1>
-<ul>
-    <li> Discovery Date: {{candidate.date_disc}} </li>
-    <li> RA: {{candidate.ra}} </li>
-    <li> DEC: {{candidate.dec}} </li>
-    <li> FIELD: {{candidate.field}} {{candidate.quadrant}} </li>
-</ul>
+<html>
+    <head>
+        <title>kmtshi: {{candidate}} </title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+
+        <h1> This is the kmtshi page for  {{ candidate }} </h1>
+        <ul>
+            <li> Discovery Date: {{candidate.date_disc}} </li>
+            <li> RA: {{candidate.ra}} </li>
+            <li> DEC: {{candidate.dec}} </li>
+            <li> FIELD: {{candidate.field}} {{candidate.quadrant}} </li>
+            <li> Classiciation: {{candidate.classification}} </li>
+        </ul>
+        <dev>
+            <h3>Edit the Classification for {{candidate}}</h3>
+        </dev>
+
+    </body>
+</html>
+
 

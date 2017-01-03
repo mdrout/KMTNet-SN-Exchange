@@ -21,5 +21,6 @@ from kmtshi import views
 urlpatterns = [url(r'^$', views.index, name='index'),
                url(r'^candidates/$', views.candidates, name='candidates'),
                url(r'^(?P<candidate_id>[0-9]+)/$', views.detail,name='detail'),
+               url(r'^(?P<candidate_id>[0-9]+)/class_edit/$', views.classification_edit,name='classification_edit'),
                url(r'^admin/', admin.site.urls)]
 

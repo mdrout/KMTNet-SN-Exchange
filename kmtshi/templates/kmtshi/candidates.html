@@ -1,6 +1,9 @@
 <html>
     <head>
         <title>kmtshi: candidates</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     </head>
     <body>
     <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
@@ -16,9 +19,11 @@
         </ul> -->
         {% for candidate in candidate_list %}
             <div>
-                <p><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></p>
+                <h4><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></h4>
                 <p>FIELD: {{candidate.field}} {{candidate.quadrant}} </p>
-                <p></p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
+                <p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
+                <p>Classification: {{candidate.classification}}
+                <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a></p>
             </div>
             <hr>
         {% endfor %}
