@@ -1,10 +1,12 @@
 .idea
 db.sqlite3
 __pycache__
-migrations/*
-kmtshi/migrations/*
+migrations/
+kmtshi/migrations/
 .DS_Store
 kmtshi/.DS_Store
+test_searchcand.py
+db_import/
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]

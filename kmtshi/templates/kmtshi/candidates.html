@@ -1,9 +1,29 @@
-{% if candidate_list %}
-    <ul>
-    {% for candidate in candidate_list %}
-        <li><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No candidates need vetting.</p>
-{% endif %}
+<html>
+    <head>
+        <title>kmtshi: candidates</title>
+    </head>
+    <body>
+    <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
+    <h2> Candidates for vetting </h2>
+    <hr>
+    <hr>
+
+    {% if candidate_list %}
+        <!-- <ul>
+        {% for candidate in candidate_list %}
+            <li><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></li>
+        {% endfor %}
+        </ul> -->
+        {% for candidate in candidate_list %}
+            <div>
+                <p><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></p>
+                <p>FIELD: {{candidate.field}} {{candidate.quadrant}} </p>
+                <p></p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No candidates need vetting.</p>
+    {% endif %}
+    </body>
+</html>
