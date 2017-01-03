@@ -7,16 +7,23 @@
     </head>
     <body>
 
-        <h1> This is the kmtshi page for  {{ candidate }} </h1>
+        <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
+        <h2> Details for {{candidate}} </h2>
+        <hr>
+        <hr>
+        <h3>Basic Information</h3>
         <ul>
+            <li> Field: {{candidate.field}} {{candidate.quadrant}} </li>
             <li> Discovery Date: {{candidate.date_disc}} </li>
-            <li> RA: {{candidate.ra}} </li>
-            <li> DEC: {{candidate.dec}} </li>
-            <li> FIELD: {{candidate.field}} {{candidate.quadrant}} </li>
-            <li> Classiciation: {{candidate.classification}} </li>
+            <li> ra = {{candidate.ra}}, dec={{candidate.dec}} </li>
+            <li> Classification: {{candidate.classification}} </li>
         </ul>
         <dev>
             <h3>Edit the Classification for {{candidate}}</h3>
+            <form method="POST" class="post-form">{% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="save btn btn-default">Save</button>
+        </form>
         </dev>
 
     </body>
