@@ -18,14 +18,29 @@
             <li> ra = {{candidate.ra}}, dec={{candidate.dec}} </li>
             <li> Classification: {{candidate.classification}} </li>
         </ul>
+        <hr>
+        <h3>Comments:</h3>
+        {% for comment in comments_list %}
+            <p><b>{{comment.pub_date}}</b> <i>{{comment.author}}</i>: {{comment.text}} </p>
+        {% endfor %}
+        <h4>Add Comment:</h4>
+            <form method="POST" class="post-form">{% csrf_token %}
+                {{ comment_form.as_p }}
+                <!--<input type="hidden" name="form_type" value="comment-form"/>
+                <button type="submit" class="save btn btn-default">Save</button>-->
+                <button type="submit" class="save btn btn-default" name="comment-form">Save</button>
+            </form>
+        <hr>
         {% if user.is_authenticated %}
-        <dev>
+        <div>
             <h3>Edit the Classification for {{candidate}}</h3>
             <form method="POST" class="post-form">{% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="save btn btn-default">Save</button>
-        </form>
-        </dev>
+                {{ class_form.as_p }}
+                <!--<input type="hidden" name="form_type" value="class-form"/>
+                <button type="submit" class="save btn btn-default">Save</button>-->
+                <button type="submit" class="save btn btn-default" name="class-form">Save</button>
+            </form>
+        </div>
         {% endif %}
 
     </body>

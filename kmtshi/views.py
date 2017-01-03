@@ -1,11 +1,13 @@
 from django.http import HttpResponse,Http404
 from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
-from kmtshi.models import Field,Quadrant,Classification,Candidate
-from kmtshi.forms import CandidateForm
+from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment
+from kmtshi.forms import CandidateForm,CommentForm
+from django.utils import timezone
 
 def index(request):
     return HttpResponse("Hello, world. You're at kmtshi, the KMTNet SN Hunter's Interface.")
+
 
 def candidates(request):
     t1=Classification.objects.get(name="candidate")
@@ -13,19 +15,40 @@ def candidates(request):
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
+
 def detail(request, candidate_id):
-    candidate=get_object_or_404(Candidate, pk=candidate_id)
+    candidate = get_object_or_404(Candidate, pk=candidate_id)
 
+    c1 = Candidate.objects.get(pk=candidate_id)
+    comments_list = Comment.objects.filter(candidate=c1).order_by('-pub_date')
+
+    #Form set-up for editing the Comment field
     if request.method == "POST":
-        form = CandidateForm(request.POST, instance=candidate)
-        if form.is_valid():
-            candidate = form.save(commit=False)
-            candidate.save()
-            return redirect('detail',candidate_id=candidate_id)
-    else:
-        form = CandidateForm(instance=candidate)
+        if 'comment-form' in request.POST:
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.author = request.user
+                comment.pub_date = timezone.now()
+                comment.candidate = c1
+                comment.save()
+                return redirect('detail', candidate_id=candidate_id)
+            class_form = CandidateForm(instance=candidate)
+        elif 'class-form' in request.POST:
+            class_form = CandidateForm(request.POST, instance=candidate)
+            if class_form.is_valid():
+                candidate = class_form.save(commit=False)
+                candidate.save()
+                return redirect('detail',candidate_id=candidate_id)
+            comment_form = CommentForm()
 
-    return render(request, 'kmtshi/detail.html',{'form': form,'candidate': candidate})
+    else:
+        class_form = CandidateForm(instance=candidate)
+        comment_form = CommentForm()
+    context = {'class_form': class_form,'comment_form': comment_form,'candidate': candidate,'comments_list': comments_list}
+
+    return render(request, 'kmtshi/detail.html',context)
+
 
 def classification_edit(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)

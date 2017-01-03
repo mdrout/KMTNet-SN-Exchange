@@ -52,7 +52,7 @@ class Candidate(models.Model):
                                      candidate.ra, candidate.dec) < (1.0 / 3600.0)
 
 @python_2_unicode_compatible #unicode support for Python 2
-class Comments(models.Model):
+class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     author = models.ForeignKey('auth.User')
