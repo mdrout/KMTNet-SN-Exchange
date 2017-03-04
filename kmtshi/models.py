@@ -66,3 +66,18 @@ class Comment(models.Model):
     def __str__(self):
         return self.text
 
+@python_2_unicode_compatible #unicode support for Python 2
+class PngImages(models.Model):
+    id = models.AutoField(primary_key=True)
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    date_txt = models.CharField(max_length=15)
+    obs_date = models.DateTimeField()
+    B_image = models.ImageField()
+    Bref_image = models.ImageField()
+    Bsub_image = models.ImageField()
+    B_prev_im = models.ImageField()
+    V_prev_im = models.ImageField()
+    I_prev_im = models.ImageField()
+
+    def __str__(self):
+        return self.candidate

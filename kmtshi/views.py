@@ -4,6 +4,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment
 from kmtshi.forms import CandidateForm,CommentForm
 from django.utils import timezone
+import glob
 
 def index(request):
     return HttpResponse("Hello, world. You're at kmtshi, the KMTNet SN Hunter's Interface.")
