@@ -72,12 +72,12 @@ class PngImages(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     date_txt = models.CharField(max_length=15)
     obs_date = models.DateTimeField()
-    B_image = models.ImageField()
-    Bref_image = models.ImageField()
-    Bsub_image = models.ImageField()
-    B_prev_im = models.ImageField()
-    V_prev_im = models.ImageField()
-    I_prev_im = models.ImageField()
+    B_image = models.ImageField(max_length=1000)
+    Bref_image = models.ImageField(max_length=1000)
+    Bsub_image = models.ImageField(max_length=1000)
+    B_prev_im = models.ImageField(max_length=1000)
+    V_prev_im = models.ImageField(max_length=1000)
+    I_prev_im = models.ImageField(max_length=1000)
 
     def __str__(self):
-        return self.candidate
+        return self.candidate.name

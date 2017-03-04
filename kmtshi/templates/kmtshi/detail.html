@@ -1,3 +1,4 @@
+{% load static %}
 <html>
     <head>
         <title>kmtshi: {{candidate}} </title>
@@ -42,6 +43,24 @@
             </form>
         </div>
         {% endif %}
+        <hr>
+        <div>
+            <h3>Postage Stamp Images</h3>
+            {% if png_list %}
+                {% for png in png_list %}
+                    <p>{{png.date_txt}} ({{png.obs_date}})</p>
+                    <img src="{% static png.B_image.url %}"/>
+                    <img src="{% static png.Bref_image.url %}"/>
+                    <img src="{% static png.Bsub_image.url %}"/>
+                    <img src="{% static png.B_prev_im.url %}"/>
+                    <img src="{% static png.V_prev_im.url %}"/>
+                    <img src="{% static png.I_prev_im.url %}"/>
+                {% endfor %}
+            {% else %}
+                <p>No candidates need vetting.</p>
+            {% endif %}
+        </div>
+
 
     </body>
 </html>

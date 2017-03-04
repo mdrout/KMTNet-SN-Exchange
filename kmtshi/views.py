@@ -1,7 +1,7 @@
 from django.http import HttpResponse,Http404
 from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
-from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment
+from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,PngImages
 from kmtshi.forms import CandidateForm,CommentForm
 from django.utils import timezone
 import glob
@@ -22,6 +22,7 @@ def detail(request, candidate_id):
 
     c1 = Candidate.objects.get(pk=candidate_id)
     comments_list = Comment.objects.filter(candidate=c1).order_by('-pub_date')
+    png_list = PngImages.objects.filter(candidate=c1).order_by('-obs_date')
 
     #Form set-up for editing the Comment field
     if request.method == "POST":
@@ -46,7 +47,7 @@ def detail(request, candidate_id):
     else:
         class_form = CandidateForm(instance=candidate)
         comment_form = CommentForm()
-    context = {'class_form': class_form,'comment_form': comment_form,'candidate': candidate,'comments_list': comments_list}
+    context = {'class_form': class_form,'comment_form': comment_form,'candidate': candidate,'comments_list': comments_list,'png_list': png_list}
 
     return render(request, 'kmtshi/detail.html',context)
 
