@@ -29,12 +29,15 @@ class Classification(models.Model):
 class Candidate(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100,default="KSP-%s")
-    date_disc = models.FloatField(default=160000)
+    date_disc = models.DateTimeField()
     ra = models.FloatField()
     dec = models.FloatField()
     field = models.ForeignKey(Field, on_delete=models.CASCADE)
     quadrant = models.ForeignKey(Quadrant, on_delete=models.CASCADE)
     classification = models.ForeignKey(Classification, on_delete=models.CASCADE)
+    disc_im = models.ImageField(max_length=1000)
+    disc_ref = models.ImageField(max_length=1000)
+    disc_sub = models.ImageField(max_length=1000)
     def __str__(self):
         return self.name
 

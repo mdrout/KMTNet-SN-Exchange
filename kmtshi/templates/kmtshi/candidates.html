@@ -23,11 +23,14 @@
                     <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
                     {% endif %}
                 </p>
+                <p>
+                    <img src="{% static candidate.disc_im %}"/>
+                    <img src="{% static candidate.disc_ref %}"/>
+                    <img src="{% static candidate.disc_sub %}"/>
+                </p>
             </div>
             <hr>
         {% endfor %}
-        <img src="{% static '/Users/mdrout/Research/KMTNet/kmtshi_testfiles/data/ksp/data/N2188/N2188-1/Q0/B_filter/Subtraction/JPEG_TV_IMAGES/N2188-1.Q0.B.161228_2045.S.061239D772-332826D7.20D204.0D020.0036/N2188-1.Q0.B.161228_2045.S.061239D772-332826D7.20D204.0D020.0036.B-Filter-SOURCE.jpeg' %}" alt="WTF" style="width:121pix;height:121pix;">
-        <img src="{% static 'kmtshi/images/test.jpeg' %}" alt="WTFx2" style="width:121pix;height:121pix;">
     {% else %}
         <p>No candidates need vetting.</p>
     {% endif %}
