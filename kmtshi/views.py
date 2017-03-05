@@ -5,6 +5,7 @@ from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,PngIma
 from kmtshi.forms import CandidateForm,CommentForm
 from django.utils import timezone
 import glob
+from kmtshi.plots import MagAuto_FiltersPlot
 
 def index(request):
     return HttpResponse("Hello, world. You're at kmtshi, the KMTNet SN Hunter's Interface.")
@@ -24,7 +25,10 @@ def detail(request, candidate_id):
     comments_list = Comment.objects.filter(candidate=c1).order_by('-pub_date')
     png_list = PngImages.objects.filter(candidate=c1).order_by('-obs_date')
 
-    #Form set-up for editing the Comment field
+    #Create the bokeh light curve plots (ideally have set-up elsewhere):
+    script,div = MagAuto_FiltersPlot(candidate_id)
+
+    #Form set-up for editing the Comment field amd Modifying the Classification:
     if request.method == "POST":
         if 'comment-form' in request.POST:
             comment_form = CommentForm(request.POST)
@@ -47,7 +51,9 @@ def detail(request, candidate_id):
     else:
         class_form = CandidateForm(instance=candidate)
         comment_form = CommentForm()
-    context = {'class_form': class_form,'comment_form': comment_form,'candidate': candidate,'comments_list': comments_list,'png_list': png_list}
+    context = {'class_form': class_form,'comment_form': comment_form,
+               'candidate': candidate,'comments_list': comments_list,'png_list': png_list,
+               'the_script': script, 'the_div': div}
 
     return render(request, 'kmtshi/detail.html',context)
 
