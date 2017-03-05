@@ -103,8 +103,19 @@ class Photometry(models.Model):
     obs_date = models.DateTimeField()
     obs_mjd = models.FloatField()
     filter = models.CharField(max_length=10)
-    mag = models.FloatField()
-    dmag = models.FloatField()
+    flux_ap = models.FloatField()
+    dflux_ap = models.FloatField()
+    flux_auto = models.FloatField()
+    dflux_auto = models.FloatField()
+    mag_ap = models.FloatField()
+    dmag_ap = models.FloatField()
+    mag_auto = models.FloatField()
+    dmag_auto = models.FloatField()
+    ra = models.FloatField()
+    dec = models.FloatField()
+    dra = models.FloatField()
+    ddec = models.FloatField()
+    class_star = models.FloatField()
     flag = models.BooleanField()  # True = detection; False = Obs, but not in files.
 
     def __str__(self):
