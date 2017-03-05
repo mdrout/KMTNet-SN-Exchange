@@ -116,6 +116,7 @@ class Photometry(models.Model):
     dra = models.FloatField()
     ddec = models.FloatField()
     class_star = models.FloatField()
+    telescope = models.CharField(max_length=3)
     flag = models.BooleanField()  # True = detection; False = Obs, but not in files.
 
     def __str__(self):
