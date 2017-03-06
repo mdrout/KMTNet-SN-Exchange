@@ -22,6 +22,14 @@ class Quadrant(models.Model):
     def __str__(self):
         return self.name
 
+@python_2_unicode_compatible  # unicode support for Python 2
+class UpdateTracker(models.Model):
+    id = models.AutoField(primary_key=True)
+    field = models.ForeignKey(Field, on_delete=models.CASCADE)
+    last_date = models.DateTimeField()
+
+    def __str__(self):
+        return self.field.subfield
 
 @python_2_unicode_compatible  # unicode support for Python 2
 class Classification(models.Model):
