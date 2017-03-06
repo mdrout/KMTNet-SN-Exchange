@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from kmtshi.coordinates import great_circle_distance
 from django.utils import timezone
-import datetime,pytz
+import datetime
 
 
 @python_2_unicode_compatible  # unicode support for Python 2
@@ -13,7 +13,7 @@ class Field(models.Model):
 
     #set default:
     timestamp=datetime.datetime(2014,1,1,00,00)
-    timestamp=timestamp.replace(tzinfo=pytz.utc)
+    timestamp=timestamp.replace(tzinfo=timezone.utc)
 
     last_date = models.DateTimeField(default=timestamp)
 
