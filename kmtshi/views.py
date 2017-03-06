@@ -17,17 +17,22 @@ def candidates(request):
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
+def candidates_field(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    context = {'candidate_list': candidate_list,'field':field}
+    return render(request, 'kmtshi/candidates_field.html', context)
 
 def detail(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
 
     c1 = Candidate.objects.get(pk=candidate_id)
     comments_list = Comment.objects.filter(candidate=c1).order_by('-pub_date')
-    png_list = PngImages.objects.filter(candidate=c1).order_by('-obs_date')
+    png_list = PngImages.objects.filter(candidate=c1).order_by('-obs_date')[:15]
 
     #Create the bokeh light curve plots (ideally have set-up elsewhere):
     script,div = MagAuto_FiltersPlot(candidate_id)
-
     script2,div2 = Mag_FiltersLinkPlot(candidate_id)
 
     #Form set-up for editing the Comment field amd Modifying the Classification:

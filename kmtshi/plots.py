@@ -48,7 +48,8 @@ def MagAuto_FiltersPlot(candidate_id):
         p.circle(mjd_ap_l, mag_ap_l, legend=filters[i] + " mag Limits", line_width=2, size=8,
                  fill_color="white", line_color=colors[2 * i])
 
-    script, div = components(p, CDN)
+    pp=gridplot([[p]],toolbar_location="right")
+    script, div = components(pp, CDN)
 
     return script, div
 
