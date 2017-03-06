@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from kmtshi.coordinates import great_circle_distance
 from django.utils import timezone
+import datetime,pytz
 
 
 @python_2_unicode_compatible  # unicode support for Python 2
@@ -9,6 +10,12 @@ class Field(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=20)
     subfield = models.CharField(max_length=20)
+
+    #set default:
+    timestamp=datetime.datetime(2014,1,1,00,00)
+    timestamp=timestamp.replace(tzinfo=pytz.utc)
+
+    last_date = models.DateTimeField(default=timestamp)
 
     def __str__(self):
         return self.subfield
@@ -22,14 +29,6 @@ class Quadrant(models.Model):
     def __str__(self):
         return self.name
 
-@python_2_unicode_compatible  # unicode support for Python 2
-class UpdateTracker(models.Model):
-    id = models.AutoField(primary_key=True)
-    field = models.ForeignKey(Field, on_delete=models.CASCADE)
-    last_date = models.DateTimeField()
-
-    def __str__(self):
-        return self.field.subfield
 
 @python_2_unicode_compatible  # unicode support for Python 2
 class Classification(models.Model):
