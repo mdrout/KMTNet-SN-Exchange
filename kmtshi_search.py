@@ -13,6 +13,7 @@ from kmtshi.dates import dates_from_filename
 from kmtshi.coordinates import coords_from_filename
 from kmtshi.kmtshi_jpeg import cjpeg
 from kmtshi.kmtshi_photom import cphotom
+from kmtshi.alphabet import num2alpha
 
 #Other set-up
 import glob
@@ -63,7 +64,7 @@ def main(argv):
 
         #Loop over each epoch:
         for i in range(0,len(epochs)):
-            print('Field = ',fld,' Epcoh = ',epochs[i].split('/')[-1])
+            print('Field = ',fld,' Epoch = ',epochs[i].split('/')[-1])
 
             #Compare epoch baseline for this field.
             if not epoch_timestamps[i] > epoch_ref:
@@ -138,7 +139,8 @@ def main(argv):
                     s3 = Classification.objects.get(name="candidate")
 
                     n1 = Candidate.objects.filter(field=s1).count() + 1
-                    obj_name = "KSP-" + field_dir + "_" + str(epoch_timestamps[i].year) + '-' + str(n1)
+                    alpha = num2alpha(n1)
+                    obj_name = "KSP-" + field_dir + "_" + str(epoch_timestamps[i].year) + alpha
 
                     pdf = event_f.split('/')[-1]
 
@@ -157,7 +159,7 @@ def main(argv):
                     cand0.disc_sub = path3
 
                     print('New Candidate= ',cand0.name,' File= ',pdf)
-                    #cand0.save()
+                    cand0.save()
 
                     #Call script to gather jpeg image for this event
                     jpeg = cjpeg(cand0.pk)

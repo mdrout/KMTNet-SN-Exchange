@@ -56,7 +56,7 @@ def cjpeg(candidate_id):
             #Candidate is the within 1". Populate the jpg database with files.
             ims = jpegImages(candidate=c1, date_txt=t2[3], obs_date=timestamp)
 
-            pdf=ffname.splot('/')[-1]+'.pdf'
+            pdf=ffname.split('/')[-1]+'.pdf'
 
             path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
             path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
