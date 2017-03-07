@@ -87,7 +87,7 @@ class Comment(models.Model):
 
 
 @python_2_unicode_compatible  # unicode support for Python 2
-class PngImages(models.Model):
+class jpegImages(models.Model):
     id = models.AutoField(primary_key=True)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     date_txt = models.CharField(max_length=15)

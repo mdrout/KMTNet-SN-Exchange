@@ -20,7 +20,7 @@ from datetime import timedelta
 def main(argv):
     flds = [] #fields to search
     nd = 2  #number of detections
-    dt = 15 #time in days for search
+    dt = 10 #time in days for search
     try:
         opts, args = getopt.getopt(argv,"f:d:t:",["fields=","detect=","days="])
     except getopt.GetoptError:
@@ -50,6 +50,7 @@ def main(argv):
     for fld in flds:
         #get database field for use:
         fld_db = Field.objects.get(subfield=fld)
+        epoch_ref = fld_db.last_date
 
         #Grab files for epochs.
         epochs = glob.glob(base_foxtrot()+base_gdrive()+fld+'/*')
@@ -60,14 +61,15 @@ def main(argv):
 
         #Loop over each epoch:
         for i in range(0,len(epochs)):
-            #Compare epoch baseline for this field.
-            epoch_ref = fld_db.last_date
+            print('Field = ',fld,' Epcoh = ',epochs[i].split('/')[-1])
 
+            #Compare epoch baseline for this field.
             if not epoch_timestamps[i] > epoch_ref:
                 continue
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
-            events = glob.glob(epochs[i]+'/*/*.pdf')
+            #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
+            events = glob.glob(epochs[i]+'/Q2/*.pdf')
 
             #check if event is already in db:
             for event_f in events:
@@ -75,8 +77,8 @@ def main(argv):
 
                 #grab ra to check if event is in database already:
                 c = coords_from_filename(event_txt[5])
-                c_ra = "{:12.6f}".format(c.ra.deg)
-                c_dec = "{:12.6f}".format(c.dec.deg)
+                c_ra = c.ra.deg #"{:12.6f}".format(c.ra.deg)
+                c_dec = c.dec.deg #"{:12.6f}".format(c.dec.deg)
 
                 cand0 = Candidate(ra=c_ra, dec=c_dec, date_disc=epoch_timestamps[i])
 
@@ -97,9 +99,16 @@ def main(argv):
                 day_min = epoch_timestamps[i] - timedelta(days=dt)
                 day_max = epoch_timestamps[i]
 
+                #print('Checking for multiple detections')
                 counter = 1 #Keep track of number of detections.
-                for j in range(0,len(epoch_timestamps)):
-                    if ((epoch_timestamps[j] < day_max) and (epoch_timestamps > day_min)):
+
+                # Ideally, we would step through the numbers backwards, so the FIRST date it
+                # will come accross is the one immediately prior to this one (as opposed to 10 days prior)
+                for j in range(len(epoch_timestamps)-1,-1,-1):
+                    if counter >= nd:
+                        break #This just saves time, if we already know we will add no need to continue checking.
+
+                    if ((epoch_timestamps[j] < day_max) and (epoch_timestamps[j] > day_min)):
                         #Date in range. Check for other detections within 1"
                         #Grab pdf candidates in this epoch.
                         events_ch = glob.glob(epochs[j] + '/*/*.pdf')
@@ -112,7 +121,7 @@ def main(argv):
                             if Candidate.is_same_target(cand0,cand_ch):
                                 counter = counter + 1
                                 break #This sends it on to check the next date
-                    elif
+                    else:
                         continue #If date not in range, move on to next date
 
                 #Should have now checked over all the dates in a range.
@@ -131,13 +140,13 @@ def main(argv):
 
                     pdf = event_f.split('/')[-1]
 
-                    path1 =  jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg"
-                    path2 = jpeg_path(pdf) + ".REF.jpeg"
-                    path3 = glob.glob(jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")[0]
+                    #These will now throw an error if they do not exist.
+                    path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")[0]
+                    path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")[0]
+                    path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")[0]
 
                     #Actually modify the candidate:
                     cand0.name = obj_name
-                    cand0.disc_date = timestamp
                     cand0.field = s1
                     cand0.quadrant = s2
                     cand0.classification = s3
@@ -145,15 +154,18 @@ def main(argv):
                     cand0.disc_ref = path2
                     cand0.disc_sub = path3
 
-                    print(cand0.name)
-                    cand0.save()
+                    print('New Candidate= ',cand0.name,' File= ',pdf)
+                    #cand0.save()
 
                     #Call script to gather photom for this event
-                    #Call script to gather png image for this event
+                    photom = kmtshi_cphotom.py(cand0.pk)
+                    print(photom)
+                    #Call script to gather jpeg image for this event
+                    jpeg = kmtshi_cjpeg.py(cand0.pk)
 
         #Update the 'last epoch checked for this field:
         fld_db.last_date = max(epoch_timestamps)
-        fld_db.save()
+        #fld_db.save()
 
 
 if __name__ == "__main__":
