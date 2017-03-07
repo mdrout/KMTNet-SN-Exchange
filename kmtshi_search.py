@@ -8,9 +8,11 @@ django.setup()
 
 #kmtshi set-up:
 from kmtshi.models import Field,Quadrant,Classification,Candidate
-from kmtshi.base_directories import base_data,base_foxtrot,base_gdrive,jpeg_path
+from kmtshi.base_directories import base_foxtrot,base_gdrive,jpeg_path
 from kmtshi.dates import dates_from_filename
 from kmtshi.coordinates import coords_from_filename
+from kmtshi.kmtshi_jpeg import cjpeg
+from kmtshi.kmtshi_photom import cphotom
 
 #Other set-up
 import glob
@@ -158,10 +160,10 @@ def main(argv):
                     #cand0.save()
 
                     #Call script to gather jpeg image for this event
-                    jpeg = kmtshi_cjpeg.py(cand0.pk)
+                    jpeg = cjpeg(cand0.pk)
                     print(jpeg)
                     #Call script to gather photom for this event
-                    photom = kmtshi_cphotom.py(cand0.pk)
+                    photom = cphotom(cand0.pk)
                     print(photom)
 
 

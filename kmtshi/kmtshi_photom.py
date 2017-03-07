@@ -122,4 +122,4 @@ def cphotom(candidate_id):
         #print(filter+' points present = '+str(n1))
 
     out_txt = 'Photometry has been updated for Object '+str(c1.name)
-    return
+    return out_txt
