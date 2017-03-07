@@ -1,5 +1,5 @@
+from django.utils import timezone
 import datetime
-import pytz
 
 def dates_from_filename(filestring):
     '''Create a datetime object based on the string
@@ -13,6 +13,5 @@ def dates_from_filename(filestring):
     d = int(filestring[6:8])
     h = int(filestring[9:11])
     s = int(filestring[11:13])
-    timestamp = datetime.datetime(y, m, d, h, s)
-    timestamp = timestamp.replace(tzinfo=pytz.utc)
+    timestamp = datetime.datetime(y, m, d, h, s,tzinfo=timezone.utc)
     return timestamp

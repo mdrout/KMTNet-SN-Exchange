@@ -5,7 +5,7 @@ from bokeh.resources import CDN
 from bokeh.embed import components
 from bokeh.layouts import gridplot
 
-from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,PngImages,Photometry
+from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages,Photometry
 
 import numpy as np
 
