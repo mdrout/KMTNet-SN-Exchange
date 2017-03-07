@@ -1,7 +1,7 @@
 from django.http import HttpResponse,Http404
 from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
-from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,PngImages
+from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages
 from kmtshi.forms import CandidateForm,CommentForm
 from django.utils import timezone
 import glob
@@ -17,6 +17,7 @@ def candidates(request):
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
+
 def candidates_field(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
@@ -24,12 +25,13 @@ def candidates_field(request,field):
     context = {'candidate_list': candidate_list,'field':field}
     return render(request, 'kmtshi/candidates_field.html', context)
 
+
 def detail(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
 
     c1 = Candidate.objects.get(pk=candidate_id)
     comments_list = Comment.objects.filter(candidate=c1).order_by('-pub_date')
-    png_list = PngImages.objects.filter(candidate=c1).order_by('-obs_date')[:15]
+    png_list = jpegImages.objects.filter(candidate=c1).order_by('-obs_date')[:15]
 
     #Create the bokeh light curve plots (ideally have set-up elsewhere):
     script,div = MagAuto_FiltersPlot(candidate_id)

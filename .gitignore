@@ -5,7 +5,7 @@ migrations/
 kmtshi/migrations/
 .DS_Store
 kmtshi/.DS_Store
-test_*.py
+test*.py
 db_import/
 
 # Byte-compiled / optimized / DLL files

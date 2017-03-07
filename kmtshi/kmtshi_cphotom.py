@@ -18,6 +18,7 @@ from astropy.time import Time
 import datetime,glob
 import numpy as np
 
+
 def cphotom(candidate_id):
     '''This will find the photometry for a specific candidate'''
     c1 = Candidate.objects.get(pk=candidate_id)

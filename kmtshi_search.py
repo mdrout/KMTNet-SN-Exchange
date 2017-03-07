@@ -157,11 +157,13 @@ def main(argv):
                     print('New Candidate= ',cand0.name,' File= ',pdf)
                     #cand0.save()
 
+                    #Call script to gather jpeg image for this event
+                    jpeg = kmtshi_cjpeg.py(cand0.pk)
+                    print(jpeg)
                     #Call script to gather photom for this event
                     photom = kmtshi_cphotom.py(cand0.pk)
                     print(photom)
-                    #Call script to gather jpeg image for this event
-                    jpeg = kmtshi_cjpeg.py(cand0.pk)
+
 
         #Update the 'last epoch checked for this field:
         fld_db.last_date = max(epoch_timestamps)
