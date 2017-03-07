@@ -10,13 +10,14 @@ django.setup()
 from kmtshi.models import Field,Quadrant,Classification,Candidate
 from kmtshi.base_directories import base_foxtrot,base_gdrive,jpeg_path
 from kmtshi.dates import dates_from_filename
-from kmtshi.coordinates import coords_from_filename
+from kmtshi.coordinates import coords_from_filename,great_circle_distance
 from kmtshi.kmtshi_jpeg import cjpeg
 from kmtshi.kmtshi_photom import cphotom
 from kmtshi.alphabet import num2alpha
 
 #Other set-up
-import glob
+import glob,time
+import numpy as np
 from datetime import timedelta
 
 ###################################################################################
@@ -102,30 +103,31 @@ def main(argv):
                 day_min = epoch_timestamps[i] - timedelta(days=dt)
                 day_max = epoch_timestamps[i]
 
-                #print('Checking for multiple detections')
+                #Identify epochs which are within that range:
+                index = np.where([((epoch < day_max) & (epoch > day_min)) for epoch in epoch_timestamps])[0]
+
                 counter = 1 #Keep track of number of detections.
 
                 # Ideally, we would step through the numbers backwards, so the FIRST date it
                 # will come accross is the one immediately prior to this one (as opposed to 10 days prior)
-                for j in range(len(epoch_timestamps)-1,-1,-1):
+                start = time.clock()
+                for j in np.flipud(index):
                     if counter >= nd:
                         break #This just saves time, if we already know we will add no need to continue checking.
 
-                    if ((epoch_timestamps[j] < day_max) and (epoch_timestamps[j] > day_min)):
-                        #Date in range. Check for other detections within 1"
-                        #Grab pdf candidates in this epoch.
-                        events_ch = glob.glob(epochs[j] + '/*/*.pdf')
-                        for event_ch_f in events_ch:
-                            event_ch_txt = event_ch_f.split('/')[-1].split('.')
-                            c_ch = coords_from_filename(event_ch_txt[5])
-                            cand_ch = Candidate(ra=c_ch.ra.deg,dec=c_ch.dec.deg,date_disc=epoch_timestamps[j])
+                    #I have already selected where timesteps are satisfied, so just grab events to check against.
+                    #pdf files for this epoch.
+                    events_ch = glob.glob(epochs[j] + '/*/*.pdf')
+                    for event_ch_f in events_ch:
+                        event_ch_txt = event_ch_f.split('/')[-1].split('.')
+                        c_ch = coords_from_filename(event_ch_txt[5])
 
-                            #Check if same:
-                            if Candidate.is_same_target(cand0,cand_ch):
-                                counter = counter + 1
-                                break #This sends it on to check the next date
-                    else:
-                        continue #If date not in range, move on to next date
+                        #import great_circle_distance directly:
+                        if great_circle_distance(c_ra,c_dec,c_ch.ra.deg,c_ch.dec.deg) < (1.0/3600.0):
+                            counter = counter + 1
+                            break #This sends it to check the next date in the range.
+
+                print('Time to check for duplicates',time.clock()-start)
 
                 #Should have now checked over all the dates in a range.
                 # If counter > required # detections, then add to database:
