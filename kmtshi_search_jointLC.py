@@ -1,10 +1,6 @@
-"""Basic file which will be called to search a kmtnet field for new transients.
-
-This version updates the LC and png images for each new candidate immediately.
-This is a slower way of doing it if you know there will be multiple new candidates
-that need to extract LC info from the same catalog files.
-
-Recommended to use kmt_search_jointLC instead."""
+'''Basic file which will be called to search a kmtnet field for new transients
+This version will call the LC function on all the new candidates within a certain
+field and quadrant together, to avoid multiple reads of the same catalog files.'''
 
 #Django set-up:
 import os,sys,getopt
@@ -17,8 +13,8 @@ from kmtshi.models import Field,Quadrant,Classification,Candidate
 from kmtshi.base_directories import base_foxtrot,base_gdrive,jpeg_path
 from kmtshi.dates import dates_from_filename
 from kmtshi.coordinates import coords_from_filename,great_circle_distance,initialize_duplicates
-from kmtshi.kmtshi_jpeg import cjpeg
-from kmtshi.kmtshi_photom import cphotom
+from kmtshi.kmtshi_jpeg import cjpeg_list
+from kmtshi.kmtshi_photom import cphotom_list
 from kmtshi.alphabet import num2alpha
 
 #Other set-up
@@ -58,6 +54,8 @@ def main(argv):
     #We are now armed with the proper fields etc.  Continue to do actual search:
     #Step 1: For a given subfield, identify the gdrive folders:
     for fld in flds:
+        new_cands = [] #will trace pk of any new objects added, so we can run photometry for all at the end.
+
         #get database field for use:
         fld_db = Field.objects.get(subfield=fld)
         epoch_ref = fld_db.last_date
@@ -79,9 +77,9 @@ def main(argv):
                 continue
 
             #Preload comparisons for this epoch:
-            start_in = time.clock()
+            start_initialize = time.clock()
             ra_comp, dec_comp = initialize_duplicates(epoch_timestamps[i],dt,epochs,epoch_timestamps)
-            print('Time to initialize comps: ',time.clock()-start_in)
+            print('Time to initialize duplicate search: ',time.clock()-start_initialize)
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
             #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
@@ -111,15 +109,12 @@ def main(argv):
                 #Check for previous detections based on pre-initialized set of ra/dec.
                 counter = 1 #Keep track of number of detections.
 
-                t_dup = time.clock()
                 for j in range(0,len(ra_comp)):
                     if counter >= nd:
                         break #This just saves time, if we already know we will add no need to continue checking.
                     elif great_circle_distance(c_ra,c_dec,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
                         counter = counter + 1
-                print('Time for duplicate check for object # ',event_txt[-1],' ',time.clock()-t_dup)
 
-                #Should have now checked over all the dates in a range.
                 # If counter > required # detections, then add to database:
                 if counter >= nd:
 
@@ -136,7 +131,7 @@ def main(argv):
 
                     pdf = event_f.split('/')[-1]
 
-                    #These will now throw an error if they do not exist.
+                    #These will now throw an error if they do not exist... not sure if that is ok
                     path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")[0]
                     path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")[0]
                     path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")[0]
@@ -152,20 +147,39 @@ def main(argv):
 
                     print('New Candidate= ',cand0.name,' File= ',pdf)
                     cand0.save()
+                    new_cands.append(cand0.pk)
 
                     #Call script to gather jpeg image for this event
-                    jpeg = cjpeg(cand0.pk)
-                    print(jpeg)
+                    #jpeg = cjpeg(cand0.pk)
+                    #print(jpeg)
                     #Call script to gather photom for this event
-                    photom = cphotom(cand0.pk)
-                    print(photom)
+                    #photom = cphotom(cand0.pk)
+                    #print(photom)
 
             print('Total time for epoch: ',time.clock()-start_epoch)
 
-            #Update the 'last epoch checked for this field:
+            #Update the last epoch checked for this field once done searching that epoch.
             fld_db.last_date = epoch_timestamps[i]
             fld_db.save()
 
+        #################################################################################
+        #Update photometry and jpeg for all new_cands that were identified in this field.
+
+        #Move onto next field if there were no new targets.
+        if not len(new_cands) > 0:
+            continue
+
+        #We need to create lists of pk's separated by quadrants
+        quads = [Candidate.object.get(pk=v).quadrant.name for v in new_cands]
+        for quad in set(quads):
+            index = np.where(quad_i == quad for quad_i in quads)
+            pk_quad = new_cands[index]
+
+            #update the photom and jpegs for this quadrant
+            jpeg = cjpeg_list(pk_quad)
+            print(jpeg)
+            photom = cphotom_list(pk_quad)
+            print(photom)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

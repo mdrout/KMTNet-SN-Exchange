@@ -15,7 +15,7 @@ from kmtshi.coordinates import great_circle_distance
 from kmtshi.base_directories import base_data,base_foxtrot
 from astropy.io import fits
 from astropy.time import Time
-import datetime,glob
+import datetime,glob,time
 import numpy as np
 
 
@@ -151,7 +151,7 @@ def cphotom_list(candidate_ids):
     ##Initalize a list of reference timestamps for all of the input candidates.
     timestamps_ref = []
     for y in range(0,len(candidate_ids)):
-        c1 = Candidate.objects.get(pk=candidate_id)
+        c1 = Candidate.objects.get(pk=candidate_ids[y])
 
         #Define ref time to search based on info in the Photom database already.
         t1 = Photometry.objects.filter(candidate=c1).order_by('-obs_date')
@@ -209,7 +209,7 @@ def cphotom_list(candidate_ids):
                 #Loop over the catalog events:
                 for i in range(0, len(ra_cat)):
 
-                    if great_circle_distance(c1_ra, c1_dec, ra_cat[i], dec_cat[i]) < (1.0 / 3600.0):
+                    if great_circle_distance(ctc_ra[j], ctc_dec[j], ra_cat[i], dec_cat[i]) < (1.0 / 3600.0):
                         event = hdulist[2].data[i]
 
                         #If condition is met, then consider object to be the same:
