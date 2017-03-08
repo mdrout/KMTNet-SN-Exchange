@@ -1,7 +1,7 @@
 '''This is a routine that can be called in order to either initialize
 or update the photometry for a given candidate'''
 
-import os
+import os,sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kmtshi.settings")
 
 #continue on to rest:
@@ -20,7 +20,7 @@ import numpy as np
 
 
 def cphotom(candidate_id):
-    '''This will find the photometry for a specific candidate'''
+    '''This will find the photometry for a specific single candidate'''
     c1 = Candidate.objects.get(pk=candidate_id)
 
     #Define ref time to search based on info in the Photom database already.
@@ -122,4 +122,148 @@ def cphotom(candidate_id):
         #print(filter+' points present = '+str(n1))
 
     out_txt = 'Photometry has been updated for Object '+str(c1.name)
+    return out_txt
+
+
+def cphotom_list(candidate_ids):
+    '''This will find the photometry for a list of candidates.
+    For each catalog file, we will initialize the ra/dec for the contents.
+    Then we will iterate through and check for matches for all of the
+    candidates at once. This provides a large improvement in time.
+
+    :param:candidate_ids: list of candidate ids for event.
+
+    Note: the list of candidate ids must all be in the same field and same quadrant.
+    '''
+
+    ########################################################################
+    #Check that all of the candidate_ids have same sub-field and quadrant.
+    flds = [Candidate.object.get(pk=x).field.subfield for x in candidate_ids]
+    quads = [Candidate.object.get(pk=x).quadrant.name for x in candidate_ids]
+    if len(set(flds)) > 1:
+        print('Not all candidates for photom are in same fld')
+        sys.exit()
+    elif len(set(quads)) > 1:
+        print('Not all candidates for photom are in same quadrant')
+        sys.exit()
+
+    #########################################################################
+    ##Initalize a list of reference timestamps for all of the input candidates.
+    timestamps_ref = []
+    for y in range(0,len(candidate_ids)):
+        c1 = Candidate.objects.get(pk=candidate_id)
+
+        #Define ref time to search based on info in the Photom database already.
+        t1 = Photometry.objects.filter(candidate=c1).order_by('-obs_date')
+        if len(t1) > 0:
+            timestamps_ref.append(t1[0].obs_date)
+        else:
+            timestamps_ref.append(datetime.datetime(2014,1,1,00,00,tzinfo=timezone.utc))
+
+    ####################################################################
+    #Set-up places to searh:
+    filters = ['B','V','I','Bsub']
+    base = base_foxtrot()+base_data()+c1.field.name+'/'+c1.field.subfield+'/'+c1.quadrant.name+'/'
+
+    #Cycle through filters:
+    for filter in filters:
+        if filter == 'Bsub':
+            files = glob.glob(base + 'B_filter/Subtraction/' + '*.nh.REF-SUB.cat')
+        else:
+            files = glob.glob(base + '*.' + filter + '.*_tan.nh.phot.cat')
+
+        #Cycle through catalog files
+        for file in files:
+
+            #basic splitting:
+            t2 = file.split('/')[-1].split('.')
+
+            # determine date from filename:
+            timestamp = dates_from_filename('20'+t2[3])
+
+            #Make a list of pks for candidates need to be checked for this epoch.
+            index = np.where([(timestamp_ref < timestamp) for timestamp_ref in timestamps_ref])
+            candidates_to_check = [candidate_ids[index]] #list of pks.
+
+            #If there are no candidates in list that need to be checked
+            #for this epoch, move on.
+            if not len(candidates_to_check) > 0:
+                continue
+
+            #initialize list of ras and decs for the cases that need to be checked.
+            ctc_ra = [Candidate.objects.get(pk=w).ra for w in candidates_to_check]
+            ctc_dec = [Candidate.objects.get(pk=w).dec for w in candidates_to_check]
+
+            #open the catalog file, and initialize the ra/dec for objects inside.
+            hdulist = fits.open(file)
+            start_t = time.clock()
+            ra_cat = [event['X_WORLD'] for event in hdulist[2].data]
+            dec_cat = [event['Y_WORLD'] for event in hdulist[2].data]
+            print('Time for initialization of catalog ra/dec: ', time.clock() - start_t)
+
+            #Now loop over the candidates which need to be check to find matches:
+            for j in range(0,len(candidates_to_check)):
+                c1 = Candidate.objects.get(pk=candidates_to_check[j])
+                Flag = False  # trackker for whether we have a match at this epoch.
+
+                #Loop over the catalog events:
+                for i in range(0, len(ra_cat)):
+
+                    if great_circle_distance(c1_ra, c1_dec, ra_cat[i], dec_cat[i]) < (1.0 / 3600.0):
+                        event = hdulist[2].data[i]
+
+                        #If condition is met, then consider object to be the same:
+                        #Grab photom info. Update the database. Set the flag. Break from event loop (move to next file).
+                        photom_obj = Photometry(candidate=c1,obs_date=timestamp,filter=filter,telescope=t2[4],flag=True)
+
+                        t=Time(timestamp)
+                        photom_obj.obs_mjd=t.mjd
+
+                        photom_obj.ra = event['X_WORLD']
+                        photom_obj.dec = event['Y_WORLD']
+                        photom_obj.dra = event['ERRA_WORLD']
+                        photom_obj.ddec = event['ERRB_WORLD']
+                        photom_obj.class_star = event['CLASS_STAR']
+
+                        #Sort out the photometry:
+                        photom_obj.flux_ap = event['FLUX_APER']
+                        photom_obj.dflux_ap = event['FLUXERR_APER']
+                        photom_obj.flux_auto = event['FLUX_AUTO']
+                        photom_obj.dflux_auto = event['FLUXERR_AUTO']
+                        photom_obj.mag_auto = event['MAG_AUTO']
+
+                        #calculate the other magnitudes/errors from this information.
+                        #mag = -2.5*alog10(F)+zpt
+                        #dmag = 2.5 dF/(ln(10)*F)
+                        zpt = event['MAG_AUTO'] + 2.5 * np.log10(event['FLUX_AUTO'])
+                        dmag_auto = 2.5*event['FLUXERR_AUTO']/(np.log(10)*event['FLUX_AUTO'])
+                        mag_ap = -2.5*np.log10(event['FLUX_APER']) + zpt
+                        dmag_ap = 2.5*event['FLUXERR_APER']/(np.log(10)*event['FLUX_APER'])
+                        #hdulist.close() #Can no longer close list here, because have other events...
+
+                        photom_obj.dmag_auto = dmag_auto
+                        photom_obj.mag_ap = mag_ap
+                        photom_obj.dmag_ap = dmag_ap
+
+                        photom_obj.save()
+                        Flag = True
+                        break #This moves onto the next candidate_to_check
+
+                #Add a 'default entry if no match was found. To show that data was taken that day.
+                if not Flag:
+
+                    #This indicates that there was no match, so populated with defaults.
+                    photom_obj = Photometry(candidate=c1, obs_date=timestamp, filter=filter, telescope=t2[4], flag=False,
+                                        ra=0.00,dec=0.00,dra=0.00,ddec=0.00,class_star=0.00,flux_ap=0.00,dflux_ap=0.00,
+                                        flux_auto=0.00,dflux_auto = 0.00,mag_auto = 22.0,dmag_auto=0.00,mag_ap = 22.0,
+                                        dmag_ap = 0.00)
+
+                    t = Time(timestamp)
+                    photom_obj.obs_mjd = t.mjd
+                    photom_obj.save()
+
+            #Finished searching candidates for this epoch can close cat file.
+            hdulist.close()
+
+    out_txt = 'Photometry has been updated for list of events'
     return out_txt
