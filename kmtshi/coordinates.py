@@ -22,7 +22,7 @@ def great_circle_distance(ra1, dec1, ra2, dec2):
     distance_in_radians = np.arccos(distance_in_radians)
     return np.rad2deg(distance_in_radians)
 
-def coords_from_filename(coords: object) -> object:
+def coords_from_filename(coords):
     '''Create an astropy Coordinate object based on the coordinate string
     which is found in many of the kmtshi file names
 

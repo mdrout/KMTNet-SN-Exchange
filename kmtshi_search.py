@@ -87,7 +87,9 @@ def main(argv):
 
                 #grab ra to check if event is in database already:
                 c = coords_from_filename(event_txt[5])
-                cand0 = Candidate(ra=c.ra.deg, dec=c.dec.deg, date_disc=epoch_timestamps[i])
+                c_ra = c.ra.deg
+                c_dec = c.dec.deg
+                cand0 = Candidate(ra=c_ra, dec=c_dec, date_disc=epoch_timestamps[i])
 
                 #check if already in db, if it is, then Flag1 = True:
                 Flag1 = False
@@ -103,11 +105,13 @@ def main(argv):
                 #Check for previous detections based on pre-initialized set of ra/dec.
                 counter = 1 #Keep track of number of detections.
 
+                t_dup = time.clock()
                 for j in range(0,len(ra_comp)):
                     if counter >= nd:
                         break #This just saves time, if we already know we will add no need to continue checking.
-                    elif great_circle_distance(c.ra.deg,c.dec.deg,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
+                    elif great_circle_distance(c_ra,c_dec,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
                         counter = counter + 1
+                print('Time for duplicate check for object # ',event_txt[-1],' ',time.clock()-t_dup)
 
                 #Should have now checked over all the dates in a range.
                 # If counter > required # detections, then add to database:
