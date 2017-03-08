@@ -10,7 +10,7 @@ django.setup()
 from kmtshi.models import Field,Quadrant,Classification,Candidate
 from kmtshi.base_directories import base_foxtrot,base_gdrive,jpeg_path
 from kmtshi.dates import dates_from_filename
-from kmtshi.coordinates import coords_from_filename,great_circle_distance
+from kmtshi.coordinates import coords_from_filename,great_circle_distance,initialize_duplicates
 from kmtshi.kmtshi_jpeg import cjpeg
 from kmtshi.kmtshi_photom import cphotom
 from kmtshi.alphabet import num2alpha
@@ -66,10 +66,16 @@ def main(argv):
         #Loop over each epoch:
         for i in range(0,len(epochs)):
             print('Field = ',fld,' Epoch = ',epochs[i].split('/')[-1])
+            start_epoch = time.clock()
 
             #Compare epoch baseline for this field.
             if not epoch_timestamps[i] > epoch_ref:
                 continue
+
+            #Preload comparisons for this epoch:
+            start_in = time.clock()
+            ra_comp, dec_comp = initialize_duplicates(epoch_timestamps[i],dt,epochs,epoch_timestamps)
+            print('Time to initialize comps: ',time.clock()-start_in)
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
             #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
@@ -81,53 +87,27 @@ def main(argv):
 
                 #grab ra to check if event is in database already:
                 c = coords_from_filename(event_txt[5])
-                c_ra = c.ra.deg #"{:12.6f}".format(c.ra.deg)
-                c_dec = c.dec.deg #"{:12.6f}".format(c.dec.deg)
-
-                cand0 = Candidate(ra=c_ra, dec=c_dec, date_disc=epoch_timestamps[i])
+                cand0 = Candidate(ra=c.ra.deg, dec=c.dec.deg, date_disc=epoch_timestamps[i])
 
                 #check if already in db, if it is, then Flag1 = True:
                 Flag1 = False
                 for tt in Candidate.objects.all():
-                    test = Candidate.is_same_target(tt, cand0)
-                    if test:
+                    if Candidate.is_same_target(tt, cand0):
                         Flag1 = True
                         break
 
-                #If it is in database, move on to next event, otherwise check for another detection:
+                #If it is in database, move on to next event.:
                 if Flag1:
                     continue
 
-                #Check for other detections.
-                #Identify which other files I need to search, based on days previous.
-                day_min = epoch_timestamps[i] - timedelta(days=dt)
-                day_max = epoch_timestamps[i]
-
-                #Identify epochs which are within that range:
-                index = np.where([((epoch < day_max) & (epoch > day_min)) for epoch in epoch_timestamps])[0]
-
+                #Check for previous detections based on pre-initialized set of ra/dec.
                 counter = 1 #Keep track of number of detections.
 
-                # Ideally, we would step through the numbers backwards, so the FIRST date it
-                # will come accross is the one immediately prior to this one (as opposed to 10 days prior)
-                start = time.clock()
-                for j in np.flipud(index):
+                for j in range(0,len(ra_comp)):
                     if counter >= nd:
                         break #This just saves time, if we already know we will add no need to continue checking.
-
-                    #I have already selected where timesteps are satisfied, so just grab events to check against.
-                    #pdf files for this epoch.
-                    events_ch = glob.glob(epochs[j] + '/*/*.pdf')
-                    for event_ch_f in events_ch:
-                        event_ch_txt = event_ch_f.split('/')[-1].split('.')
-                        c_ch = coords_from_filename(event_ch_txt[5])
-
-                        #import great_circle_distance directly:
-                        if great_circle_distance(c_ra,c_dec,c_ch.ra.deg,c_ch.dec.deg) < (1.0/3600.0):
-                            counter = counter + 1
-                            break #This sends it to check the next date in the range.
-
-                print('Time to check for duplicates',time.clock()-start)
+                    elif great_circle_distance(c.ra.deg,c.dec.deg,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
+                        counter = counter + 1
 
                 #Should have now checked over all the dates in a range.
                 # If counter > required # detections, then add to database:
@@ -170,10 +150,11 @@ def main(argv):
                     photom = cphotom(cand0.pk)
                     print(photom)
 
+            print('Total time for epoch: ',time.clock()-start_epoch)
 
-        #Update the 'last epoch checked for this field:
-        fld_db.last_date = max(epoch_timestamps)
-        #fld_db.save()
+            #Update the 'last epoch checked for this field:
+            fld_db.last_date = epoch_timestamps[i]
+            fld_db.save()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from datetime import timedelta
+import glob
 
 def great_circle_distance(ra1, dec1, ra2, dec2):
     """
@@ -20,7 +22,7 @@ def great_circle_distance(ra1, dec1, ra2, dec2):
     distance_in_radians = np.arccos(distance_in_radians)
     return np.rad2deg(distance_in_radians)
 
-def coords_from_filename(coords):
+def coords_from_filename(coords: object) -> object:
     '''Create an astropy Coordinate object based on the coordinate string
     which is found in many of the kmtshi file names
 
@@ -31,3 +33,33 @@ def coords_from_filename(coords):
     dec = coords[10:13] + " " + coords[13:15] + " " + coords[15:17] + "." + coords[18]
     c = SkyCoord(ra + " " + dec, unit=(u.hourangle, u.deg))
     return c
+
+def initialize_duplicates(epoch_prim,dt,epochs_f,epoch_timestamps):
+    '''This will load up an array with the ra and dec of all of the objects
+    That I will want to check against to see if their are multiple detections.
+    This saves time to avoid repeated operations unnecessarily.
+
+    :param epoch_prim: Epoch of primary search (datetime object)
+    :param dt: number of days previous to primary epoch in which to conduct search
+    :param epochs_f: array which contains the folder path to all of the epochs for this field
+    :param epochs_timestamps: datetime objects for all of the epochs above
+
+    NB: both epochs_f and epochs_timestamps are arrays created in kmtshi_search that can be passed'''
+
+    day_min = epoch_prim - timedelta(days=dt)
+    day_max = epoch_prim
+    index = np.where([((epoch < day_max) & (epoch > day_min)) for epoch in epoch_timestamps])[0]
+    ra = []
+    dec = []
+
+    #Looping this way ensures that data taken most recently before is searched first.
+    for j in np.flipud(index):
+        events_ch = glob.glob(epochs_f[j] + '/*/*.pdf')
+
+        for event_ch_f in events_ch:
+            event_ch_txt = event_ch_f.split('/')[-1].split('.')
+            c = coords_from_filename(event_ch_txt[5])
+            ra.append(c.ra.deg)
+            dec.append(c.dec.deg)
+
+    return ra, dec
