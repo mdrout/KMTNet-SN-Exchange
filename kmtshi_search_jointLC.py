@@ -70,6 +70,7 @@ def main(argv):
         #Initialize comparison ra/dec for duplicate search. This loads any object needed for any epoch after reference
         #Will select appropriate subset of this in the loop below.
         start_initialize = time.clock()
+        print(epoch_ref)
         ra_dup, dec_dup, times_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
         print('Time to initialize duplicate search: ', time.clock() - start_initialize)
 

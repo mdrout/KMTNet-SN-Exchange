@@ -125,9 +125,6 @@ def cphotom(candidate_id):
                 photom_obj.obs_mjd = t.mjd
                 photom_obj.save()
 
-                # print number of points in database for this filter
-                # n1=Photometry.objects.filter(candidate=c1).filter(filter=filter).count()
-                # print(filter+' points present = '+str(n1))
 
     out_txt = 'Photometry has been updated for Object ' + str(c1.name)
     return out_txt
@@ -214,7 +211,7 @@ def cphotom_list(candidate_ids):
             start_t = time.clock()
             ra_cat = [event['X_WORLD'] for event in hdulist[2].data]
             dec_cat = [event['Y_WORLD'] for event in hdulist[2].data]
-            print('Time for initialization of catalog ra/dec: ', time.clock() - start_t)
+            print('Time for initialization of ',filter,' catalog ra/dec: ', time.clock() - start_t)
 
             # Now loop over the candidates which need to be check to find matches:
             for j in range(0, len(candidates_to_check)):

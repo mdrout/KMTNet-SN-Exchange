@@ -2,7 +2,7 @@ import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from datetime import timedelta
-import glob
+import glob,sys
 
 
 def great_circle_distance(ra1, dec1, ra2, dec2):
@@ -89,7 +89,7 @@ def initialize_duplicates_set(epoch_ref,dt,epochs_f,epoch_timestamps):
     NB: both epochs_f and epochs_timestamps are arrays created in kmtshi_search that can be passed"""
 
     # Identify the first epoch in list which is after the reference date:
-    day_min = epoch_ref = timedelta(days=dt)
+    day_min = epoch_ref - timedelta(days=dt)
     for epoch_ts in epoch_timestamps:
         if epoch_ts > epoch_ref:
             day_min = epoch_ts - timedelta(days=dt)
