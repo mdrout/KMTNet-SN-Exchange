@@ -36,7 +36,6 @@ field_path = glob.glob(base_foxtrot()+base_data()+'*/*')
 
 for f in field_path:
 
-    temp = field_path.split('/')
-    sub_fld = temp[len(temp) - 1]
-    fld = temp[len(temp)-2]
+    sub_fld = f.split('/')[-1]
+    fld = f.split('/')[-2]
     ff = Field.objects.create(name=fld,subfield=sub_fld)
