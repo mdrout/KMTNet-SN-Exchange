@@ -12,7 +12,7 @@ django.setup()
 from kmtshi.models import Field,Quadrant,Classification,Candidate
 from kmtshi.base_directories import base_foxtrot,base_gdrive,jpeg_path
 from kmtshi.dates import dates_from_filename
-from kmtshi.coordinates import coords_from_filename,great_circle_distance,initialize_duplicates
+from kmtshi.coordinates import coords_from_filename,great_circle_distance,initialize_duplicates_set
 from kmtshi.kmtshi_jpeg import cjpeg_list
 from kmtshi.kmtshi_photom import cphotom_list
 from kmtshi.alphabet import num2alpha
@@ -67,6 +67,12 @@ def main(argv):
         #I need to select epochs that are within that timeframe before given epoch.
         epoch_timestamps = [dates_from_filename('20'+epoch_f.split('/')[-1].split('.')[0]) for epoch_f in epochs]
 
+        #Initialize comparison ra/dec for duplicate search. This loads any object needed for any epoch after reference
+        #Will select appropriate subset of this in the loop below.
+        start_initialize = time.clock()
+        ra_dup, dec_dup, times_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
+        print('Time to initialize duplicate search: ', time.clock() - start_initialize)
+
         #Loop over each epoch:
         for i in range(0,len(epochs)):
             print('Field = ',fld,' Epoch = ',epochs[i].split('/')[-1])
@@ -76,10 +82,17 @@ def main(argv):
             if not epoch_timestamps[i] > epoch_ref:
                 continue
 
-            #Preload comparisons for this epoch:
-            start_initialize = time.clock()
-            ra_comp, dec_comp = initialize_duplicates(epoch_timestamps[i],dt,epochs,epoch_timestamps)
-            print('Time to initialize duplicate search: ',time.clock()-start_initialize)
+            # Previous method: Preload duplicate comparisons for this epoch only:
+            # start_initialize = time.clock()
+            # ra_comp, dec_comp = initialize_duplicates(epoch_timestamps[i],dt,epochs,epoch_timestamps)
+            # print('Time to initialize duplicate search: ',time.clock()-start_initialize)
+
+            # New method: identify which members of the initialized array are appropriate for this epoch:
+            day_max = epoch_timestamps[i]
+            day_min = epoch_timestamps[i] - timedelta(days=dt)
+            index = np.where([((t_dup < day_max) & (t_dup > day_min)) for t_dup in times_dup])[0]
+            ra_comp = [ra_dup[m] for m in index]
+            dec_comp = [dec_dup[m] for m in index]
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
             #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
@@ -173,8 +186,8 @@ def main(argv):
         #We need to create lists of pk's separated by quadrants
         quads = [Candidate.objects.get(pk=v).quadrant.name for v in new_cands]
         for quad in set(quads):
-            index = np.where([quad_i == quad for quad_i in quads])
-            pk_quad = [new_cands[x] for x in index[0]]
+            index = np.where([quad_i == quad for quad_i in quads])[0]
+            pk_quad = [new_cands[x] for x in index]
 
             #update the photom and jpegs for this quadrant
             jpeg = cjpeg_list(pk_quad)
