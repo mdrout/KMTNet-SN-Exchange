@@ -146,18 +146,25 @@ def main(argv):
                     pdf = event_f.split('/')[-1]
 
                     #These will now throw an error if they do not exist... not sure if that is ok
-                    path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")[0]
-                    path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")[0]
-                    path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")[0]
+                    path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
+                    path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
+                    path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
+
+                    if not len(path1) > 0:
+                        path1 = 'kmtshi/images/nojpeg.jpg'
+                    if not len(path2) > 0:
+                        path2 = 'kmtshi/images/nojpeg.jpg'
+                    if not len(path3) > 0:
+                        path3 = 'kmtshi/images/nojpeg.jpg'
 
                     #Actually modify the candidate:
                     cand0.name = obj_name
                     cand0.field = s1
                     cand0.quadrant = s2
                     cand0.classification = s3
-                    cand0.disc_im = path1
-                    cand0.disc_ref = path2
-                    cand0.disc_sub = path3
+                    cand0.disc_im = path1[0]
+                    cand0.disc_ref = path2[0]
+                    cand0.disc_sub = path3[0]
 
                     print('New Candidate= ',cand0.name,' File= ',pdf)
                     cand0.save()
