@@ -13,7 +13,7 @@ from kmtshi.models import Candidate,jpegImages,Photometry
 from kmtshi.dates import dates_from_filename
 from kmtshi.coordinates import great_circle_distance,coords_from_filename
 from kmtshi.base_directories import base_data,base_foxtrot,jpeg_path
-import datetime,glob
+import datetime,glob,time
 
 
 def cjpeg(candidate_id):
@@ -85,8 +85,8 @@ def cjpeg_list(candidate_ids):
 
     ########################################################################
     # Check that all of the candidate_ids have same sub-field and quadrant.
-    flds = [Candidate.object.get(pk=x).field.subfield for x in candidate_ids]
-    quads = [Candidate.object.get(pk=x).quadrant.name for x in candidate_ids]
+    flds = [Candidate.objects.get(pk=x).field.subfield for x in candidate_ids]
+    quads = [Candidate.objects.get(pk=x).quadrant.name for x in candidate_ids]
     if len(set(flds)) > 1:
         print('Not all candidates for jpegs are in same fld')
         sys.exit()
@@ -110,7 +110,6 @@ def cjpeg_list(candidate_ids):
         else:
             timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
 
-
     ####################################################################
     # Set-up places to search for these events:
     base = base_foxtrot() + base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_filter/Subtraction/JPEG_TV_IMAGES/'
@@ -122,23 +121,27 @@ def cjpeg_list(candidate_ids):
     ffnames = glob.glob(base + '*')
 
     #Initialize lists of (a) timestamps (b) ra/dec for all of these jpeg folderss.
-    time_folders = [ffname.split('/')[-1].split['.'][3] for ffname in ffnames]
-    timestamp_folders = [dates_from_filename('20'+ffname.split('/')[-1].split['.'][3]) for ffname in ffnames]
-    ra_folders = [coords_from_filename(ffname.split('/')[-1].split['.'][5]).ra.deg for ffname in ffnames]
-    dec_folders = [coords_from_filename(ffname.split('/')[-1].split['.'][5]).dec.deg for ffname in ffnames]
+    t_init = time.clock()
+    time_folders = [ffname.split('/')[-1].split('.')[3] for ffname in ffnames]
+    timestamp_folders = [dates_from_filename('20'+ffname.split('/')[-1].split('.')[3]) for ffname in ffnames]
+    ra_folders = [coords_from_filename(ffname.split('/')[-1].split('.')[5]).ra.deg for ffname in ffnames]
+    dec_folders = [coords_from_filename(ffname.split('/')[-1].split('.')[5]).dec.deg for ffname in ffnames]
+    print('time to init jpeg = ', time.clock()-t_init)
 
     #Cycle over the new candidates:
     for j in range(0,len(candidate_ids)):
-        c1=Candidate.object.get(candidate_ids[j])
+        c1=Candidate.objects.get(pk=candidate_ids[j])
 
         #cycle over the jpeg folders:
         for i in range(0,len(ffnames)):
+
             #Check the timestamp:
-            if not (timestamps_ref[j] > timestamp_folders[i]):
+            if (timestamps_ref[j] > timestamp_folders[i]):
                 continue
 
             #Check the coordinates:
-            if great_circle_distance(c1.ra,c1.dec,ra_folders[i],dec_folders[j]) < (1.0/3600.0):
+            if great_circle_distance(c1.ra, c1.dec, ra_folders[i], dec_folders[i]) < (1.0 / 3600.0):
+
                 # Candidate is the within 1". Populate the jpg database with files.
                 ims = jpegImages(candidate=c1, date_txt=time_folders[i], obs_date=timestamp_folders[i])
 

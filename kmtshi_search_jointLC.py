@@ -156,7 +156,7 @@ def main(argv):
                     #photom = cphotom(cand0.pk)
                     #print(photom)
 
-            print('Total time for epoch: ',time.clock()-start_epoch)
+            print('Total time for epoch (no photom): ',time.clock()-start_epoch)
 
             #Update the last epoch checked for this field once done searching that epoch.
             fld_db.last_date = epoch_timestamps[i]
@@ -164,22 +164,25 @@ def main(argv):
 
         #################################################################################
         #Update photometry and jpeg for all new_cands that were identified in this field.
+        time_photom = time.clock()
 
         #Move onto next field if there were no new targets.
         if not len(new_cands) > 0:
             continue
 
         #We need to create lists of pk's separated by quadrants
-        quads = [Candidate.object.get(pk=v).quadrant.name for v in new_cands]
+        quads = [Candidate.objects.get(pk=v).quadrant.name for v in new_cands]
         for quad in set(quads):
-            index = np.where(quad_i == quad for quad_i in quads)
-            pk_quad = new_cands[index]
+            index = np.where([quad_i == quad for quad_i in quads])
+            pk_quad = [new_cands[x] for x in index[0]]
 
             #update the photom and jpegs for this quadrant
             jpeg = cjpeg_list(pk_quad)
             print(jpeg)
             photom = cphotom_list(pk_quad)
             print(photom)
+
+        print('Total time to update photom for ',len(new_cands),' objects = ',time.clock()-time_photom)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
