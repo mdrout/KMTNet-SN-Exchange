@@ -65,6 +65,19 @@ def cjpeg(candidate_id):
             path5 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".V.*.jpeg")
             path6 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".I.*.jpeg")
 
+            if not len(path1) > 0:
+                path1 = 'kmtshi/images/nojpeg.jpg'
+            if not len(path2) > 0:
+                path2 = 'kmtshi/images/nojpeg.jpg'
+            if not len(path3) > 0:
+                path3 = 'kmtshi/images/nojpeg.jpg'
+            if not len(path4) > 0:
+                path4 = 'kmtshi/images/nojpeg.jpg'
+            if not len(path5) > 0:
+                path5 = 'kmtshi/images/nojpeg.jpg'
+            if not len(path6) > 0:
+                path6 = 'kmtshi/images/nojpeg.jpg'
+
             ims.B_image = path1[0]
             ims.Bref_image = path2[0]
             ims.Bsub_image = path3[0]
