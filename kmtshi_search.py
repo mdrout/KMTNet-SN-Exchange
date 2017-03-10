@@ -97,7 +97,7 @@ def main(argv):
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
             #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
-            events = glob.glob(epochs[i]+'/Q2/*.pdf')
+            events = glob.glob(epochs[i]+'/*/*.pdf')
 
             #check if event is already in db:
             for event_f in events:
@@ -151,11 +151,11 @@ def main(argv):
                     path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
 
                     if not len(path1) > 0:
-                        path1 = 'kmtshi/images/nojpeg.jpg'
+                        path1 = ['kmtshi/images/nojpeg.jpg']
                     if not len(path2) > 0:
-                        path2 = 'kmtshi/images/nojpeg.jpg'
+                        path2 = ['kmtshi/images/nojpeg.jpg']
                     if not len(path3) > 0:
-                        path3 = 'kmtshi/images/nojpeg.jpg'
+                        path3 = ['kmtshi/images/nojpeg.jpg']
 
                     #Actually modify the candidate:
                     cand0.name = obj_name

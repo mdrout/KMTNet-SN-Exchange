@@ -90,10 +90,16 @@ def cjpeg(candidate_id):
     txt_out='Jpeg images have been updated for object '+str(c1.name)
     return txt_out
 
-def cjpeg_list(candidate_ids):
+
+def cjpeg_list(candidate_ids,check_all=False):
     '''This will find the jpeg images for list of candiates.
     All must be within the same subfield and quadrant.
-    It will just pre-initialize several things to make it more efficient.'''
+    It will just pre-initialize several things to make it more efficient.
+
+    :param candidate_ids: list of pk values for events to be checked
+    :param check_all: if this is true the reference epoch over which
+    time to look will be set to 2014, otherwise it is based on the last bit
+    of photometry in the database for that event.'''
 
 
     ########################################################################
@@ -114,18 +120,21 @@ def cjpeg_list(candidate_ids):
     for y in range(0, len(candidate_ids)):
         c1 = Candidate.objects.get(pk=candidate_ids[y])
 
-        # Define ref time to search based on info in the Photom database already.
         # Define ref time to search based on info in the photometry database already.
+        # Unless check_all has been given.
         # See commentary above.
-        t1 = Photometry.objects.filter(candidate=c1).order_by('-obs_date')
-        if len(t1) > 0:
-            timestamps_ref.append(t1[0].obs_date)
-        else:
+        if check_all:
             timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
+        else:
+            t1 = Photometry.objects.filter(candidate=c1).order_by('-obs_date')
+            if len(t1) > 0:
+                timestamps_ref.append(t1[0].obs_date)
+            else:
+                timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
 
     ####################################################################
     # Set-up places to search for these events:
-    base = base_foxtrot() + base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_filter/Subtraction/JPEG_TV_IMAGES/'
+    base = base_foxtrot() + base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
 
     #Determine folders to search:
     #They are of the form: "N2188-1.Q0.B.161228_2045.S.061239D772-332826D7.20D204.0D020.0036"
@@ -168,17 +177,17 @@ def cjpeg_list(candidate_ids):
                 path6 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".I.*.jpeg")
 
                 if not len(path1) > 0:
-                    path1 = 'kmtshi/images/nojpeg.jpg'
+                    path1 = ['kmtshi/images/nojpeg.jpg']
                 if not len(path2) > 0:
-                    path2 = 'kmtshi/images/nojpeg.jpg'
+                    path2 = ['kmtshi/images/nojpeg.jpg']
                 if not len(path3) > 0:
-                    path3 = 'kmtshi/images/nojpeg.jpg'
+                    path3 = ['kmtshi/images/nojpeg.jpg']
                 if not len(path4) > 0:
-                    path4 = 'kmtshi/images/nojpeg.jpg'
+                    path4 = ['kmtshi/images/nojpeg.jpg']
                 if not len(path5) > 0:
-                    path5 = 'kmtshi/images/nojpeg.jpg'
+                    path5 = ['kmtshi/images/nojpeg.jpg']
                 if not len(path6) > 0:
-                    path6 = 'kmtshi/images/nojpeg.jpg'
+                    path6 = ['kmtshi/images/nojpeg.jpg']
 
                 ims.B_image = path1[0]
                 ims.Bref_image = path2[0]
