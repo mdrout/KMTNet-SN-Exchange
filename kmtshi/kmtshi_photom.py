@@ -226,6 +226,8 @@ def cphotom_list(candidate_ids):
 
                         if event['FLUX_AUTO'] <= 0.0:
                             continue  # Tell it to just move on.
+                        if event['FLUX_APER'] <= 0.0:
+                            continue
 
                         # If condition is met, then consider object to be the same:
                         # Grab photom info. Update database. Set the flag. Break from event loop (move to next file).
