@@ -14,7 +14,8 @@ def base_gdrive():
 
 def base_foxtrot():
     '''Defines addition to path on Froxtrot to get to testfiles'''
-    base = '/Users/mdrout/Research/KMTNet/kmtshi_testfiles'
+    base = ''
+    #base = '/Users/mdrout/Research/KMTNet/kmtshi_testfiles'
     return base
 
 def jpeg_path(gdrive_pdf):
@@ -28,6 +29,6 @@ def jpeg_path(gdrive_pdf):
     sfld = gdrive_txt[0]
     quad = gdrive_txt[1]
 
-    base = '/data/ksp/data/PROCESSED/'+fld+'/'+sfld+'/'+quad+'/B_filter/Subtraction/JPEG_TV_IMAGES/'+gdrive_f+'/'+gdrive_f
+    base = '/data/ksp/data/PROCESSED/'+fld+'/'+sfld+'/'+quad+'/B_Filter/Subtraction/JPEG_TV_IMAGES/'+gdrive_f+'/'+gdrive_f
 
     return base

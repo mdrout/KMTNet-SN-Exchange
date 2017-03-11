@@ -40,6 +40,7 @@ if not len(new_cands) > 0:
 #We need to create lists of pk's separated by quadrants
 quads = [Candidate.objects.get(pk=v).quadrant.name for v in new_cands]
 for quad in set(quads):
+
     index = np.where([quad_i == quad for quad_i in quads])[0]
     pk_quad = [new_cands[x] for x in index]
 

@@ -25,7 +25,7 @@ from datetime import timedelta
 ###################################################################################
 def main(argv):
     flds = [] #fields to search
-    nd = 2  #number of detections
+    nd = 3  #number of detections
     dt = 10 #time in days for search
     try:
         opts, args = getopt.getopt(argv,"f:d:t:",["fields=","detect=","days="])
@@ -200,10 +200,10 @@ def main(argv):
             #update the photom and jpegs for this quadrant
             jpeg = cjpeg_list(pk_quad)
             print(jpeg)
-            photom = cphotom_list(pk_quad)
-            print(photom)
+            #photom = cphotom_list(pk_quad)
+            #print(photom)
 
-        print('Total time to update photom for ',len(new_cands),' objects = ',time.clock()-time_photom)
+        print('Total time to update jpeg for ',len(new_cands),' objects = ',time.clock()-time_photom)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

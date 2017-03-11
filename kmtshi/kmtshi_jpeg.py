@@ -32,7 +32,7 @@ def cjpeg(candidate_id):
 
     ####################################################################
     # Set-up places to searh:
-    base = base_foxtrot() + base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_filter/Subtraction/JPEG_TV_IMAGES/'
+    base = base_foxtrot() + base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
 
     #Determine folders to search:
     #They are of the form: "N2188-1.Q0.B.161228_2045.S.061239D772-332826D7.20D204.0D020.0036"
