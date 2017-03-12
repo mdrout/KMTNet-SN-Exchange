@@ -25,7 +25,8 @@ from datetime import timedelta
 
 ################################################################################
 #List of candidates, pks.
-c1 = Candidate.objects.all()
+f1 = Field.objects.get(subfield='N5128-1')
+c1 = Candidate.objects.filter(field=f1)
 new_cands = [c.pk for c in c1]
 
 #################################################################################
@@ -40,14 +41,17 @@ if not len(new_cands) > 0:
 #We need to create lists of pk's separated by quadrants
 quads = [Candidate.objects.get(pk=v).quadrant.name for v in new_cands]
 for quad in set(quads):
+    if quad == 'Q0':
+        continue
 
+    print(quad)
     index = np.where([quad_i == quad for quad_i in quads])[0]
     pk_quad = [new_cands[x] for x in index]
 
     #update the photom and jpegs for this quadrant
-    jpeg = cjpeg_list(pk_quad,check_all=True)
-    print(jpeg)
-    #photom = cphotom_list(pk_quad)
-    #print(photom)
+    #jpeg = cjpeg_list(pk_quad,check_all=True)
+    #print(jpeg)
+    photom = cphotom_list(pk_quad)
+    print(photom)
 
 print('Total time to update photom for ',len(new_cands),' objects = ',time.clock()-time_photom)

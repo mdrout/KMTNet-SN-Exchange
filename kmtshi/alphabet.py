@@ -8,11 +8,26 @@ def num2alpha(num):
     upper = ascii_letters[26:]
     if num <= 26:
         letters = upper[num-1]
-    else:
+    elif num <= 702:
         base1 = int(num/26)
         base2 = num % 26
         if base2 == 0:
             letters = lower[base1-2]+lower[base2-1]
         else:
             letters = lower[base1-1]+lower[base2-1]
+    else:
+        base1 = int(num/676)
+        temp = num % 676
+        base2 = int(temp/26)
+        base3 = temp % 26
+        if ((base2 == 0) or (base2 == 1 and base3 == 0)):
+            if base3 == 0:
+                letters = lower[base1-2] + lower[base2-2]+lower[base3-1]
+            else:
+                letters = lower[base1-2] + lower[base2-1]+lower[base3-1]
+        else:
+            if base3 == 0:
+                letters = lower[base1-1] + lower[base2-2]+lower[base3-1]
+            else:
+                letters = lower[base1-1] + lower[base2-1]+lower[base3-1]
     return letters

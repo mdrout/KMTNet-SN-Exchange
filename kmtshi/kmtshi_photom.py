@@ -94,7 +94,7 @@ def cphotom(candidate_id):
                         photom_obj.ddec = 0.0
                     else:
                         photom_obj.ddec = event['ERRB_WORLD']
-                    if np.isnan(event[CLASS_STAR]):
+                    if np.isnan(event['CLASS_STAR']):
                         photom_obj.class_star = 99.999
                     else:
                         photom_obj.class_star = event['CLASS_STAR']
@@ -165,6 +165,7 @@ def cphotom_list(candidate_ids):
 
     # If pass test, initialize one so field and quandrant can be called:
     c1 = Candidate.objects.get(pk=candidate_ids[0])
+    print('Field = ',flds[0],'Quad = ',quads[0])
 
     # ###################################################################
     # Set-up places to searh:
@@ -197,6 +198,7 @@ def cphotom_list(candidate_ids):
 
         # Cycle through catalog files
         for file in files:
+            file_start = time.clock()
 
             # basic splitting:
             t2 = file.split('/')[-1].split('.')
@@ -211,6 +213,7 @@ def cphotom_list(candidate_ids):
             # If there are no candidates in list that need to be checked
             # for this epoch, move on.
             if not len(candidates_to_check) > 0:
+                print('Epoch/filter up to date')
                 continue
 
             # initialize list of ras and decs for the cases that need to be checked.
@@ -258,7 +261,7 @@ def cphotom_list(candidate_ids):
                             photom_obj.ddec = 0.0
                         else:
                             photom_obj.ddec = event['ERRB_WORLD']
-                        if np.isnan(event[CLASS_STAR]):
+                        if np.isnan(event['CLASS_STAR']):
                             photom_obj.class_star = 99.999
                         else:
                             photom_obj.class_star = event['CLASS_STAR']
@@ -302,6 +305,7 @@ def cphotom_list(candidate_ids):
 
             # Finished searching candidates for this epoch can close cat file.
             hdulist.close()
+            print('Total time for single file ', time.clock()-file_start)
 
     out_txt = 'Photometry has been updated for list of events'
     return out_txt
