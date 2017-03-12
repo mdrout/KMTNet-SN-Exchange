@@ -23,35 +23,60 @@ import numpy as np
 from datetime import timedelta
 
 
-################################################################################
-#List of candidates, pks.
-f1 = Field.objects.get(subfield='N5128-1')
-c1 = Candidate.objects.filter(field=f1)
-new_cands = [c.pk for c in c1]
+#Copy bit to submit fields from search:
+###################################################################################
+def main(argv):
+    flds = [] #fields to search
+    try:
+        opts, args = getopt.getopt(argv,"f:",["fields="])
+    except getopt.GetoptError:
+        print('kmtshi_search.py -f <[list of subfields]>')
+        print('--fields also permitted')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-f","--fields"):
+            flds = arg
+    if len(flds) < 1:
+        print('At least one field to search must be specified')
+        print('kmtshi_search.py -f <[list of subfields]> ')
+        sys.exit(2)
+    else:
+        #Sort fields into strings:
+        flds_st = str(flds[1:len(flds)-1])
+        flds = flds_st.split(',')
+        print('fields ',flds,' will be updated')
 
-#################################################################################
-# #Update photometry and jpeg for all new_cands that were identified in this field.
-time_photom = time.clock()
 
-#Move onto next field if there were no new targets.
-if not len(new_cands) > 0:
-    print('No candidates listed for update')
-    sys.exit()
+    ################################################################################
+    # List of candidates, pks. for each field:
+    for fld in flds:
+        f1 = Field.objects.get(subfield=fld)
+        c1 = Candidate.objects.filter(field=f1)
+        new_cands = [c.pk for c in c1]
 
-#We need to create lists of pk's separated by quadrants
-quads = [Candidate.objects.get(pk=v).quadrant.name for v in new_cands]
-for quad in set(quads):
-    if quad == 'Q0':
-        continue
+        # ################################################################################
+        # #Update photometry and jpeg for all new_cands that were identified in this field.
+        time_photom = time.clock()
 
-    print(quad)
-    index = np.where([quad_i == quad for quad_i in quads])[0]
-    pk_quad = [new_cands[x] for x in index]
+        # Move onto next field if there were no new targets.
+        if not len(new_cands) > 0:
+            print('No candidates listed for update')
+            sys.exit()
 
-    #update the photom and jpegs for this quadrant
-    #jpeg = cjpeg_list(pk_quad,check_all=True)
-    #print(jpeg)
-    photom = cphotom_list(pk_quad)
-    print(photom)
+        #   We need to create lists of pk's separated by quadrants
+        quads = [Candidate.objects.get(pk=v).quadrant.name for v in new_cands]
+        for quad in set(quads):
+            print(fld,quad)
+            index = np.where([quad_i == quad for quad_i in quads])[0]
+            pk_quad = [new_cands[x] for x in index]
 
-print('Total time to update photom for ',len(new_cands),' objects = ',time.clock()-time_photom)
+            #update the photom and jpegs for this quadrant
+            #jpeg = cjpeg_list(pk_quad,check_all=True)
+            #print(jpeg)
+            photom = cphotom_list(pk_quad)
+            print(photom)
+
+        print('Total time to update photom for ',fld,' objects = ',time.clock()-time_photom)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
