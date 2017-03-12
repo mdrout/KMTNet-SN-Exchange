@@ -43,7 +43,7 @@ def cphotom(candidate_id):
 
         # Find catalog files for this filter.
         if filter == 'Bsub':
-            files = glob.glob(base + 'B_filter/Subtraction/' + '*.nh.REF-SUB.cat')
+            files = glob.glob(base + 'B_Filter/Subtraction/' + '*.nh.REF-SUB.cat')
         else:
             files = glob.glob(base + '*.' + filter + '.*_tan.nh.phot.cat')
 
@@ -192,7 +192,7 @@ def cphotom_list(candidate_ids):
 
         # Make list of catalog files for this filter:
         if filter == 'Bsub':
-            files = glob.glob(base + 'B_filter/Subtraction/' + '*.nh.REF-SUB.cat')
+            files = glob.glob(base + 'B_Filter/Subtraction/' + '*.nh.REF-SUB.cat')
         else:
             files = glob.glob(base + '*.' + filter + '.*_tan.nh.phot.cat')
 

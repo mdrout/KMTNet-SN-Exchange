@@ -157,13 +157,12 @@ def cphotom_list_t(candidate_ids):
 
     # ###################################################################
     # Set-up places to searh:
-    filters = ['V','I','Bsub']
+    filters = ['Bsub']
     base = base_foxtrot() + base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/'
 
-    time_filter = time.clock()
     # Cycle through filters:
     for filter in filters:
-
+        time_filter = time.clock()
         # ########################################################################
         # Initialize a list of reference timestamps for all of the input candidates.
         # This is done on a filter-by-filter basis
@@ -174,7 +173,8 @@ def cphotom_list_t(candidate_ids):
             timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
 
 
-        files = glob.glob(base + '*.' + filter + '.*_tan.nh.phot.cat')
+        #files = glob.glob(base + '*.' + filter + '.*_tan.nh.phot.cat')
+        files = glob.glob(base + 'B_Filter/Subtraction/' + '*.nh.REF-SUB.cat')
 
         # Cycle through catalog files
         for file in files:
@@ -246,7 +246,7 @@ def cphotom_list_t(candidate_ids):
                             photom_obj.ddec = 0.0
                         else:
                             photom_obj.ddec = event['ERRB_WORLD']
-                        if np.isnan(event[CLASS_STAR]):
+                        if np.isnan(event['CLASS_STAR']):
                             photom_obj.class_star = 99.999
                         else:
                             photom_obj.class_star = event['CLASS_STAR']

@@ -69,13 +69,14 @@ def detail(request, candidate_id):
 
 def classification_edit(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
+    field=candidate.field.subfield
 
     if request.method == "POST":
         form = CandidateForm(request.POST, instance=candidate)
         if form.is_valid():
             candidate = form.save(commit=False)
             candidate.save()
-            return redirect('candidates')
+            return redirect('candidates_field',field=field)
     else:
         form = CandidateForm(instance=candidate)
     return render(request, 'kmtshi/class_edit.html', {'form': form, 'candidate': candidate})
