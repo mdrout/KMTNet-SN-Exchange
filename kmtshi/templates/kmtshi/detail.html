@@ -20,7 +20,7 @@
         <hr>
         <h3>Basic Information</h3>
         <ul>
-            <li> Field: {{candidate.field}} {{candidate.quadrant}} </li>
+            <li> Field: <a href=" {% url 'candidates_field' candidate.field.subfield %}"> {{candidate.field}}</a> {{candidate.quadrant}} </li>
             <li> Discovery Date: {{candidate.date_disc}} </li>
             <li> ra = {{candidate.ra}}, dec={{candidate.dec}} </li>
             <li> Classification: {{candidate.classification}} </li>
