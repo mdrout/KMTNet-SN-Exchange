@@ -15,9 +15,9 @@
     {% if field_list %}
         {% for field in field_list %}
             <p> {{field.subfield}}. last date searched = {{field.last_date}}.
-                <a href=" {% url 'candidates_field' candidate.field.subfield %}">candidates</a>
-                <a href=" {% url 'transients_field' candidate.field.subfield %}">transients</a>
-                <a href=" {% url 'variables_field' candidate.field.subfield %}">var_stars</a>
+                <a href=" {% url 'candidates_field' field.subfield %}">candidates</a>
+                <a href=" {% url 'transients_field' field.subfield %}">transients</a>
+                <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
             </p>
         {% endfor %}
     {% else %}
