@@ -8,7 +8,7 @@ import glob
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
 
 def index(request):
-    field_list = Field.objects.all().order_by('-late_date')
+    field_list = Field.objects.all().order_by('-last_date')
     context = {'field_list': field_list}
     return render(request,'kmtshi/index.html', context)
 
