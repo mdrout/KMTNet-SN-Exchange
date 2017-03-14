@@ -8,7 +8,9 @@ import glob
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
 
 def index(request):
-    return HttpResponse("Hello, world. You're at kmtshi, the KMTNet SN Hunter's Interface.")
+    field_list = Field.objects.all().order_by('-late_date')
+    context = {'field_list': field_list}
+    return render(request,'kmtshi/index.html', context)
 
 
 def candidates(request):
@@ -25,6 +27,33 @@ def candidates_field(request,field):
     context = {'candidate_list': candidate_list,'field':field}
     return render(request, 'kmtshi/candidates_field.html', context)
 
+def transients(request):
+    t1=Classification.objects.get(name="real transient")
+    candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
+    context = {'candidate_list': candidate_list}
+    return render(request, 'kmtshi/candidates.html', context)
+
+
+def transients_field(request,field):
+    t1=Classification.objects.get(name="real transient")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    context = {'candidate_list': candidate_list,'field':field}
+    return render(request, 'kmtshi/candidates_field.html', context)
+
+def variables(request):
+    t1=Classification.objects.get(name="stellar source: variable")
+    candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
+    context = {'candidate_list': candidate_list}
+    return render(request, 'kmtshi/candidates.html', context)
+
+
+def variables_field(request,field):
+    t1=Classification.objects.get(name="stellar source: variable")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    context = {'candidate_list': candidate_list,'field':field}
+    return render(request, 'kmtshi/candidates_field.html', context)
 
 def detail(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
