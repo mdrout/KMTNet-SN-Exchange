@@ -1,6 +1,5 @@
 from django import forms
-from kmtshi.models import Candidate
-from .models import Comment
+from kmtshi.models import Candidate, Comment
 
 class CandidateForm(forms.ModelForm):
 

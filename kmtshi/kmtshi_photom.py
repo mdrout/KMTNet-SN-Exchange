@@ -141,7 +141,7 @@ def cphotom(candidate_id):
     return out_txt
 
 
-def cphotom_list(candidate_ids):
+def cphotom_list(candidate_ids,all_dates=False):
     '''This will find the photometry for a list of candidates.
     For each catalog file, we will initialize the ra/dec for the contents.
     Then we will iterate through and check for matches for all of the
@@ -177,7 +177,9 @@ def cphotom_list(candidate_ids):
 
         # ########################################################################
         # Initialize a list of reference timestamps for all of the input candidates.
-        # This is done on a filter-by-filter basis
+        # This is done on a filter-by-filter basis. Either based on photometry
+        # on this season
+        # or all of the data.
 
         timestamps_ref = []
         for y in range(0, len(candidate_ids)):
@@ -187,8 +189,10 @@ def cphotom_list(candidate_ids):
             t1 = Photometry.objects.filter(candidate=c1).filter(filter=filter).order_by('-obs_date')
             if len(t1) > 0:
                 timestamps_ref.append(t1[0].obs_date)
-            else:
+            elif all_dates == True:
                 timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
+            else:
+                timestamps_ref.append(datetime.datetime(2015, 8, 1, 00, 00, tzinfo=timezone.utc))
 
         # Make list of catalog files for this filter:
         if filter == 'Bsub':

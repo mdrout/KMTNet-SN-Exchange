@@ -6,6 +6,7 @@ from kmtshi.forms import CandidateForm,CommentForm
 from django.utils import timezone
 import glob
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
+from kmtshi.dates import dates_from_filename
 
 def index(request):
     field_list = Field.objects.all().order_by('-last_date')
@@ -55,6 +56,32 @@ def variables_field(request,field):
     context = {'candidate_list': candidate_list,'field':field}
     return render(request, 'kmtshi/candidates_field.html', context)
 
+
+def candidate_date(request,field,quadrant,date):
+    """The date will be in the form 170125_2045 y,m,d,_h,m"""
+    f1=Field.objects.get(subfield=field)
+    q1=Quadrant.object.get(name=quadrant)
+    timestamp=dates_from_filename('20'+date)
+
+    # Identify the candidates which are in that:
+    cands = Candidate.objects.filter(field=f1).filter(quadrant=q1).filter(date_disc=timestamp)
+
+    # Make a form:
+    # If valid update everything on the page.
+    if request.method == "POST":
+        for candidate in cands:
+            form = CandidateForm(request.POST, instance=candidate)
+            if form.is_valid():
+                candidate = form.save(commit=False)
+                candidate.save()
+            return redirect('candidates_field',field=field)
+    else:
+        form = CandidateForm(instance=cands[0])
+
+    context = {'form': form, 'candidates': cands}
+    return render(request, 'kmtshi/candidates_date.html', context)
+
+
 def detail(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
 
@@ -97,6 +124,20 @@ def detail(request, candidate_id):
 
 
 def classification_edit(request, candidate_id):
+    candidate = get_object_or_404(Candidate, pk=candidate_id)
+    field=candidate.field.subfield
+
+    if request.method == "POST":
+        form = CandidateForm(request.POST, instance=candidate)
+        if form.is_valid():
+            candidate = form.save(commit=False)
+            candidate.save()
+            return redirect('candidates_field',field=field)
+    else:
+        form = CandidateForm(instance=candidate)
+    return render(request, 'kmtshi/class_edit.html', {'form': form, 'candidate': candidate})
+
+def classification_bulkedit(request, candidate_ids):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
     field=candidate.field.subfield
 
