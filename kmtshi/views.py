@@ -4,7 +4,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages
 from kmtshi.forms import CandidateForm,CommentForm
 from django.utils import timezone
-import glob
+from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
 from kmtshi.dates import dates_from_filename
 
@@ -62,23 +62,25 @@ def candidate_date(request,field,quadrant,date):
     f1=Field.objects.get(subfield=field)
     q1=Quadrant.object.get(name=quadrant)
     timestamp=dates_from_filename('20'+date)
+    t1 = Classification.objects.get(name="candidate")
 
     # Identify the candidates which are in that:
-    cands = Candidate.objects.filter(field=f1).filter(quadrant=q1).filter(date_disc=timestamp)
+    candidate_list = Candidate.objects.filter(field=f1).filter(quadrant=q1).filter(date_disc=timestamp).filter(classification=t1)
 
-    # Make a form:
+    # Make a formset:
     # If valid update everything on the page.
-    if request.method == "POST":
-        for candidate in cands:
-            form = CandidateForm(request.POST, instance=candidate)
-            if form.is_valid():
-                candidate = form.save(commit=False)
-                candidate.save()
-            return redirect('candidates_field',field=field)
-    else:
-        form = CandidateForm(instance=cands[0])
+    # if request.method == "POST":
+    #    for candidate in cands:
+    #        form = CandidateForm(request.POST, instance=candidate)
+    #        if form.is_valid():
+    #            candidate = form.save(commit=False)
+    #            candidate.save()
+    #        return redirect('candidates_field',field=field)
+    #else:
+    #    form = CandidateForm(instance=cands[0])
 
-    context = {'form': form, 'candidates': cands}
+    #context = {'form': form, 'candidates': cand}
+    context = {'candidates': candidate_list}
     return render(request, 'kmtshi/candidates_date.html', context)
 
 
@@ -137,16 +139,27 @@ def classification_edit(request, candidate_id):
         form = CandidateForm(instance=candidate)
     return render(request, 'kmtshi/class_edit.html', {'form': form, 'candidate': candidate})
 
-def classification_bulkedit(request, candidate_ids):
-    candidate = get_object_or_404(Candidate, pk=candidate_id)
-    field=candidate.field.subfield
+def classification_bulkedit(request, field,quadrant,date):
+    """The date will be in the form 170125_2045 y,m,d,_h,m"""
+    f1=Field.objects.get(subfield=field)
+    q1=Quadrant.object.get(name=quadrant)
+    timestamp=dates_from_filename('20'+date)
+    t1 = Classification.objects.get(name="candidate")
+
+    # Identify the candidates which are in that:
+    candidates = Candidate.objects.filter(field=f1).filter(quadrant=q1).filter(date_disc=timestamp).filter(classification=t1)
+    cand0=candidates[0]
 
     if request.method == "POST":
-        form = CandidateForm(request.POST, instance=candidate)
+        form = CandidateForm(request.POST, instance=cand0)
         if form.is_valid():
             candidate = form.save(commit=False)
             candidate.save()
+            new_class = candidate.classification
+            for cand in candidates:
+                cand.classification = new_class
+                cand.save()
             return redirect('candidates_field',field=field)
     else:
-        form = CandidateForm(instance=candidate)
-    return render(request, 'kmtshi/class_edit.html', {'form': form, 'candidate': candidate})
+        form = CandidateForm(instance=cand0)
+    return render(request, 'kmtshi/class_edit.html', {'form': form, 'candidates': candidates})
