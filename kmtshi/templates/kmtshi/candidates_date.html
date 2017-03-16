@@ -8,10 +8,16 @@
     </head>
     <body>
     <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
-    <h2> Candidates for vetting: {{candidate_list[0].field}} </h2>
+    <h2> Candidates for vetting: {{field}} {{quad}} {{date}} </h2>
     <hr>
     <hr>
-
+    <div>
+    {% if user.is_authenticated %}
+        <b> <h3> Bulk edit this field:</h3></b>
+        <a class="btn btn-default" href="{% url 'class_bulkedit' field.subfield quad.name date %}"><span class="glyphicon glyphicon-pencil"></span></a>
+    {% endif %}
+    </div>
+    <hr>
     {% if candidate_list %}
         {% for candidate in candidate_list %}
             <div>

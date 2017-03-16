@@ -60,7 +60,7 @@ def variables_field(request,field):
 def candidate_date(request,field,quadrant,date):
     """The date will be in the form 170125_2045 y,m,d,_h,m"""
     f1=Field.objects.get(subfield=field)
-    q1=Quadrant.object.get(name=quadrant)
+    q1=Quadrant.objects.get(name=quadrant)
     timestamp=dates_from_filename('20'+date)
     t1 = Classification.objects.get(name="candidate")
 
@@ -80,7 +80,7 @@ def candidate_date(request,field,quadrant,date):
     #    form = CandidateForm(instance=cands[0])
 
     #context = {'form': form, 'candidates': cand}
-    context = {'candidates': candidate_list}
+    context = {'candidate_list': candidate_list, 'field': f1, 'quad': q1, 'time': timestamp, 'date': date}
     return render(request, 'kmtshi/candidates_date.html', context)
 
 
@@ -142,7 +142,7 @@ def classification_edit(request, candidate_id):
 def classification_bulkedit(request, field,quadrant,date):
     """The date will be in the form 170125_2045 y,m,d,_h,m"""
     f1=Field.objects.get(subfield=field)
-    q1=Quadrant.object.get(name=quadrant)
+    q1=Quadrant.objects.get(name=quadrant)
     timestamp=dates_from_filename('20'+date)
     t1 = Classification.objects.get(name="candidate")
 
@@ -159,7 +159,8 @@ def classification_bulkedit(request, field,quadrant,date):
             for cand in candidates:
                 cand.classification = new_class
                 cand.save()
-            return redirect('candidates_field',field=field)
+            return redirect('candidates_date',field=field,quadrant=quadrant,date=date)
     else:
         form = CandidateForm(instance=cand0)
-    return render(request, 'kmtshi/class_edit.html', {'form': form, 'candidates': candidates})
+    context = {'form': form, 'candidate_list': candidates,'field': f1, 'quad': q1, 'time': timestamp, 'date': date}
+    return render(request, 'kmtshi/class_bulkedit.html', context)
