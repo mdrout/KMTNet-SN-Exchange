@@ -25,7 +25,8 @@ def candidates_field(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
     candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
-    context = {'candidate_list': candidate_list,'field':field}
+    num = len(candidate_list)
+    context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
 def transients(request):
@@ -39,7 +40,8 @@ def transients_field(request,field):
     t1=Classification.objects.get(name="real transient")
     f1=Field.objects.get(subfield=field)
     candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
-    context = {'candidate_list': candidate_list,'field':field}
+    num = len(candidate_list)
+    context = {'candidate_list': candidate_list,'field':field, 'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
 def variables(request):
@@ -53,7 +55,8 @@ def variables_field(request,field):
     t1=Classification.objects.get(name="stellar source: variable")
     f1=Field.objects.get(subfield=field)
     candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
-    context = {'candidate_list': candidate_list,'field':field}
+    num = len(candidate_list)
+    context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
 
@@ -159,7 +162,7 @@ def classification_bulkedit(request, field,quadrant,date):
             for cand in candidates:
                 cand.classification = new_class
                 cand.save()
-            return redirect('candidates_date',field=field,quadrant=quadrant,date=date)
+            return redirect('candidates_field',field=field)
     else:
         form = CandidateForm(instance=cand0)
     context = {'form': form, 'candidate_list': candidates,'field': f1, 'quad': q1, 'time': timestamp, 'date': date}
