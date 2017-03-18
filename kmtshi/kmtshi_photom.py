@@ -156,6 +156,7 @@ def cphotom_list(candidate_ids,all_dates=False):
     # Check that all of the candidate_ids have same sub-field and quadrant.
     flds = [Candidate.objects.get(pk=x).field.subfield for x in candidate_ids]
     quads = [Candidate.objects.get(pk=x).quadrant.name for x in candidate_ids]
+    classi = [Candidate.objects.get(pk=x).classification.name for x in candidate_ids]
     if len(set(flds)) > 1:
         print('Not all candidates for photom are in same fld')
         sys.exit()
@@ -211,7 +212,8 @@ def cphotom_list(candidate_ids,all_dates=False):
             timestamp = dates_from_filename('20' + t2[3])
 
             # Make a list of pks for candidates need to be checked for this epoch.
-            index = np.where([(timestamp_ref < timestamp) for timestamp_ref in timestamps_ref])
+            # Now elimanate cases where objects are classified as either 'junk' or 'bad subtraction'
+            index = np.where([((timestamps_ref[m] < timestamp) and (classi[m] != 'junk') and (classi[m] != 'bad subtraction')) for m in range(len(timestamps_ref))])
             candidates_to_check = [candidate_ids[x] for x in index[0]]  # list of pks.
 
             # If there are no candidates in list that need to be checked
