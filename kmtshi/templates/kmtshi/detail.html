@@ -21,7 +21,7 @@
         <h3>Basic Information</h3>
         <ul>
             <li> Field: <a href=" {% url 'candidates_field' candidate.field.subfield %}"> {{candidate.field}}</a> {{candidate.quadrant}} </li>
-            <li> Discovery Date: {{candidate.date_disc}} </li>
+            <li> Discovery Date: <a href="{% url 'candidates_date' candidate.field.subfield candidate.quadrant.name date_txt%}">{{candidate.date_disc}} </a> </li>
             <li> ra = {{candidate.ra}}, dec={{candidate.dec}} </li>
             <li> Classification: {{candidate.classification}} </li>
         </ul>

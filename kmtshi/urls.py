@@ -28,6 +28,6 @@ urlpatterns = [url(r'^$', views.index, name='index'),
                url(r'^object/(?P<candidate_id>[0-9]+)/$', views.detail,name='detail'),
                url(r'^object/(?P<candidate_id>[0-9]+)/class_edit/$', views.classification_edit,name='classification_edit'),
                url(r'^(?P<field>[A-Z0-9-]+)/(?P<quadrant>[A-Z0-9]+)/(?P<date>[A-Z0-9_]+)/candidates/$', views.candidate_date,name='candidates_date'),
-               url(r'^(?P<field>[A-Z0-9-]+)/(?P<quadrant>[A-Z0-0]+)/(?P<date>[A-Z0-9_]+)/bulk_edit/$', views.classification_bulkedit,name='class_bulkedit'),
+               url(r'^(?P<field>[A-Z0-9-]+)/(?P<quadrant>[A-Z0-9]+)/(?P<date>[A-Z0-9_]+)/bulk_edit/$', views.classification_bulkedit,name='class_bulkedit'),
                url(r'^admin/', admin.site.urls)]
 

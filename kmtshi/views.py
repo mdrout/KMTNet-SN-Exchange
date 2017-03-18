@@ -6,7 +6,7 @@ from kmtshi.forms import CandidateForm,CommentForm
 from django.utils import timezone
 from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
-from kmtshi.dates import dates_from_filename
+from kmtshi.dates import dates_from_filename,filename_from_dates
 
 def index(request):
     field_list = Field.objects.all().order_by('-last_date')
@@ -69,6 +69,7 @@ def candidate_date(request,field,quadrant,date):
 
     # Identify the candidates which are in that:
     candidate_list = Candidate.objects.filter(field=f1).filter(quadrant=q1).filter(date_disc=timestamp).filter(classification=t1)
+    num = len(candidate_list)
 
     # Make a formset:
     # If valid update everything on the page.
@@ -83,7 +84,8 @@ def candidate_date(request,field,quadrant,date):
     #    form = CandidateForm(instance=cands[0])
 
     #context = {'form': form, 'candidates': cand}
-    context = {'candidate_list': candidate_list, 'field': f1, 'quad': q1, 'time': timestamp, 'date': date}
+    context = {'candidate_list': candidate_list, 'field': f1, 'quad': q1, 'time': timestamp,
+               'number': num,'date': date}
     return render(request, 'kmtshi/candidates_date.html', context)
 
 
@@ -97,6 +99,9 @@ def detail(request, candidate_id):
     #Create the bokeh light curve plots (ideally have set-up elsewhere):
     script,div = MagAuto_FiltersPlot(candidate_id)
     script2,div2 = Mag_FiltersLinkPlot(candidate_id)
+
+    #Create data array for links purpose:
+    date_txt = filename_from_dates(c1.date_disc)
 
     #Form set-up for editing the Comment field amd Modifying the Classification:
     if request.method == "POST":
@@ -121,7 +126,7 @@ def detail(request, candidate_id):
     else:
         class_form = CandidateForm(instance=candidate)
         comment_form = CommentForm()
-    context = {'class_form': class_form,'comment_form': comment_form,
+    context = {'class_form': class_form,'comment_form': comment_form, 'date_txt': date_txt,
                'candidate': candidate,'comments_list': comments_list,'png_list': png_list,
                'the_script': script, 'the_div': div,'the_script2': script2, 'the_div2': div2}
 
