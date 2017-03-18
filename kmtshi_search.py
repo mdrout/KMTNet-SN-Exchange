@@ -89,11 +89,13 @@ def main(argv):
             # print('Time to initialize duplicate search: ',time.clock()-start_initialize)
 
             # New method: identify which members of the initialized array are appropriate for this epoch:
+            sub_t = time.clock()
             day_max = epoch_timestamps[i]
             day_min = epoch_timestamps[i] - timedelta(days=dt)
-            index = np.where([((t_dup < day_max) & (t_dup > day_min)) for t_dup in times_dup])[0]
+            index = np.where([((t_dup < day_max) and (t_dup > day_min)) for t_dup in times_dup])[0]
             ra_comp = [ra_dup[m] for m in index]
             dec_comp = [dec_dup[m] for m in index]
+            print('Time to select epochs from initialized list ',time.clock()-sub_t)
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
             #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
