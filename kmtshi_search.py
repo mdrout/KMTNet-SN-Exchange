@@ -95,7 +95,7 @@ def main(argv):
             index = np.where([((t_dup < day_max) and (t_dup > day_min)) for t_dup in times_dup])[0]
             ra_comp = [ra_dup[m] for m in index]
             dec_comp = [dec_dup[m] for m in index]
-            print(day_max,day_min)
+            print(day_max,day_min, len(times_dup))
             print('Time to select epochs from initialized list ',time.clock()-sub_t, 'Number ',len(ra_comp))
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
