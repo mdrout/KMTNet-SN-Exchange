@@ -77,6 +77,7 @@ def initialize_duplicates_set(epoch_ref,dt,epochs_f,epoch_timestamps):
     In the main program I will then need to select which subset of members of this array
     I *actually* need to check against. So I now need to output a timestamp
     as well as an ra/dec for each member of this field.
+    I have also added an output for quadrant, so I only check against those as well.
 
     This will save even more time to avoid repeated operations unnecessarily.
 
@@ -102,6 +103,7 @@ def initialize_duplicates_set(epoch_ref,dt,epochs_f,epoch_timestamps):
     ra = []
     dec = []
     times = []
+    quads = []
 
     # Looping this way ensures that data taken most recently before is searched first.
     for j in np.flipud(index):
@@ -113,5 +115,6 @@ def initialize_duplicates_set(epoch_ref,dt,epochs_f,epoch_timestamps):
             ra.append(c.ra.deg)
             dec.append(c.dec.deg)
             times.append(epoch_timestamps[j])
+            quads.append(event_ch_f.split('/')[-2])
 
-    return ra, dec, times
+    return ra, dec, times, quads

@@ -51,6 +51,9 @@ def main(argv):
         print('fields ',flds,' will be searched')
         print(nd,' detections within ',dt,' days will be required')
 
+    # Set up list of quads:
+    quads = ['Q0','Q1','Q2','Q3']
+
     #We are now armed with the proper fields etc.  Continue to do actual search:
     #Step 1: For a given subfield, identify the gdrive folders:
     for fld in flds:
@@ -71,7 +74,7 @@ def main(argv):
         #Will select appropriate subset of this in the loop below.
         start_initialize = time.clock()
         print(epoch_ref)
-        ra_dup, dec_dup, times_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
+        ra_dup, dec_dup, times_dup, quads_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
         print('Time to initialize duplicate search: ', time.clock() - start_initialize)
 
         #Loop over each epoch:
@@ -89,94 +92,96 @@ def main(argv):
             # print('Time to initialize duplicate search: ',time.clock()-start_initialize)
 
             # New method: identify which members of the initialized array are appropriate for this epoch:
+            # This is now done as a function of quadrant as well:
             day_max = epoch_timestamps[i]
             day_min = epoch_timestamps[i] - timedelta(days=dt)
-            index = np.where([((t_dup < day_max) and (t_dup > day_min)) for t_dup in times_dup])[0]
-            ra_comp = [ra_dup[m] for m in index]
-            dec_comp = [dec_dup[m] for m in index]
+            for quad in quads:
 
-            #If it is after the reference epoch, then go into the folder and get list of sources:
-            #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
-            events = glob.glob(epochs[i]+'/*/*.pdf')
-            print('Number of events to check ',len(events), 'against ', len(ra_comp))
+                index = np.where([((times_dup[m] < day_max) and (times_dup[m] > day_min) and (quads_dup[m] == quad)) for m in range(len(times_dup))])[0]
+                ra_comp = [ra_dup[m] for m in index]
+                dec_comp = [dec_dup[m] for m in index]
 
-            #check if event is already in db:
-            for event_f in events:
-                event_txt = event_f.split('/')[-1].split('.')
+                # If it is after the reference epoch, then go into the folder and get list of sources:
+                events = glob.glob(epochs[i]+'/'+quad+'/*.pdf')
+                print(quad,' Number of events to check ',len(events), 'against ', len(ra_comp))
 
-                #grab ra to check if event is in database already:
-                c = coords_from_filename(event_txt[5])
-                c_ra = c.ra.deg
-                c_dec = c.dec.deg
-                cand0 = Candidate(ra=c_ra, dec=c_dec, date_disc=epoch_timestamps[i])
+                # check if event is already in db:
+                for event_f in events:
+                    event_txt = event_f.split('/')[-1].split('.')
 
-                #check if already in db, if it is, then Flag1 = True:
-                Flag1 = False
-                for tt in Candidate.objects.all():
-                    if Candidate.is_same_target(tt, cand0):
-                        Flag1 = True
-                        break
+                    # grab ra to check if event is in database already:
+                    c = coords_from_filename(event_txt[5])
+                    c_ra = c.ra.deg
+                    c_dec = c.dec.deg
+                    cand0 = Candidate(ra=c_ra, dec=c_dec, date_disc=epoch_timestamps[i])
 
-                #If it is in database, move on to next event.:
-                if Flag1:
-                    continue
+                    # check if already in db, if it is, then Flag1 = True:
+                    Flag1 = False
+                    for tt in Candidate.objects.all():
+                        if Candidate.is_same_target(tt, cand0):
+                            Flag1 = True
+                            break
 
-                #Check for previous detections based on pre-initialized set of ra/dec.
-                counter = 1 #Keep track of number of detections.
+                    # If it is in database, move on to next event.:
+                    if Flag1:
+                        continue
 
-                for j in range(0,len(ra_comp)):
+                    # Check for previous detections based on pre-initialized set of ra/dec.
+                    counter = 1 #Keep track of number of detections.
+
+                    for j in range(0,len(ra_comp)):
+                        if counter >= nd:
+                            break #This just saves time, if we already know we will add no need to continue checking.
+                        elif great_circle_distance(c_ra,c_dec,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
+                            counter = counter + 1
+
+                    # If counter > required # detections, then add to database:
                     if counter >= nd:
-                        break #This just saves time, if we already know we will add no need to continue checking.
-                    elif great_circle_distance(c_ra,c_dec,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
-                        counter = counter + 1
 
-                # If counter > required # detections, then add to database:
-                if counter >= nd:
+                        #Gather additional parameters for the database:
+                        field_dir = event_txt[0]
+                        quad_dir = event_txt[1]
+                        s1 = Field.objects.get(subfield=field_dir)
+                        s2 = Quadrant.objects.get(name=quad_dir)
+                        s3 = Classification.objects.get(name="candidate")
 
-                    #Gather additional parameters for the database:
-                    field_dir = event_txt[0]
-                    quad_dir = event_txt[1]
-                    s1 = Field.objects.get(subfield=field_dir)
-                    s2 = Quadrant.objects.get(name=quad_dir)
-                    s3 = Classification.objects.get(name="candidate")
+                        n1 = Candidate.objects.filter(field=s1).count() + 1
+                        alpha = num2alpha(n1)
+                        obj_name = "KSP-" + field_dir + "_" + str(epoch_timestamps[i].year) + alpha
 
-                    n1 = Candidate.objects.filter(field=s1).count() + 1
-                    alpha = num2alpha(n1)
-                    obj_name = "KSP-" + field_dir + "_" + str(epoch_timestamps[i].year) + alpha
+                        pdf = event_f.split('/')[-1]
 
-                    pdf = event_f.split('/')[-1]
+                        # These will now throw an error if they do not exist... not sure if that is ok
+                        path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
+                        path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
+                        path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
 
-                    #These will now throw an error if they do not exist... not sure if that is ok
-                    path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
-                    path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
-                    path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
+                        if not len(path1) > 0:
+                            path1 = ['kmtshi/images/nojpeg.jpg']
+                        if not len(path2) > 0:
+                            path2 = ['kmtshi/images/nojpeg.jpg']
+                        if not len(path3) > 0:
+                            path3 = ['kmtshi/images/nojpeg.jpg']
 
-                    if not len(path1) > 0:
-                        path1 = ['kmtshi/images/nojpeg.jpg']
-                    if not len(path2) > 0:
-                        path2 = ['kmtshi/images/nojpeg.jpg']
-                    if not len(path3) > 0:
-                        path3 = ['kmtshi/images/nojpeg.jpg']
+                        # Actually modify the candidate:
+                        cand0.name = obj_name
+                        cand0.field = s1
+                        cand0.quadrant = s2
+                        cand0.classification = s3
+                        cand0.disc_im = path1[0]
+                        cand0.disc_ref = path2[0]
+                        cand0.disc_sub = path3[0]
 
-                    #Actually modify the candidate:
-                    cand0.name = obj_name
-                    cand0.field = s1
-                    cand0.quadrant = s2
-                    cand0.classification = s3
-                    cand0.disc_im = path1[0]
-                    cand0.disc_ref = path2[0]
-                    cand0.disc_sub = path3[0]
+                        print('New Candidate= ',cand0.name,' File= ',pdf)
+                        cand0.save()
+                        new_cands.append(cand0.pk)
 
-                    print('New Candidate= ',cand0.name,' File= ',pdf)
-                    cand0.save()
-                    new_cands.append(cand0.pk)
-
-                    #Call script to gather jpeg image for this event
-                    #jpeg = cjpeg(cand0.pk)
-                    #print(jpeg)
-                    #Call script to gather photom for this event
-                    #photom = cphotom(cand0.pk)
-                    #print(photom)
+                        # Call script to gather jpeg image for this event
+                        # jpeg = cjpeg(cand0.pk)
+                        # print(jpeg)
+                        #Call script to gather photom for this event
+                        #photom = cphotom(cand0.pk)
+                        #print(photom)
 
             print('Total time for epoch (no photom): ',time.clock()-start_epoch)
 
