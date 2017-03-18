@@ -98,7 +98,7 @@ def initialize_duplicates_set(epoch_ref,dt,epochs_f,epoch_timestamps):
     # Set max day to be the final epoch
     day_max = epoch_timestamps[-1]
 
-    index = np.where([((epoch < day_max) & (epoch > day_min)) for epoch in epoch_timestamps])[0]
+    index = np.where([((epoch < day_max) and (epoch > day_min)) for epoch in epoch_timestamps])[0]
     ra = []
     dec = []
     times = []
