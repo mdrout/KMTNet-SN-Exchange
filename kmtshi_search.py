@@ -95,11 +95,13 @@ def main(argv):
             index = np.where([((t_dup < day_max) and (t_dup > day_min)) for t_dup in times_dup])[0]
             ra_comp = [ra_dup[m] for m in index]
             dec_comp = [dec_dup[m] for m in index]
-            print('Time to select epochs from initialized list ',time.clock()-sub_t)
+            print(day_max,day_min)
+            print('Time to select epochs from initialized list ',time.clock()-sub_t, 'Number ',len(ra_comp))
 
             #If it is after the reference epoch, then go into the folder and get list of sources:
             #NB: Need to reset once I'm not on FOXTROT ANYMORE. Only have Q2 for data, but gdrive for all.
             events = glob.glob(epochs[i]+'/*/*.pdf')
+            print('Number of events to check ',len(events))
 
             #check if event is already in db:
             for event_f in events:
