@@ -52,7 +52,7 @@ def main(argv):
         print(nd,' detections within ',dt,' days will be required')
 
     # Set up list of quads:
-    quads = ['Q0','Q1','Q2','Q3']
+    quads_all = ['Q0','Q1','Q2','Q3']
 
     #We are now armed with the proper fields etc.  Continue to do actual search:
     #Step 1: For a given subfield, identify the gdrive folders:
@@ -73,7 +73,7 @@ def main(argv):
         #Initialize comparison ra/dec for duplicate search. This loads any object needed for any epoch after reference
         #Will select appropriate subset of this in the loop below.
         start_initialize = time.clock()
-        print(epoch_ref)
+        print('Reference epoch', epoch_ref)
         ra_dup, dec_dup, times_dup, quads_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
         print('Time to initialize duplicate search: ', time.clock() - start_initialize)
 
@@ -95,7 +95,7 @@ def main(argv):
             # This is now done as a function of quadrant as well:
             day_max = epoch_timestamps[i]
             day_min = epoch_timestamps[i] - timedelta(days=dt)
-            for quad in quads:
+            for quad in quads_all:
 
                 index = np.where([((times_dup[m] < day_max) and (times_dup[m] > day_min) and (quads_dup[m] == quad)) for m in range(len(times_dup))])[0]
                 ra_comp = [ra_dup[m] for m in index]
@@ -107,6 +107,9 @@ def main(argv):
 
                 # check if event is already in db:
                 for event_f in events:
+                    if not len(ra_comp) > 0:
+                        continue
+
                     event_txt = event_f.split('/')[-1].split('.')
 
                     # grab ra to check if event is in database already:
