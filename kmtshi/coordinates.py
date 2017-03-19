@@ -104,6 +104,7 @@ def initialize_duplicates_set(epoch_ref,dt,epochs_f,epoch_timestamps):
     dec = []
     times = []
     quads = []
+    events = []
 
     # Looping this way ensures that data taken most recently before is searched first.
     for j in np.flipud(index):
@@ -116,5 +117,6 @@ def initialize_duplicates_set(epoch_ref,dt,epochs_f,epoch_timestamps):
             dec.append(c.dec.deg)
             times.append(epoch_timestamps[j])
             quads.append(event_ch_f.split('/')[-2])
+            events.append(event_ch_f)
 
-    return ra, dec, times, quads
+    return ra, dec, times, quads, events

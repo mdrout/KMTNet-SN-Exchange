@@ -57,6 +57,7 @@ def main(argv):
     #We are now armed with the proper fields etc.  Continue to do actual search:
     #Step 1: For a given subfield, identify the gdrive folders:
     for fld in flds:
+        s1 = Field.objects.get(subfield=fld)
         new_cands = [] #will trace pk of any new objects added, so we can run photometry for all at the end.
 
         #get database field for use:
@@ -74,7 +75,7 @@ def main(argv):
         #Will select appropriate subset of this in the loop below.
         start_initialize = time.clock()
         print('Reference epoch', epoch_ref)
-        ra_dup, dec_dup, times_dup, quads_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
+        ra_dup, dec_dup, times_dup, quads_dup, events_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
         print('Time to initialize duplicate search: ', time.clock() - start_initialize)
 
         #Loop over each epoch:
@@ -92,35 +93,39 @@ def main(argv):
             # print('Time to initialize duplicate search: ',time.clock()-start_initialize)
 
             # New method: identify which members of the initialized array are appropriate for this epoch:
-            # This is now done as a function of quadrant as well:
+            # This is now done as a function of quadrant.
             day_max = epoch_timestamps[i]
             day_min = epoch_timestamps[i] - timedelta(days=dt)
             for quad in quads_all:
+                s2 = Quadrant.object.get(name=quad)
 
                 index = np.where([((times_dup[m] < day_max) and (times_dup[m] > day_min) and (quads_dup[m] == quad)) for m in range(len(times_dup))])[0]
                 ra_comp = [ra_dup[m] for m in index]
                 dec_comp = [dec_dup[m] for m in index]
 
-                # If it is after the reference epoch, then go into the folder and get list of sources:
-                events = glob.glob(epochs[i]+'/'+quad+'/*.pdf')
-                print(quad,' Number of events to check ',len(events), 'against ', len(ra_comp))
+                # Move on if nothing to compare against:
+                if not len(ra_comp) > 0:
+                    continue
 
-                # check if event is already in db:
-                for event_f in events:
-                    if not len(ra_comp) > 0:
-                        continue
+                # Previously: went into epoch folder and grabbed ra/dec again.
+                # New method: use info in the duplicate initialized list:
+                index2 = np.where([(time_dup == epoch_timestamps[i]) for time_dup in times_dup])[0]
+                events_epoch = [events_dup[m] for m in index2]
+                ra_epoch = [ra_dup[m] for m in index2]
+                dec_epoch = [dec_dup[m] for m in index2]
+                #events = glob.glob(epochs[i]+'/'+quad+'/*.pdf')
+                print(quad,' Number of events to check ',len(events_epoch), 'against ', len(ra_comp))
 
-                    event_txt = event_f.split('/')[-1].split('.')
+                # Check event versus database and for duplicates
+                for k in range(0,len(events_epoch)):
 
-                    # grab ra to check if event is in database already:
-                    c = coords_from_filename(event_txt[5])
-                    c_ra = c.ra.deg
-                    c_dec = c.dec.deg
-                    cand0 = Candidate(ra=c_ra, dec=c_dec, date_disc=epoch_timestamps[i])
+
+                    cand0 = Candidate(ra=ra_epoch[k], dec=dec_epoch[k], date_disc=epoch_timestamps[i])
 
                     # check if already in db, if it is, then Flag1 = True:
+                    # Only check against proper field and quadrant
                     Flag1 = False
-                    for tt in Candidate.objects.all():
+                    for tt in Candidate.objects.filter(field=s1).filter(quadrant=s2):
                         if Candidate.is_same_target(tt, cand0):
                             Flag1 = True
                             break
@@ -135,17 +140,19 @@ def main(argv):
                     for j in range(0,len(ra_comp)):
                         if counter >= nd:
                             break #This just saves time, if we already know we will add no need to continue checking.
-                        elif great_circle_distance(c_ra,c_dec,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
+                        elif great_circle_distance(ra_epoch[k],dec_epoch[k],ra_comp[j],dec_comp[j]) < (1.0/3600.0):
                             counter = counter + 1
 
                     # If counter > required # detections, then add to database:
                     if counter >= nd:
+                        # Grab other info for database
+                        event_f = events_epoch[k]
+                        #event_txt = event_f.split('/')[-1].split('.')
+                        #field_dir = event_txt[0]
+                        #quad_dir = event_txt[1]
 
-                        #Gather additional parameters for the database:
-                        field_dir = event_txt[0]
-                        quad_dir = event_txt[1]
-                        s1 = Field.objects.get(subfield=field_dir)
-                        s2 = Quadrant.objects.get(name=quad_dir)
+                        #s1 = Field.objects.get(subfield=field_dir)
+                        #s2 = Quadrant.objects.get(name=quad_dir)
                         s3 = Classification.objects.get(name="candidate")
 
                         n1 = Candidate.objects.filter(field=s1).count() + 1
