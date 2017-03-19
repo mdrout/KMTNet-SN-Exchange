@@ -74,7 +74,7 @@ def main(argv):
         #Will select appropriate subset of this in the loop below.
         start_initialize = time.clock()
         print(epoch_ref)
-        ra_dup, dec_dup, times_dup, quads_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
+        ra_dup, dec_dup, times_dup, quads_dup, events_dup = initialize_duplicates_set(epoch_ref,dt,epochs,epoch_timestamps)
         print('Time to initialize duplicate search: ', time.clock() - start_initialize)
 
         #Loop over each epoch:
@@ -92,7 +92,7 @@ def main(argv):
             # print('Time to initialize duplicate search: ',time.clock()-start_initialize)
 
             # New method: identify which members of the initialized array are appropriate for this epoch:
-            # This is now done as a function of quadrant as well:
+            # This is now done as a function of quadrant.
             day_max = epoch_timestamps[i]
             day_min = epoch_timestamps[i] - timedelta(days=dt)
             for quad in quads:
@@ -101,19 +101,24 @@ def main(argv):
                 ra_comp = [ra_dup[m] for m in index]
                 dec_comp = [dec_dup[m] for m in index]
 
-                # If it is after the reference epoch, then go into the folder and get list of sources:
-                events = glob.glob(epochs[i]+'/'+quad+'/*.pdf')
-                print(quad,' Number of events to check ',len(events), 'against ', len(ra_comp))
+                # Previously: went into epoch folder and grabbed ra/dec again.
+                # New method: use info in the duplicate initialized list:
+                index2 = np.where([(time_dup == epoch_timestamps[i]) for time_dup in times_dup])[0]
+                events_epoch = [events_dup[m] for m in index2]
+                ra_epoch = [ra_dup[m] for m in index2]
+                dec_epoch = [dec_dup[m] for m in index2]
+                #events = glob.glob(epochs[i]+'/'+quad+'/*.pdf')
+                print(quad,' Number of events to check ',len(events_epoch), 'against ', len(ra_comp))
 
                 # check if event is already in db:
-                for event_f in events:
-                    event_txt = event_f.split('/')[-1].split('.')
+                for k in range(0,len(events_epoch)):
+                    # event_txt = event_f.split('/')[-1].split('.')
 
-                    # grab ra to check if event is in database already:
-                    c = coords_from_filename(event_txt[5])
-                    c_ra = c.ra.deg
-                    c_dec = c.dec.deg
-                    cand0 = Candidate(ra=c_ra, dec=c_dec, date_disc=epoch_timestamps[i])
+                    ## grab ra to check if event is in database already:
+                    #c = coords_from_filename(event_txt[5])
+                    #c_ra = c.ra.deg
+                    #c_dec = c.dec.deg
+                    cand0 = Candidate(ra=ra_epoch[k], dec=dec_epoch[k], date_disc=epoch_timestamps[i])
 
                     # check if already in db, if it is, then Flag1 = True:
                     Flag1 = False
@@ -132,11 +137,13 @@ def main(argv):
                     for j in range(0,len(ra_comp)):
                         if counter >= nd:
                             break #This just saves time, if we already know we will add no need to continue checking.
-                        elif great_circle_distance(c_ra,c_dec,ra_comp[j],dec_comp[j]) < (1.0/3600.0):
+                        elif great_circle_distance(ra_epoch[k],dec_epoch[k],ra_comp[j],dec_comp[j]) < (1.0/3600.0):
                             counter = counter + 1
 
                     # If counter > required # detections, then add to database:
                     if counter >= nd:
+                        event_f = events_epoch[k]
+                        event_txt = event_f.split('/')[-1].split('.')
 
                         #Gather additional parameters for the database:
                         field_dir = event_txt[0]
