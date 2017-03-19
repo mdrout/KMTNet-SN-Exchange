@@ -97,7 +97,7 @@ def main(argv):
             day_max = epoch_timestamps[i]
             day_min = epoch_timestamps[i] - timedelta(days=dt)
             for quad in quads_all:
-                s2 = Quadrant.object.get(name=quad)
+                s2 = Quadrant.objects.get(name=quad)
 
                 index = np.where([((times_dup[m] < day_max) and (times_dup[m] > day_min) and (quads_dup[m] == quad)) for m in range(len(times_dup))])[0]
                 ra_comp = [ra_dup[m] for m in index]
@@ -109,7 +109,7 @@ def main(argv):
 
                 # Previously: went into epoch folder and grabbed ra/dec again.
                 # New method: use info in the duplicate initialized list:
-                index2 = np.where([(time_dup == epoch_timestamps[i]) for time_dup in times_dup])[0]
+                index2 = np.where([((times_dup[m] == epoch_timestamps[i]) and (quads_dup[m] == quad)) for m in range(len(times_dup))])[0]
                 events_epoch = [events_dup[m] for m in index2]
                 ra_epoch = [ra_dup[m] for m in index2]
                 dec_epoch = [dec_dup[m] for m in index2]
@@ -157,7 +157,7 @@ def main(argv):
 
                         n1 = Candidate.objects.filter(field=s1).count() + 1
                         alpha = num2alpha(n1)
-                        obj_name = "KSP-" + field_dir + "_" + str(epoch_timestamps[i].year) + alpha
+                        obj_name = "KSP-" + fld + "_" + str(epoch_timestamps[i].year) + alpha
 
                         pdf = event_f.split('/')[-1]
 
