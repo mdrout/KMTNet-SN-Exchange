@@ -91,7 +91,7 @@ def cjpeg(candidate_id):
     return txt_out
 
 
-def cjpeg_list(candidate_ids,check_all=False):
+def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
     '''This will find the jpeg images for list of candiates.
     All must be within the same subfield and quadrant.
     It will just pre-initialize several things to make it more efficient.
@@ -123,10 +123,16 @@ def cjpeg_list(candidate_ids,check_all=False):
         # Define ref time to search based on info in the photometry database already.
         # Unless check_all has been given.
         # See commentary above.
+        # Third option: check_photom now applied to above case of photometry.
+        # Otherwise based on the last JPEG which is actually there.
         if check_all:
             timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
         else:
-            t1 = Photometry.objects.filter(candidate=c1).order_by('-obs_date')
+            if check_photom:
+                t1 = Photometry.objects.filter(candidate=c1).order_by('-obs_date')
+            else:
+                t1 = jpegImages.objects.filter(candidate=c1).order_by('-obs_date')
+
             if len(t1) > 0:
                 timestamps_ref.append(t1[0].obs_date)
             else:

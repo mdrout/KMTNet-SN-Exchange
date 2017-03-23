@@ -18,7 +18,7 @@ def base_foxtrot():
     #base = '/Users/mdrout/Research/KMTNet/kmtshi_testfiles'
     return base
 
-def jpeg_path(gdrive_pdf):
+def jpeg_path(gdrive_pdf,second=False):
     '''Defines path to a jpeg folder given string with the gdrive s.pdf
     Form = N2223-1.Q2.B.170120_0117.C.062448D724-223052D3.18D962.0D004.0000.pdf'''
 
@@ -30,5 +30,9 @@ def jpeg_path(gdrive_pdf):
     quad = gdrive_txt[1]
 
     base = '/data/ksp/data/PROCESSED/'+fld+'/'+sfld+'/'+quad+'/B_Filter/Subtraction/JPEG_TV_IMAGES/'+gdrive_f+'/'+gdrive_f
+
+    # Define different base if flag 'second' is thrown
+    if second:
+        base = '/home/mdrout/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/' + gdrive_f + '/' + gdrive_f
 
     return base
