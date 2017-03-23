@@ -219,7 +219,7 @@ def cphotom_list(candidate_ids,all_dates=False):
             # If there are no candidates in list that need to be checked
             # for this epoch, move on.
             if not len(candidates_to_check) > 0:
-                print('Epoch/filter up to date')
+                #print('Epoch/filter up to date')
                 continue
 
             # initialize list of ras and decs for the cases that need to be checked.

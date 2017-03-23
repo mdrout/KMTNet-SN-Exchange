@@ -41,9 +41,13 @@ def main(argv):
         print('kmtshi_search.py -f <[list of subfields]> ')
         sys.exit(2)
     else:
-        #Sort fields into strings:
-        flds_st = str(flds[1:len(flds)-1])
-        flds = flds_st.split(',')
+        if flds == 'all':
+            fld_paths = glob.glob(base_gdrive()+'/*')
+            flds = [f.split('/')[-1] for f in fld_paths]
+        else:
+            # Sort fields into strings:
+            flds_st = str(flds[1:len(flds)-1])
+            flds = flds_st.split(',')
         print('fields ',flds,' will be updated')
 
 
@@ -71,8 +75,8 @@ def main(argv):
             pk_quad = [new_cands[x] for x in index]
 
             #update the photom and jpegs for this quadrant
-            #jpeg = cjpeg_list(pk_quad,check_all=True)
-            #print(jpeg)
+            jpeg = cjpeg_list(pk_quad)
+            print(jpeg)
             photom = cphotom_list(pk_quad)
             print(photom)
 
