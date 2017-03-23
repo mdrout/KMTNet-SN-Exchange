@@ -45,11 +45,15 @@ def main(argv):
         print('kmtshi_search.py -f <[list of subfields]> (-d <required # detections> -t <# days for detections>)')
         sys.exit(2)
     else:
-        #Sort fields into strings:
-        flds_st = str(flds[1:len(flds)-1])
-        flds = flds_st.split(',')
-        print('fields ',flds,' will be searched')
-        print(nd,' detections within ',dt,' days will be required')
+        if flds == 'all':
+            fld_paths = glob.glob(base_gdrive()+'/*-*')
+            flds = [f.split('/')[-1] for f in fld_paths]
+        else:
+            # Sort fields into strings:
+            flds_st = str(flds[1:len(flds)-1])
+            flds = flds_st.split(',')
+            print('fields ',flds,' will be searched')
+            print(nd,' detections within ',dt,' days will be required')
 
     # Set up list of quads:
     quads_all = ['Q0','Q1','Q2','Q3']
