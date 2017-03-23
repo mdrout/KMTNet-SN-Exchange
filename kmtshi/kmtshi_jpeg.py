@@ -98,9 +98,10 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
 
     :param candidate_ids: list of pk values for events to be checked
     :param check_all: if this is true the reference epoch over which
-    time to look will be set to 2014, otherwise it is based on the last bit
-    of photometry in the database for that event.'''
-
+    time to look will be set to 2014,
+    :param check_photom: if true reference epoch based on the last bit
+    of photometry in the database for that event.
+    Otherwise reference date set by last jpeg image avaliable'''
 
     ########################################################################
     # Check that all of the candidate_ids have same sub-field and quadrant.
@@ -112,7 +113,6 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
     elif len(set(quads)) > 1:
         print('Not all candidates for jpegs are in same quadrant')
         sys.exit()
-
 
     #########################################################################
     ##Initalize a list of reference timestamps for all of the input candidates.
@@ -140,7 +140,10 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
 
     ####################################################################
     # Set-up places to search for these events:
-    base = base_foxtrot() + base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+    base = base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+
+    #Base for early jpegs:
+    base = base_data(second=True) + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
 
     #Determine folders to search:
     #They are of the form: "N2188-1.Q0.B.161228_2045.S.061239D772-332826D7.20D204.0D020.0036"

@@ -16,10 +16,12 @@ from kmtshi.coordinates import coords_from_filename,great_circle_distance,initia
 from kmtshi.kmtshi_jpeg import cjpeg_list
 from kmtshi.kmtshi_photom import cphotom_list
 from kmtshi.alphabet import num2alpha
+from django.utils import timezone
 
 #Other set-up
 import glob,time
 import numpy as np
+import datetime
 from datetime import timedelta
 
 ###################################################################################
@@ -165,10 +167,15 @@ def main(argv):
 
                         pdf = event_f.split('/')[-1]
 
-                        # These will now throw an error if they do not exist... not sure if that is ok
-                        path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
-                        path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
-                        path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
+                        #Define paths Base this on discovery date:
+                        if epoch_timestamps[i] < datetime.datetime(2016,12,20,00,00,tzinfo=timezone.utc):
+                            path1 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".B-Filter-SOURCE.jpeg")
+                            path2 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".REF.jpeg")
+                            path3 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".SOURCE-REF-*-mag.jpeg")
+                        else:
+                            path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
+                            path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
+                            path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
 
                         if not len(path1) > 0:
                             path1 = ['kmtshi/images/nojpeg.jpg']

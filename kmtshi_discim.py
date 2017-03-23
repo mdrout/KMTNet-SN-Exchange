@@ -7,16 +7,19 @@ import django
 django.setup()
 
 import glob
-from kmtshi.models import Candidate
+from kmtshi.models import Candidate,jpegImages
 from kmtshi.coordinates import coords_from_filename, great_circle_distance
+from kmtshi.dates import filename_from_dates
 
 # ###############################################################################
 # List of candidates, pks.
-c1 = Candidate.objects.all()
+# c1 = Candidate.objects.all()
+
+#List of events which have missing discovery images:
+c1 = Candidate.objects.filter(disc_im='kmtshi/images/nojpeg.jpg')
 new_cands = [c.pk for c in c1]
 
 # ################################################################################
-
 
 for nc in new_cands:
     c1 = Candidate.objects.get(pk=nc)
@@ -30,31 +33,13 @@ for nc in new_cands:
     dec = c1.dec
 
     # Turn the discovery datetime object back into a string..
-    y = str(date.year)[2:]
-    if len(str(date.month)) < 2:
-        m = '0'+str(date.month)
-    else:
-        m = str(date.month)
-    if len(str(date.day)) < 2:
-        d = '0'+str(date.day)
-    else:
-        d = str(date.day)
-    if len(str(date.hour)) < 2:
-        h = '0'+str(date.hour)
-    else:
-        h = str(date.hour)
-    if len(str(date.minute)) < 2:
-        mn = '0'+str(date.minute)
-    else:
-        mn = str(date.minute)
-
-    # Combine:
-    date_txt = y+m+d+'_'+h+mn
+    date_txt = filename_from_dates(date)
 
     # Use this plus the field info to find the right candidate/jpeg images.
 
     # Load ones from proper day:
-    base = '/data/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+    # base = '/data/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+    base = '/home/mdrout/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
     events_f = glob.glob(base+'*'+date_txt+'*')
     events = [e.split('/')[-1] for e in events_f]
 

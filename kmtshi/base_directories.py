@@ -2,8 +2,12 @@
 by other pipeline routines'''
 
 
-def base_data():
-    base = '/data/ksp/data/PROCESSED/'
+def base_data(second=False):
+    if not second:
+        base = '/data/ksp/data/PROCESSED/'
+    else:
+        base = '/home/mdrout/ksp/data/PROCESSED/'
+
     return base
 
 
