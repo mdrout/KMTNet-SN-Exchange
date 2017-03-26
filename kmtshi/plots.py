@@ -22,8 +22,8 @@ def MagAuto_FiltersPlot(candidate_id):
 
     # Set up the plot:
     p = figure(title="Raw Image SExtractor BVI Photometry", x_axis_label='MJD (days)', y_axis_label='mag',
-               y_range=[22.5, 11],tools='pan,box_zoom,wheel_zoom,box_select,crosshair,reset,save,resize',
-               width=700,height=450)
+               y_range=[22.5, 11],tools='box_zoom,pan,wheel_zoom,box_select,crosshair,reset,save,resize',
+               active_drag='box_zoom',width=700,height=450)
 
     p.background_fill_color = "beige"
     p.background_fill_alpha = 0.5
@@ -61,13 +61,13 @@ def Mag_FiltersLinkPlot(candidate_id):
     #Set up all four plots:
     TOOLS = 'pan,box_zoom,wheel_zoom,box_select,crosshair,reset,save'
     s1 = figure(title="Raw Image B Photom", x_axis_label='MJD (days)', y_axis_label='mag',
-                y_range=[22.5, 11], tools=TOOLS,width=350, plot_height=350)
+                y_range=[22.5, 11], tools=TOOLS,active_drag='box_zoom',width=350, plot_height=350)
     s2 = figure(title="Raw Image V Photom", x_axis_label='MJD (days)', y_axis_label='mag',
-                y_range=[22.5, 11], x_range=s1.x_range, tools=TOOLS,width=350, plot_height=350)
+                y_range=[22.5, 11], x_range=s1.x_range, tools=TOOLS,active_drag='box_zoom',width=350, plot_height=350)
     s3 = figure(title="Raw Image I Photom", x_axis_label='MJD (days)', y_axis_label='mag',
-                y_range=[22.5, 11], x_range=s1.x_range, tools=TOOLS,width=350, plot_height=350)
+                y_range=[22.5, 11], x_range=s1.x_range, tools=TOOLS,active_drag='box_zoom',width=350, plot_height=350)
     s4 = figure(title="Bsub Photom", x_axis_label='MJD (days)', y_axis_label='mag',
-                y_range=[22.5, 11], x_range=s1.x_range, tools=TOOLS,width=350, plot_height=350)
+                y_range=[22.5, 11], x_range=s1.x_range, tools=TOOLS,active_drag='box_zoom',width=350, plot_height=350)
 
     s1.background_fill_color = "beige"
     s1.background_fill_alpha = 0.5

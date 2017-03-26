@@ -75,8 +75,8 @@ def main(argv):
             pk_quad = [new_cands[x] for x in index]
 
             #update the photom and jpegs for this quadrant
-            jpeg = cjpeg_list(pk_quad)
-            print(jpeg)
+            #jpeg = cjpeg_list(pk_quad,check_all=True)
+            #print(jpeg)
             photom = cphotom_list(pk_quad)
             print(photom)
 

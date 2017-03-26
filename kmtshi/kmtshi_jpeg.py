@@ -140,72 +140,91 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
 
     ####################################################################
     # Set-up places to search for these events:
-    base = base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+    base1 = base_data() + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
 
-    #Base for early jpegs:
-    base = base_data(second=True) + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+    # Base for early jpegs:
+    base2 = base_data(second=True) + c1.field.name + '/' + c1.field.subfield + '/' + c1.quadrant.name + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
 
-    #Determine folders to search:
-    #They are of the form: "N2188-1.Q0.B.161228_2045.S.061239D772-332826D7.20D204.0D020.0036"
-    #All candidates for all epochs have their own folder:
+    bases=[base1,base2]
 
-    ffnames = glob.glob(base + '*')
+    #Cycle over both the new and the old:
+    for b in range(len(bases)):
+        base = bases[b]
 
-    #Initialize lists of (a) timestamps (b) ra/dec for all of these jpeg folderss.
-    t_init = time.clock()
-    time_folders = [ffname.split('/')[-1].split('.')[3] for ffname in ffnames]
-    timestamp_folders = [dates_from_filename('20'+ffname.split('/')[-1].split('.')[3]) for ffname in ffnames]
-    ra_folders = [coords_from_filename(ffname.split('/')[-1].split('.')[5]).ra.deg for ffname in ffnames]
-    dec_folders = [coords_from_filename(ffname.split('/')[-1].split('.')[5]).dec.deg for ffname in ffnames]
-    print('time to init jpeg = ', time.clock()-t_init)
+        #Determine folders to search:
+        #They are of the form: "N2188-1.Q0.B.161228_2045.S.061239D772-332826D7.20D204.0D020.0036"
+        #All candidates for all epochs have their own folder:
 
-    #Cycle over the new candidates:
-    for j in range(0,len(candidate_ids)):
-        c1=Candidate.objects.get(pk=candidate_ids[j])
+        ffnames = glob.glob(base + '*')
 
-        #cycle over the jpeg folders:
-        for i in range(0,len(ffnames)):
+        #Initialize lists of (a) timestamps (b) ra/dec for all of these jpeg folderss.
+        t_init = time.clock()
+        time_folders = [ffname.split('/')[-1].split('.')[3] for ffname in ffnames]
+        timestamp_folders = [dates_from_filename('20'+ffname.split('/')[-1].split('.')[3]) for ffname in ffnames]
+        ra_folders = [coords_from_filename(ffname.split('/')[-1].split('.')[5]).ra.deg for ffname in ffnames]
+        dec_folders = [coords_from_filename(ffname.split('/')[-1].split('.')[5]).dec.deg for ffname in ffnames]
+        print('time to init jpeg = ', time.clock()-t_init)
 
-            #Check the timestamp:
-            if (timestamps_ref[j] > timestamp_folders[i]):
-                continue
+        #Cycle over the new candidates:
+        for j in range(0,len(candidate_ids)):
+            c1=Candidate.objects.get(pk=candidate_ids[j])
+            #count = 0
 
-            #Check the coordinates:
-            if great_circle_distance(c1.ra, c1.dec, ra_folders[i], dec_folders[i]) < (1.0 / 3600.0):
+            #cycle over the jpeg folders:
+            for i in range(0,len(ffnames)):
 
-                # Candidate is the within 1". Populate the jpg database with files.
-                ims = jpegImages(candidate=c1, date_txt=time_folders[i], obs_date=timestamp_folders[i])
+                #Check the timestamp:
+                if (timestamps_ref[j] > timestamp_folders[i]):
+                    continue
 
-                pdf = ffnames[i].split('/')[-1] + '.pdf'
+                #Check the coordinates:
+                if great_circle_distance(c1.ra, c1.dec, ra_folders[i], dec_folders[i]) < (1.0 / 3600.0):
 
-                path1 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
-                path2 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".REF.jpeg")
-                path3 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
-                path4 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".B.*.jpeg")
-                path5 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".V.*.jpeg")
-                path6 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".I.*.jpeg")
+                    # Candidate is the within 1". Populate the jpg database with files.
+                    ims = jpegImages(candidate=c1, date_txt=time_folders[i], obs_date=timestamp_folders[i])
 
-                if not len(path1) > 0:
-                    path1 = ['kmtshi/images/nojpeg.jpg']
-                if not len(path2) > 0:
-                    path2 = ['kmtshi/images/nojpeg.jpg']
-                if not len(path3) > 0:
-                    path3 = ['kmtshi/images/nojpeg.jpg']
-                if not len(path4) > 0:
-                    path4 = ['kmtshi/images/nojpeg.jpg']
-                if not len(path5) > 0:
-                    path5 = ['kmtshi/images/nojpeg.jpg']
-                if not len(path6) > 0:
-                    path6 = ['kmtshi/images/nojpeg.jpg']
+                    pdf = ffnames[i].split('/')[-1] + '.pdf'
 
-                ims.B_image = path1[0]
-                ims.Bref_image = path2[0]
-                ims.Bsub_image = path3[0]
-                ims.B_prev_im = path4[0]
-                ims.V_prev_im = path5[0]
-                ims.I_prev_im = path6[0]
+                    if b==0:
+                        path1 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
+                        path2 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".REF.jpeg")
+                        path3 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
+                        path4 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".B.*.jpeg")
+                        path5 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".V.*.jpeg")
+                        path6 = glob.glob(base_foxtrot() + jpeg_path(pdf) + ".I.*.jpeg")
+                    else:
+                        path1 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".B-Filter-SOURCE.jpeg")
+                        path2 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".REF.jpeg")
+                        path3 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".SOURCE-REF-*-mag.jpeg")
+                        path4 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".B.*.jpeg")
+                        path5 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".V.*.jpeg")
+                        path6 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".I.*.jpeg")
 
-                ims.save()
+                    if not len(path1) > 0:
+                        path1 = ['kmtshi/images/nojpeg.jpg']
+                    if not len(path2) > 0:
+                        path2 = ['kmtshi/images/nojpeg.jpg']
+                    if not len(path3) > 0:
+                        path3 = ['kmtshi/images/nojpeg.jpg']
+                    if not len(path4) > 0:
+                        path4 = ['kmtshi/images/nojpeg.jpg']
+                    if not len(path5) > 0:
+                        path5 = ['kmtshi/images/nojpeg.jpg']
+                    if not len(path6) > 0:
+                        path6 = ['kmtshi/images/nojpeg.jpg']
+
+                    ims.B_image = path1[0]
+                    ims.Bref_image = path2[0]
+                    ims.Bsub_image = path3[0]
+                    ims.B_prev_im = path4[0]
+                    ims.V_prev_im = path5[0]
+                    ims.I_prev_im = path6[0]
+
+                    ims.save()
+                    #count = count+1
+
+            #if count > 0:
+            #    print(count)
 
     txt_out='Jpeg images have been updated list of objects'
     return txt_out

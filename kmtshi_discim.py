@@ -20,7 +20,7 @@ c1 = Candidate.objects.filter(disc_im='kmtshi/images/nojpeg.jpg')
 new_cands = [c.pk for c in c1]
 
 # ################################################################################
-
+count = 0
 for nc in new_cands:
     c1 = Candidate.objects.get(pk=nc)
 
@@ -67,6 +67,7 @@ for nc in new_cands:
             c1.disc_sub = path3[0]
             c1.save()
             Flag = True
+            count = count+1
             break
 
     # If no match was found: assign nojpeg image:
@@ -79,3 +80,5 @@ for nc in new_cands:
         c1.disc_ref = path2[0]
         c1.disc_sub = path3[0]
         c1.save()
+
+print('Found new files for ',count,' of ',len(new_cands))
