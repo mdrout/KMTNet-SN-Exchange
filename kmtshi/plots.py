@@ -8,6 +8,8 @@ from bokeh.layouts import gridplot
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages,Photometry
 
 import numpy as np
+from astropy.stats import LombScargle
+import math
 
 ################################################################################################
 
@@ -124,3 +126,35 @@ def Mag_FiltersLinkPlot(candidate_id):
     script, div = components(p, CDN)
 
     return script, div
+
+#def periodogram(candidate_id):
+#    c1 = Candidate.objects.get(pk=candidate_id)
+#    filters = ['B', 'V', 'I']
+
+    # There are two figures. The periodogram and the phased light curve.
+
+    # Set up plots:
+
+    # Set up the data:
+#    for i in range(0, len(filters)):#
+#        p1 = Photometry.objects.filter(candidate=c1).filter(filter=filters[i])
+#        p1_r = p1.filter(flag=True)
+#        p1_l = p1.filter(flag=False)
+
+#        mag_auto_r = np.array([p.mag_auto for p in p1_r])
+#        dmag_auto_r = np.array([p.dmag_auto for p in p1_r])
+#        mjd_auto_r = np.array([p.obs_mjd for p in p1_r])
+
+#        phase = mjd_auto_r - mjd_auto_r[0]
+
+#        frequency, power = LombScargle(phase, mag_auto_r, dy=dmag_auto_r).autopower()
+
+        # Find max frequency
+#        f1 = frequency[np.argmax(power)]
+#        p1 = 1./f1
+
+        # make the phase part.
+#        time_phased = (phase/p1) % 2
+
+
+#    return script, div
