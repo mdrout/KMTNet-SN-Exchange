@@ -27,7 +27,7 @@ from datetime import timedelta
 ###################################################################################
 def main(argv):
     flds = [] #fields to search
-    nd = 3  #number of detections
+    nd = 2  #number of detections
     dt = 10 #time in days for search
     try:
         opts, args = getopt.getopt(argv,"f:d:t:",["fields=","detect=","days="])
@@ -48,8 +48,10 @@ def main(argv):
         sys.exit(2)
     else:
         if flds == 'all':
-            fld_paths = glob.glob(base_gdrive()+'/*-*')
+            fld_paths = glob.glob(base_gdrive()+'/*-1')+glob.glob(base_gdrive()+'/*-2')+glob.glob(base_gdrive()+'/*-9')
             flds = [f.split('/')[-1] for f in fld_paths]
+            print('fields ', flds, ' will be searched')
+            print(nd, ' detections within ', dt, ' days will be required')
         else:
             # Sort fields into strings:
             flds_st = str(flds[1:len(flds)-1])
@@ -71,7 +73,7 @@ def main(argv):
         epoch_ref = fld_db.last_date
 
         #Grab files for epochs.
-        epochs = glob.glob(base_foxtrot()+base_gdrive()+fld+'/*')
+        epochs = glob.glob(base_foxtrot()+base_gdrive()+fld+'/*.*')
 
         #In order to facilitate checking for multiple detections,within a timeframe:
         #I need to select epochs that are within that timeframe before given epoch.
@@ -146,7 +148,7 @@ def main(argv):
                     for j in range(0,len(ra_comp)):
                         if counter >= nd:
                             break #This just saves time, if we already know we will add no need to continue checking.
-                        elif great_circle_distance(ra_epoch[k],dec_epoch[k],ra_comp[j],dec_comp[j]) < (1.0/3600.0):
+                        elif great_circle_distance(ra_epoch[k],dec_epoch[k],ra_comp[j],dec_comp[j]) < (2.0/3600.0):
                             counter = counter + 1
 
                     # If counter > required # detections, then add to database:
