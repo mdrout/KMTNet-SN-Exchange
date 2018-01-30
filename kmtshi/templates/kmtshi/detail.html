@@ -32,7 +32,7 @@
         {% endfor %}
         <h4>Add Comment:</h4>
             <form method="POST" class="post-form">{% csrf_token %}
-                {{ comment_form.as_p }}
+                {{ comment_form}}
                 <!--<input type="hidden" name="form_type" value="comment-form"/>
                 <button type="submit" class="save btn btn-default">Save</button>-->
                 <button type="submit" class="save btn btn-default" name="comment-form">Save</button>
@@ -42,7 +42,7 @@
         <div>
             <h3>Edit the Classification for {{candidate}}</h3>
             <form method="POST" class="post-form">{% csrf_token %}
-                {{ class_form.as_p }}
+                {{ class_form }}
                 <!--<input type="hidden" name="form_type" value="class-form"/>
                 <button type="submit" class="save btn btn-default">Save</button>-->
                 <button type="submit" class="save btn btn-default" name="class-form">Save</button>

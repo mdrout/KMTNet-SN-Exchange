@@ -12,7 +12,27 @@
     <h2> Results from Database Search </h2>
     <hr>
     <hr>
-    <p> Objects whose names contain: {{ sname }}</p>
-
+    <p> Objects whose names contain the phrase: {{ sname }}</p>
+    <hr>
+    <hr>
+    {% if candidate_list %}
+        {% for candidate in candidate_list %}
+            <div>
+                <h4><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></h4>
+                <p>FIELD: {{candidate.field}} {{candidate.quadrant}} </p>
+                <p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
+                <p>Discovery Date: {{candidate.date_disc}}</p>
+                <p>Classification: {{candidate.classification}} </p>
+                <p>
+                    <img src="{% static candidate.disc_im %}"/>
+                    <img src="{% static candidate.disc_ref %}"/>
+                    <img src="{% static candidate.disc_sub %}"/>
+                </p>
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No objects match search query.</p>
+    {% endif %}
     </body>
 </html>

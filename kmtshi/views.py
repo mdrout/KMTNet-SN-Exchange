@@ -26,7 +26,10 @@ def index(request):
     return render(request,'kmtshi/index.html', context)
 
 def search_name(request,sname):
-    context = {'sname':sname}
+    #Search databased to select names that *contain* the name in the search:
+    candidate_list = Candidate.objects.filter(name__icontains=sname)
+
+    context = {'sname':sname, 'candidate_list': candidate_list}
     return render(request,'kmtshi/search_name.html', context)
 
 def candidates(request):
