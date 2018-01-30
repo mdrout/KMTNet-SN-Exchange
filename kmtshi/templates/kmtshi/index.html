@@ -12,6 +12,13 @@
     <h2> Index </h2>
     <hr>
     <hr>
+    <h3> Database Search: </h3>
+        <form method="POST" class="post-form">{% csrf_token %}
+            {{ name_form }}
+            <button type="submit" class="save btn btn-default" name="name-form">Search</button>
+        </form>
+    <hr>
+    <hr>
     {% if field_list %}
         {% for field in field_list %}
             <p> {{field.subfield}}. last date searched = {{field.last_date}}.

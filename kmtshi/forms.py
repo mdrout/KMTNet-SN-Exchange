@@ -14,4 +14,4 @@ class CommentForm(forms.ModelForm):
         fields = ('text',)
 
 class NameForm(forms.Form):
-    name = forms.CharField(label='Object Name',max_length=100)
+    name = forms.CharField(label='Object Name Contains',max_length=100)

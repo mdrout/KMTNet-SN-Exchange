@@ -19,7 +19,7 @@ def index(request):
 
     else:
         name_form = NameForm()
-    
+
 
     context = {'field_list': field_list, 'name_form':name_form}
     return render(request,'kmtshi/index.html', context)
