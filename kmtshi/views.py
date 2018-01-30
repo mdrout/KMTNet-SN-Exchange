@@ -2,7 +2,7 @@ from django.http import HttpResponse,Http404
 from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages
-from kmtshi.forms import CandidateForm,CommentForm
+from kmtshi.forms import CandidateForm,CommentForm,NameForm
 from django.utils import timezone
 from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
@@ -10,7 +10,18 @@ from kmtshi.dates import dates_from_filename,filename_from_dates
 
 def index(request):
     field_list = Field.objects.all().order_by('-last_date')
-    context = {'field_list': field_list}
+
+    if request.method == "POST":
+        if 'name-form' in request.POST:
+            name_form = NameForm(request.POST)
+            if name_form.is_valid():
+                return redirect('candidates')
+
+    else:
+        name_form = NameForm()
+    
+
+    context = {'field_list': field_list, 'name_form':name_form}
     return render(request,'kmtshi/index.html', context)
 
 
