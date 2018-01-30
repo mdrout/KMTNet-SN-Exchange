@@ -15,7 +15,8 @@ def index(request):
         if 'name-form' in request.POST:
             name_form = NameForm(request.POST)
             if name_form.is_valid():
-                return redirect('candidates')
+                name_input = name_form.cleaned_data['name']
+                return redirect('search_name',sname=name_input)
 
     else:
         name_form = NameForm()
@@ -24,6 +25,9 @@ def index(request):
     context = {'field_list': field_list, 'name_form':name_form}
     return render(request,'kmtshi/index.html', context)
 
+def search_name(request,sname):
+    context = {'sname':sname}
+    return render(request,'kmtshi/search_name.html', context)
 
 def candidates(request):
     t1=Classification.objects.get(name="candidate")

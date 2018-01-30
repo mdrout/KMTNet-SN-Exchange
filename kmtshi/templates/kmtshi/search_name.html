@@ -1,0 +1,18 @@
+{% load static %}
+<html>
+    <head>
+        <title>kmtshi: candidates</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static 'kmtshi/css/kmtshi.css' %}">
+    </head>
+    <body>
+    <h1> KMTSHI: The KMTNet Supernova Hunter's Interface  </h1>
+    <h2> Results from Database Search </h2>
+    <hr>
+    <hr>
+    <p> Objects whose names contain: {{ sname }}</p>
+
+    </body>
+</html>
