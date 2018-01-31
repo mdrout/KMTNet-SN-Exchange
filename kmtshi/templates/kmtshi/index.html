@@ -13,11 +13,19 @@
     <hr>
     <hr>
     <h3> Database Search: </h3>
+    <hr>
+    <h4> Search by Name: </h4>
         <form method="POST" class="post-form">{% csrf_token %}
             {{ name_form }}
             <button type="submit" class="save btn btn-default" name="name-form">Search</button>
         </form>
     <p>Naming convention is KSP-[Field]_[Year][Letter]. Example: KSP-E489-1_2016ad </p>
+    <hr>
+    <h4> Search by Coordinates: </h4>
+        <form method="POST" class="post-form">{% csrf_token %}
+            {{ coord_form.as_p }}
+            <button type="submit" class="save btn btn-default" name="coord-form">Search</button>
+        </form>
     <hr>
     <hr>
     {% if field_list %}

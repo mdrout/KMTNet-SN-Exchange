@@ -2,7 +2,7 @@ from django.http import HttpResponse,Http404
 from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages
-from kmtshi.forms import CandidateForm,CommentForm,NameForm
+from kmtshi.forms import CandidateForm,CommentForm,NameForm,CoordinateForm
 from django.utils import timezone
 from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
@@ -17,12 +17,17 @@ def index(request):
             if name_form.is_valid():
                 name_input = name_form.cleaned_data['name']
                 return redirect('search_name',sname=name_input)
-
+            coord_form = CoordinateForm()
+        if 'coord-form' in request.POST:
+            coord_form = CoordinateForm(request.POST)
+            if coord_form.is_valid():
+                return redirect('search_name',sname='Test')
+            name_form = NameForm()
     else:
         name_form = NameForm()
+        coord_form = CoordinateForm()
 
-
-    context = {'field_list': field_list, 'name_form':name_form}
+    context = {'field_list': field_list, 'name_form':name_form, 'coord_form':coord_form}
     return render(request,'kmtshi/index.html', context)
 
 def search_name(request,sname):
