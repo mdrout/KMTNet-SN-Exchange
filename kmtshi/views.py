@@ -21,7 +21,7 @@ def index(request):
         if 'coord-form' in request.POST:
             coord_form = CoordinateForm(request.POST)
             if coord_form.is_valid():
-                return redirect('search_name',sname='Test')
+                return redirect('search_coord',ra=10.0,dec=-15.0,radius=1.0)
             name_form = NameForm()
     else:
         name_form = NameForm()
@@ -36,6 +36,11 @@ def search_name(request,sname):
 
     context = {'sname':sname, 'candidate_list': candidate_list}
     return render(request,'kmtshi/search_name.html', context)
+
+def search_coord(request,ra,dec,radius):
+
+    context = {'ra':ra, 'dec':dec, 'radius':radius}
+    return render(request,'kmtshi/search_coord.html', context)
 
 def candidates(request):
     t1=Classification.objects.get(name="candidate")

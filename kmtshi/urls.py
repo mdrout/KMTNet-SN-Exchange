@@ -30,5 +30,6 @@ urlpatterns = [url(r'^$', views.index, name='index'),
                url(r'^(?P<field>[A-Z0-9-]+)/(?P<quadrant>[A-Z0-9]+)/(?P<date>[A-Z0-9_]+)/candidates/$', views.candidate_date,name='candidates_date'),
                url(r'^(?P<field>[A-Z0-9-]+)/(?P<quadrant>[A-Z0-9]+)/(?P<date>[A-Z0-9_]+)/bulk_edit/$', views.classification_bulkedit,name='class_bulkedit'),
                url(r'^name-search/(?P<sname>[a-zA-Z0-9-]+)/$',views.search_name, name='search_name'),
+               url(r'^coord-search/ra=(?P<ra>[0-9.-]+);dec=(?P<dec>[0-9.-]+);radius=(?P<radius>[0-9.-]+)/$',views.search_coord, name='search_coord'),
                url(r'^admin/', admin.site.urls)]
 
