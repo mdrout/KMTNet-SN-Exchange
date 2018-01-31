@@ -21,7 +21,10 @@ def index(request):
         if 'coord-form' in request.POST:
             coord_form = CoordinateForm(request.POST)
             if coord_form.is_valid():
-                return redirect('search_coord',ra=10.0,dec=-15.0,radius=1.0)
+                ra_input = coord_form.cleaned_data['ra']
+                dec_input = coord_form.cleaned_data['dec']
+                radius_input = coord_form.cleaned_data['radius']
+                return redirect('search_coord',ra=ra_input,dec=dec_input,radius=radius_input)
             name_form = NameForm()
     else:
         name_form = NameForm()
