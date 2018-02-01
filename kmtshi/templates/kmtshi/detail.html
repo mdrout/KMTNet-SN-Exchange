@@ -1,4 +1,5 @@
 {% load static %}
+{% load format5d %}
 <html>
     <head>
         <title>kmtshi: {{candidate}} </title>
@@ -22,7 +23,7 @@
         <ul>
             <li> Field: <a href=" {% url 'candidates_field' candidate.field.subfield %}"> {{candidate.field}}</a> {{candidate.quadrant}} </li>
             <li> Discovery Date: <a href="{% url 'candidates_date' candidate.field.subfield candidate.quadrant.name date_txt%}">{{candidate.date_disc}} </a> </li>
-            <li> ra = {{candidate.ra}}, dec={{candidate.dec}} </li>
+            <li> ra = {{candidate.ra|format5d}}, dec={{candidate.dec|format5d}} </li>
             <li> Classification: {{candidate.classification}} </li>
         </ul>
         <hr>

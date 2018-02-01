@@ -1,4 +1,5 @@
 {% load static %}
+{% load format5d %}
 <html>
     <head>
         <title>kmtshi: candidates</title>
@@ -18,7 +19,7 @@
             <div>
                 <h4><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></h4>
                 <p>FIELD: {{candidate.field}} {{candidate.quadrant}} </p>
-                <p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
+                <p>ra={{candidate.ra|format5d}}, dec={{candidate.dec|format5d}}</p>
                 <p>Classification: {{candidate.classification}}
                     {% if user.is_authenticated %}
                     <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a>

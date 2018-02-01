@@ -2,5 +2,5 @@ from django import template
 register = template.Library()
 
 @register.filter
-def index(List, i):
-    return List[int(i)]
+def format5d(value):
+    return '%.5f'%(float(value))
