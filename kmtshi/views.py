@@ -7,6 +7,8 @@ from django.utils import timezone
 from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
 from kmtshi.dates import dates_from_filename,filename_from_dates
+from kmtshi.coordinates import great_circle_distance
+import numpy as np
 
 def index(request):
     field_list = Field.objects.all().order_by('-last_date')
@@ -41,8 +43,24 @@ def search_name(request,sname):
     return render(request,'kmtshi/search_name.html', context)
 
 def search_coord(request,ra,dec,radius):
+    # Perform cone search on the candidates in the database.
+    # Initial filter down to things that are close:
+    ra = float(ra)
+    dec = float(dec)
+    radius = float(radius)
+    ra_max = ra + (radius/3600.)/np.cos(dec*np.pi/180.)
+    ra_min = ra - (radius/3600.)/np.cos(dec*np.pi/180.)
+    dec_max = dec + (radius/3600.)
+    dec_min = dec - (radius/3600.)
+    candidate_list1 = Candidate.objects.filter(ra__lte=ra_max).filter(ra__gte=ra_min).filter(dec__lte=dec_max).filter(dec__gte=dec_min)
 
-    context = {'ra':ra, 'dec':dec, 'radius':radius}
+    # Use this list, and create a list that actually passes, as well as a list of the actual great_circle distance.
+    distances_1 = [great_circle_distance(c.ra,c.dec,ra,dec) for c in candidate_list1]
+    index1 = np.where([d < (radius/3600.) for d in distances_1])[0]
+    candidate_list = [candidate_list1[int(x)] for x in index1]
+    distances = ['%.3f'%(distances_1[int(x)]*3600.) for x in index1]
+
+    context = {'ra':ra, 'dec':dec, 'radius':radius, 'candidate_list':candidate_list,'distances':distances}
     return render(request,'kmtshi/search_coord.html', context)
 
 def candidates(request):
