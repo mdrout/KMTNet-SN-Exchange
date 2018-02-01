@@ -59,8 +59,10 @@ def search_coord(request,ra,dec,radius):
     index1 = np.where([d < (radius/3600.) for d in distances_1])[0]
     candidate_list = [candidate_list1[int(x)] for x in index1]
     distances = ['%.3f'%(distances_1[int(x)]*3600.) for x in index1]
+    combo = zip(distances,candidate_list)
+    scombo = sorted(combo)
 
-    context = {'ra':ra, 'dec':dec, 'radius':radius, 'candidate_list':candidate_list,'distances':distances}
+    context = {'ra':ra, 'dec':dec, 'radius':radius, 'scombo':scombo}
     return render(request,'kmtshi/search_coord.html', context)
 
 def candidates(request):

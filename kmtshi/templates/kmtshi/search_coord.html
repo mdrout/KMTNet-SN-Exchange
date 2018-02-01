@@ -16,10 +16,10 @@
     <p> Objects whose coordinates are within {{ radius }} arcsec of ra = {{ra}} dec = {{dec}}</p>
     <hr>
     <hr>
-        {% if candidate_list %}
-        {% for candidate in candidate_list %}
+    {% if scombo %}
+        {% for distance,candidate in scombo %}
             <div>
-                <h4><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }} (distance: {{distances|index:forloop.counter0}} arcsec) </a></h4>
+                <h4><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }} (distance: {{distance}} arcsec) </a></h4>
                 <p>FIELD: {{candidate.field}} {{candidate.quadrant}} </p>
                 <p>ra={{candidate.ra}}, dec={{candidate.dec}}</p>
                 <p>Discovery Date: {{candidate.date_disc}}</p>
@@ -32,6 +32,7 @@
             </div>
             <hr>
         {% endfor %}
+
     {% else %}
         <p>No objects match search query.</p>
     {% endif %}
