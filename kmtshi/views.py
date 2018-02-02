@@ -8,7 +8,9 @@ from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
 from kmtshi.dates import dates_from_filename,filename_from_dates
 from kmtshi.coordinates import great_circle_distance
+from kmtshi.queries import simbad_query
 import numpy as np
+
 
 def index(request):
     field_list = Field.objects.all().order_by('-last_date')
@@ -147,6 +149,9 @@ def detail(request, candidate_id):
     comments_list = Comment.objects.filter(candidate=c1).order_by('-pub_date')
     png_list = jpegImages.objects.filter(candidate=c1).order_by('-obs_date')[:15]
 
+    # Query simbad at these coordinates.
+    simbad_q = simbad_query(c1.ra,c1.dec,120.)
+
     #Create the bokeh light curve plots (ideally have set-up elsewhere):
     script,div = MagAuto_FiltersPlot(candidate_id)
     script2,div2 = Mag_FiltersLinkPlot(candidate_id)
@@ -179,7 +184,8 @@ def detail(request, candidate_id):
         comment_form = CommentForm()
     context = {'class_form': class_form,'comment_form': comment_form, 'date_txt': date_txt,
                'candidate': candidate,'comments_list': comments_list,'png_list': png_list,
-               'the_script': script, 'the_div': div,'the_script2': script2, 'the_div2': div2}
+               'the_script': script, 'the_div': div,'the_script2': script2, 'the_div2': div2,
+               'simbad_q': simbad_q}
 
     return render(request, 'kmtshi/detail.html',context)
 

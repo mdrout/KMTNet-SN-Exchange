@@ -6,8 +6,8 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-        <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.js"></script>
-        <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css">
+        <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.7.min.js"></script>
+        <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.7.min.css">
         {{the_script|safe}}
         {{the_script2|safe}}
         <style> .embed-wrapper1 {width: 50%; height: 475px; margin: 20px;} </style>
@@ -60,6 +60,9 @@
         <script type="text/javascript">
             var aladin = A.aladin('#aladin-lite-div', {survey: "P/DSS2/color", fov:0.08, target: "{{candidate.ra}} {{candidate.dec}}"});
         </script>
+        <hr>
+        <div><h3>Simbad Query</h3></div>
+        <div>{{simbad_q}}</div>
         <hr>
         <div>
             <h3>Light Curve Plots</h3>
