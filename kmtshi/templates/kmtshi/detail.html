@@ -14,6 +14,7 @@
         <style> .embed-wrapper2 {width: 50%; height: 725px; margin: 20px;} </style>
         <link rel="stylesheet" href="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.css" />
         <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+        <style>table,th,td {padding: 5px;} </style>
     </head>
     <body>
 
@@ -62,7 +63,30 @@
         </script>
         <hr>
         <div><h3>Simbad Query</h3></div>
-        <div>{{simbad_q}}</div>
+        {% if simbad_q %}
+            <table >
+                <tr>
+                    <td>Main_ID  </td>
+                    <td>RA  </td>
+                    <td>DEC  </td>
+                    <td>O_type  </td>
+                    <td>sp_type  </td>
+                    <td>rvz  </td>
+                </tr>
+                {% for id,ra,dec,ot,st,rv in simbad_q2 %}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{ra}}</td>
+                        <td>{{dec}}</td>
+                        <td>{{ot}}</td>
+                        <td>{{st}}</td>
+                        <td>{{rv}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            No Simbad objects with {{radius}} arcseconds.
+        {% endif %}
         <hr>
         <div>
             <h3>Light Curve Plots</h3>
