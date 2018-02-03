@@ -1,5 +1,7 @@
 {% load static %}
+{% load index %}
 {% load format5d %}
+{% load format2d %}
 <html>
     <head>
         <title>kmtshi: {{candidate}} </title>
@@ -67,15 +69,17 @@
             <table >
                 <tr>
                     <td>Main_ID  </td>
+                    <td>Offset (")</td>
                     <td>RA  </td>
                     <td>DEC  </td>
                     <td>O_type  </td>
                     <td>sp_type  </td>
                     <td>rvz  </td>
                 </tr>
-                {% for id,ra,dec,ot,st,rv in simbad_q2 %}
+                {% for id,ra,dec,ra2,dec2,ot,st,rv in simbad_q2 %}
                     <tr>
                         <td>{{id}}</td>
+                        <td>{{distance|index:forloop.counter0|format2d}}</td>
                         <td>{{ra}}</td>
                         <td>{{dec}}</td>
                         <td>{{ot}}</td>

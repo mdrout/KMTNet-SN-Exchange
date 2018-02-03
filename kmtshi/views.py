@@ -151,7 +151,7 @@ def detail(request, candidate_id):
 
     # Query simbad at these coordinates.
     radius = 15.
-    simbad_q,simbad_q2 = simbad_query(c1.ra,c1.dec,radius)
+    simbad_q,simbad_q2,distance = simbad_query(c1.ra,c1.dec,radius)
 
     #Create the bokeh light curve plots (ideally have set-up elsewhere):
     script,div = MagAuto_FiltersPlot(candidate_id)
@@ -186,7 +186,7 @@ def detail(request, candidate_id):
     context = {'class_form': class_form,'comment_form': comment_form, 'date_txt': date_txt,
                'candidate': candidate,'comments_list': comments_list,'png_list': png_list,
                'the_script': script, 'the_div': div,'the_script2': script2, 'the_div2': div2,
-               'simbad_q': simbad_q,'simbad_q2':simbad_q2,'radius':radius}
+               'simbad_q': simbad_q,'simbad_q2':simbad_q2,'radius':radius,'distance':distance}
 
     return render(request, 'kmtshi/detail.html',context)
 
