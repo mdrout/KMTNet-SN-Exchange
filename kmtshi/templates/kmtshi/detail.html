@@ -97,6 +97,31 @@
         {% else %}
             No Simbad objects with {{radius}} arcseconds.
         {% endif %}
+        <div><h3>NED Query</h3></div>
+        {% if ned_q %}
+            <table >
+                <tr>
+                    <td>Name  </td>
+                    <td>Offset (")</td>
+                    <td>RA  </td>
+                    <td>DEC  </td>
+                    <td>NED Type  </td>
+                    <td>Redshift  </td>
+                </tr>
+                {% for id,ra,dec,distance,ot,rv in ned_q2 %}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{distance}}</td>
+                        <td>{{ra}}</td>
+                        <td>{{dec}}</td>
+                        <td>{{ot}}</td>
+                        <td>{{rv}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            No NED objects with {{radius}} arcseconds.
+        {% endif %}
         <hr>
         <div>
             <h3>Light Curve Plots</h3>
