@@ -38,8 +38,8 @@ for nc in new_cands:
     # Use this plus the field info to find the right candidate/jpeg images.
 
     # Load ones from proper day:
-    # base = '/data/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
-    base = '/home/mdrout/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+    base = '/data/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
+    # base = '/home/mdrout/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/'
     events_f = glob.glob(base+'*'+date_txt+'*')
     events = [e.split('/')[-1] for e in events_f]
 
