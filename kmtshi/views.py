@@ -150,7 +150,7 @@ def detail(request, candidate_id):
     png_list = jpegImages.objects.filter(candidate=c1).order_by('-obs_date')[:15]
 
     # Query simbad and ned at these coordinates.
-    radius = 120.
+    radius = 15.
     simbad_q,simbad_q2,distance = simbad_query(c1.ra,c1.dec,radius)
     ned_q,ned_q2 = ned_query(c1.ra,c1.dec,radius)
 

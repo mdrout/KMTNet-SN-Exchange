@@ -16,7 +16,7 @@ def simbad_query(ra, dec, radius):
     # Set-up output columns
     customSimbad = Simbad()
     customSimbad.remove_votable_fields('coordinates')
-    customSimbad.add_votable_fields('ra(:;;;;)','dec(:;;;;)','ra(d;;;;)','dec(d;;;;)','otype(V)','sp', 'rvz_radvel')
+    customSimbad.add_votable_fields('ra(d;;;;)','dec(d;;;;)','otype(V)','sp', 'rvz_radvel')
 
     # Create coordinate object
     c = coordinates.SkyCoord(ra, dec, unit='deg')
@@ -27,10 +27,8 @@ def simbad_query(ra, dec, radius):
     # Calculate the distance between the objects and our coordinates:
     if result_table:
         distance = [great_circle_distance(ra,dec,result_table['RA_d____'][x],result_table['DEC_d____'][x])*3600. for x in range(len(result_table))]
-        print(distance)
     else:
         distance = 0.
-        print(distance)
 
     return result_table,result_table2,distance
 
@@ -51,9 +49,12 @@ def ned_query(ra, dec, radius):
     ra1 = result_table['RA(deg)']
     dec1 = result_table['DEC(deg)']
     distance = result_table['Distance (arcmin)']*60. # Now in arcseconds
-    type = result_table['Type']
+    ttype = result_table['Type']
     redshift = result_table['Redshift']
 
-    result_table2 = zip(name,ra1,dec1,distance,type,redshift)
+    if result_table:
+        result_table2 = sorted(zip(distance,name,ra1,dec1,ttype,redshift))
+    else:
+        result_table2 = result_table
 
     return result_table,result_table2

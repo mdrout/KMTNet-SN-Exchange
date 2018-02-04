@@ -82,7 +82,7 @@
                     <td>sp_type  </td>
                     <td>rvz  </td>
                 </tr>
-                {% for id,ra,dec,ra2,dec2,ot,st,rv in simbad_q2 %}
+                {% for id,ra,dec,ot,st,rv in simbad_q2 %}
                     <tr>
                         <td>{{id}}</td>
                         <td>{{distance|index:forloop.counter0|format2d}}</td>
@@ -108,7 +108,7 @@
                     <td>NED Type  </td>
                     <td>Redshift  </td>
                 </tr>
-                {% for id,ra,dec,distance,ot,rv in ned_q2 %}
+                {% for distance,id,ra,dec,ot,rv in ned_q2 %}
                     <tr>
                         <td>{{id}}</td>
                         <td>{{distance}}</td>
