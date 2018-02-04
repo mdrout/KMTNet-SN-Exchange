@@ -6,6 +6,6 @@ setup(name='kmtshi',
       version=0.1,
       packages=['kmtshi'],
       setup_requires=[],
-      install_requires=['numpy', 'astropy', 'django','pillow','bokeh'],
+      install_requires=['numpy', 'astropy', 'django','pillow','bokeh','astroquery'],
       tests_require=[]
       )
