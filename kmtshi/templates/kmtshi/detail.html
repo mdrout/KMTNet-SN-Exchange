@@ -59,9 +59,15 @@
         <div><h3>Aladin Image</h3></div>
         <!-- insert this snippet where you want Aladin Lite viewer to appear and after the loading of jQuery -->
         <div id="aladin-lite-div" style="width:400px;height:400px;"></div>
+        <input id="DSS" type="radio" name="survey" value="P/DSS2/color"><label for="DSS">DSS</label>
+        <input id="2MASS" type="radio" name="survey" value="P/2MASS/color"><label for="2MASS">2MASS</label>
+        <input id="allwise" type="radio" name="survey" value="P/allWISE/color"><label for="allwise">AllWISE</label>
+        <input id="GALEX" type="radio" name="survey" value="P/GALEXGR6/AIS/color"><label for="GALEX">GALEX</label>
         <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>
         <script type="text/javascript">
             var aladin = A.aladin('#aladin-lite-div', {survey: "P/DSS2/color", fov:0.08, target: "{{candidate.ra}} {{candidate.dec}}"});
+            aladin.addCatalog(A.catalogFromSimbad('{{candidate.ra}} {{candidate.dec}}',0.05,{shape:'circle',color: 'red',onClick: 'showTable'}));
+            $('input[name=survey]').change(function() {aladin.setImageSurvey($(this).val());});
         </script>
         <hr>
         <div><h3>Simbad Query</h3></div>
