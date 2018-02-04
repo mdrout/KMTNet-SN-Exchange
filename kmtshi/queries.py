@@ -43,14 +43,18 @@ def ned_query(ra, dec, radius):
     # Create coordinate object
     c = coordinates.SkyCoord(ra, dec, unit='deg')
     r = radius * u.arcsecond
-    result_table = Ned.query_region(c, radius=r)
+    try:
+        result_table = Ned.query_region(c, radius=r)
 
-    name = result_table['Object Name']
-    ra1 = result_table['RA(deg)']
-    dec1 = result_table['DEC(deg)']
-    distance = result_table['Distance (arcmin)']*60. # Now in arcseconds
-    ttype = result_table['Type']
-    redshift = result_table['Redshift']
+        name = result_table['Object Name']
+        ra1 = result_table['RA(deg)']
+        dec1 = result_table['DEC(deg)']
+        distance = result_table['Distance (arcmin)']*60. # Now in arcseconds
+        ttype = result_table['Type']
+        redshift = result_table['Redshift']
+
+    except:
+        result_table = False
 
     if result_table:
         result_table2 = sorted(zip(distance,name,ra1,dec1,ttype,redshift))
