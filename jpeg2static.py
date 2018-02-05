@@ -11,12 +11,17 @@ from kmtshi.base_directories import base_static_image
 from PIL import Image
 from shutil import copyfile
 
-def jpeg2static(candidate):
+def jpeg2static(candidate,errorfile):
+    '''
+    :param candidate: A django database object to run on.
+    :param errorfile: A file (which should *already be open for appending*) that errors can be written to
+    '''
+
     jpeg_list = jpegImages.objects.filter(candidate=candidate)
 
     jpeg_m_list = jpeg_list.filter(B_image__icontains='/home/mdrout')
 
-    # Handle ones in my home directory:
+    # Loop over the list of jpegs:
     for jpeg in jpeg_list:
 
         # Grab path to all six image:
@@ -27,7 +32,7 @@ def jpeg2static(candidate):
         file_V_prev_i = jpeg.V_prev_im.name
         file_I_prev_i = jpeg.I_prev_im.name
 
-        # identify directory depends on whether it is in the 'm' list:
+        # identify directory depends on whether it is in the my home directory of the ksp area:
         if jpeg in jpeg_m_list:
             folder_base = ''.join([a+'/' for a in file_B_i.split('/')[3:-1]])
         else:
@@ -35,7 +40,7 @@ def jpeg2static(candidate):
 
         folder = base_static_image()+folder_base
 
-        # Make sure that it exists in the /static area:
+        # Make sure that the folder exists in the /static area:
         if not os.path.exists(folder):
             os.makedirs(folder)
 
@@ -47,39 +52,25 @@ def jpeg2static(candidate):
         file_V_prev_n = folder+file_V_prev_i.split('/')[-1]
         file_I_prev_n = folder+file_I_prev_i.split('/')[-1]
 
+        files_i = [file_B_i,file_Bref_i,file_Bsub_i,file_B_prev_i,file_V_prev_i,file_I_prev_i]
+        files_n = [file_B_n,file_Bref_n,file_Bsub_n,file_B_prev_n,file_V_prev_n,file_I_prev_n]
+
         # Copy the files. If if came from my home directory, use Pillow to flip y direction.
         if jpeg in jpeg_m_list:
-            Bim_obj = Image.open(file_B_i)
-            Bim_rot = Bim_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            Bim_rot.save(file_B_n)
-
-            Bref_obj = Image.open(file_Bref_i)
-            Bref_rot = Bref_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            Bref_rot.save(file_Bref_n)
-
-            Bsub_obj = Image.open(file_Bsub_i)
-            Bsub_rot = Bsub_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            Bsub_rot.save(file_Bsub_n)
-
-            Bprev_obj = Image.open(file_B_prev_i)
-            Bprev_rot = Bprev_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            Bprev_rot.save(file_B_prev_n)
-
-            Vprev_obj = Image.open(file_V_prev_i)
-            Vprev_rot = Vprev_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            Vprev_rot.save(file_V_prev_n)
-
-            Iprev_obj = Image.open(file_I_prev_i)
-            Iprev_rot = Iprev_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            Iprev_rot.save(file_I_prev_n)
-
+            for x in range(len(files_i)):
+                if os.path.exists(files_i[x]):
+                    obj = Image.open(files_i[x])
+                    rot = obj.transpose(Image.FLIP_TOP_BOTTOM)
+                    rot.save(files_n[x])
+                else:
+                    errorfile.write(files_i[x])
         else:
-            copyfile(file_B_i,file_B_n)
-            copyfile(file_Bref_i, file_Bref_n)
-            copyfile(file_Bsub_i, file_Bsub_n)
-            copyfile(file_B_prev_i, file_B_prev_n)
-            copyfile(file_V_prev_i, file_V_prev_n)
-            copyfile(file_I_prev_i, file_I_prev_n)
+            for x in range(len(files_i)):
+                if os.path.exists(files_i[x]):
+                    copyfile(files_i[x], files_n[x])
+                else:
+                    errorfile.write(files_i[x])
+
 
     # Check if the disim have already been copied, if not copy them over.
     discim = candidate.disc_im.name
@@ -101,24 +92,26 @@ def jpeg2static(candidate):
         discsub_n = folder+discsub.split('/')[-1]
         discref_n = folder+discref.split('/')[-1]
 
+        dis_i = [discim,discsub,discref]
+        dis_n = [discim_n,discsub_n,discref_n]
+
         # Copy over given each case:
         if '/home/mdrout' in discim:
-            discim_obj = Image.open(discim)
-            discim_rot = discim_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            discim_rot.save(discim_n)
-
-            discsub_obj = Image.open(discsub)
-            discsub_rot = discsub_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            discsub_rot.save(discsub_n)
-
-            discref_obj = Image.open(discref)
-            discref_rot = discref_obj.transpose(Image.FLIP_TOP_BOTTOM)
-            discref_rot.save(discref_n)
+            for x in range(len(dis_i)):
+                if os.path.exists(dis_i[x]):
+                    obj = Image.open(dis_i[x])
+                    rot = obj.transpose(Image.FLIP_TOP_BOTTOM)
+                    rot.save(dis_n[x])
+                else:
+                    errorfile.write(dis_i[x])
 
         else:
-            copyfile(discim, discim_n)
-            copyfile(discref, discref_n)
-            copyfile(discsub, discsub_n)
+            for x in range(len(dis_i)):
+                if os.path.exists(dis_i[x]):
+                    copyfile(dis_i[x], dis_n[x])
+                else:
+                    errorfile.write(dis_i[x])
+            
 
 
     message = 'complete'
