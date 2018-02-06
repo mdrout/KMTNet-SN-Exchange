@@ -156,29 +156,24 @@ def path2static(candidate):
         else:
             folder_base2 = ''.join([a + '/' for a in discim.split('/')[2:-1]])
 
-        folder_full = base_static_image() + folder_base2
+        #folder_full = base_static_image() + folder_base2
         folder_rel = base_static_rel() + folder_base2
 
         # Construct the new name/path as above:
-        discim_n_full = folder_full + discim.split('/')[-1]
-        discsub_n_full = folder_full + discsub.split('/')[-1]
-        discref_n_full = folder_full + discref.split('/')[-1]
+        #discim_n_full = folder_full + discim.split('/')[-1]
+        #discsub_n_full = folder_full + discsub.split('/')[-1]
+        #discref_n_full = folder_full + discref.split('/')[-1]
 
         # Check if each of those exists, and assign proper path as a result.
-        if os.path.exists(discim_n_full):
-            path1 = [folder_rel + discim.split('/')[-1]]
-        else:
-            path1 = ['kmtshi/images/nojpeg.jpg']
+        #if os.path.exists(discim_n_full):
+        #    path1 = [folder_rel + discim.split('/')[-1]]
+        #else:
+        #    path1 = ['kmtshi/images/nojpeg.jpg']
 
-        if os.path.exists(discsub_n_full):
-            path2 = [folder_rel + discsub.split('/')[-1]]
-        else:
-            path2 = ['kmtshi/images/nojpeg.jpg']
-
-        if os.path.exists(discref_n_full):
-            path3 = [folder_rel + discref.split('/')[-1]]
-        else:
-            path3 = ['kmtshi/images/nojpeg.jpg']
+        # Actually, change no matter if the new one exists. Will maintain info on what the anem of the file WAS before deleted.
+        path1 = [folder_rel + discim.split('/')[-1]]
+        path2 = [folder_rel + discsub.split('/')[-1]]
+        path3 = [folder_rel + discref.split('/')[-1]]
 
         # Save these results in the Candidate Model Instance itself:
         candidate.disc_im = path1[0]
@@ -210,47 +205,24 @@ def path2static(candidate):
             else:
                 folder_base = ''.join([a + '/' for a in file_B_i.split('/')[2:-1]])
 
-            folder_full = base_static_image() + folder_base
+            #folder_full = base_static_image() + folder_base
             folder_rel = base_static_rel() + folder_base
 
             # Construct the full new name/path as above:
-            file_B_n = folder_full + file_B_i.split('/')[-1]
-            file_Bref_n = folder_full + file_Bref_i.split('/')[-1]
-            file_Bsub_n = folder_full + file_Bsub_i.split('/')[-1]
-            file_B_prev_n = folder_full + file_B_prev_i.split('/')[-1]
-            file_V_prev_n = folder_full + file_V_prev_i.split('/')[-1]
-            file_I_prev_n = folder_full + file_I_prev_i.split('/')[-1]
+            #file_B_n = folder_full + file_B_i.split('/')[-1]
+            #file_Bref_n = folder_full + file_Bref_i.split('/')[-1]
+            #file_Bsub_n = folder_full + file_Bsub_i.split('/')[-1]
+            #file_B_prev_n = folder_full + file_B_prev_i.split('/')[-1]
+            #file_V_prev_n = folder_full + file_V_prev_i.split('/')[-1]
+            #file_I_prev_n = folder_full + file_I_prev_i.split('/')[-1]
 
             # Check if each of those exists, and assign proper path as a result.
-            if os.path.exists(file_B_n):
-                path1 = [folder_rel + file_B_i.split('/')[-1]]
-            else:
-                path1 = ['kmtshi/images/nojpeg.jpg']
-
-            if os.path.exists(file_Bref_n):
-                path2 = [folder_rel + file_Bref_i.split('/')[-1]]
-            else:
-                path2 = ['kmtshi/images/nojpeg.jpg']
-
-            if os.path.exists(file_Bsub_n):
-                path3 = [folder_rel + file_Bsub_i.split('/')[-1]]
-            else:
-                path3 = ['kmtshi/images/nojpeg.jpg']
-
-            if os.path.exists(file_B_prev_n):
-                path4 = [folder_rel + file_B_prev_i.split('/')[-1]]
-            else:
-                path4 = ['kmtshi/images/nojpeg.jpg']
-
-            if os.path.exists(file_V_prev_n):
-                path5 = [folder_rel + file_V_prev_i.split('/')[-1]]
-            else:
-                path5 = ['kmtshi/images/nojpeg.jpg']
-
-            if os.path.exists(file_I_prev_n):
-                path6 = [folder_rel + file_I_prev_i.split('/')[-1]]
-            else:
-                path6 = ['kmtshi/images/nojpeg.jpg']
+            path1 = [folder_rel + file_B_i.split('/')[-1]]
+            path2 = [folder_rel + file_Bref_i.split('/')[-1]]
+            path3 = [folder_rel + file_Bsub_i.split('/')[-1]]
+            path4 = [folder_rel + file_B_prev_i.split('/')[-1]]
+            path5 = [folder_rel + file_V_prev_i.split('/')[-1]]
+            path6 = [folder_rel + file_I_prev_i.split('/')[-1]]
 
             jpeg.B_image = path1[0]
             jpeg.Bref_image = path2[0]
