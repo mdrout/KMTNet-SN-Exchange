@@ -48,11 +48,11 @@ def main(argv):
 
 
     for fld in flds:
-        field = Field.objects.get(subfield = fld)
-        candidates = Candidate.objects.filter(field = field)
-
         print('Processing '+fld)
         tstart = time.clock()
+
+        field = Field.objects.get(subfield = fld)
+        candidates = Candidate.objects.filter(field = field)
 
         # Open the error file:
         err = open('missingfiles.dat','a')
