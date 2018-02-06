@@ -36,7 +36,7 @@ def main(argv):
         sys.exit(2)
     else:
         if flds == 'all':
-            fld_paths = glob.glob(base_gdrive()+'/*-*')
+            fld_paths = glob.glob(base_gdrive() + '/*-1') + glob.glob(base_gdrive() + '/*-2') + glob.glob(base_gdrive() + '/*-9')
             flds = [f.split('/')[-1] for f in fld_paths]
         else:
             # Sort fields into strings:
@@ -44,8 +44,8 @@ def main(argv):
             flds = flds_st.split(',')
         print('fields ',flds,' will be processed')
 
-
-
+    # Open the error file:
+    errorfile = open('missingfiles.dat','a')
 
     for fld in flds:
         print('Processing '+fld)
@@ -54,15 +54,12 @@ def main(argv):
         field = Field.objects.get(subfield = fld)
         candidates = Candidate.objects.filter(field = field)
 
-        # Open the error file:
-        err = open('missingfiles.dat','a')
-
         for cand in candidates:
-            temp = jpeg2static(cand,err)
+            temp = jpeg2static(cand,errorfile)
 
-        err.close()
         print('Time for '+fld, time.clock()-tstart)
 
+    errorfile.close()
 
 if __name__ == "__main__":
     main(sys.argv[1:])

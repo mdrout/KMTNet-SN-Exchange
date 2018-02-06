@@ -14,6 +14,10 @@ def base_static_image():
     base = '/home/mdrout/ksp-django/kmtshi/static/kmtshi/images/'
     return  base
 
+def base_static_rel():
+    base = 'kmtshi/images/'
+    return base
+
 def base_gdrive():
     base = '/data/ksp/gdrive/ksp.publish/moon/Night-by-Night/'
     return base
