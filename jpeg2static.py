@@ -14,8 +14,9 @@ from shutil import copyfile
 def jpeg2static(candidate,errorfile):
     '''
     :param candidate: A django database object to run on.
-    :param errorfile: A file (which should *already be open for appending*) that errors can be written to
+    :param errorfile: A file that errors can be written to (should already be open when passed here)
     '''
+
 
     jpeg_list = jpegImages.objects.filter(candidate=candidate)
 
@@ -56,6 +57,7 @@ def jpeg2static(candidate,errorfile):
         files_n = [file_B_n,file_Bref_n,file_Bsub_n,file_B_prev_n,file_V_prev_n,file_I_prev_n]
 
         # Copy the files. If if came from my home directory, use Pillow to flip y direction.
+        Missing  = False
         if jpeg in jpeg_m_list:
             for x in range(len(files_i)):
                 if os.path.exists(files_i[x]):
@@ -63,14 +65,19 @@ def jpeg2static(candidate,errorfile):
                     rot = obj.transpose(Image.FLIP_TOP_BOTTOM)
                     rot.save(files_n[x])
                 else:
-                    errorfile.write(files_i[x])
+                    Missing = True
+
         else:
             for x in range(len(files_i)):
                 if os.path.exists(files_i[x]):
                     copyfile(files_i[x], files_n[x])
                 else:
-                    errorfile.write(files_i[x])
+                    Missing = True
 
+
+        if Missing:
+            outline = folder_base + ' \n'
+            errorfile.write(outline)
 
     # Check if the disim have already been copied, if not copy them over.
     discim = candidate.disc_im.name
@@ -87,6 +94,7 @@ def jpeg2static(candidate,errorfile):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
+        Missing = False
         #Define new outputs
         discim_n = folder+discim.split('/')[-1]
         discsub_n = folder+discsub.split('/')[-1]
@@ -103,16 +111,20 @@ def jpeg2static(candidate,errorfile):
                     rot = obj.transpose(Image.FLIP_TOP_BOTTOM)
                     rot.save(dis_n[x])
                 else:
-                    errorfile.write(dis_i[x])
+                    Missing = True
 
         else:
             for x in range(len(dis_i)):
                 if os.path.exists(dis_i[x]):
                     copyfile(dis_i[x], dis_n[x])
                 else:
-                    errorfile.write(dis_i[x])
-            
+                    Missing = True
 
+        if Missing:
+            outline = folder_base2 + ' \n'
+            errorfile.write(outline)
+
+    errorfile.close()
 
     message = 'complete'
     return message
