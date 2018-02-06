@@ -12,8 +12,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kmtshi.settings")
 import django
 django.setup()
 
-from kmtshi.models import Candidate,jpegImages
+from kmtshi.models import Candidate,Field,jpegImages
 from kmtshi.base_directories import base_gdrive,jpeg_path
+from jpeg2static import jpeg2static
 
 #Copy bit to submit fields from search:
 ###################################################################################
@@ -43,3 +44,25 @@ def main(argv):
             flds = flds_st.split(',')
         print('fields ',flds,' will be processed')
 
+
+
+
+    for fld in flds:
+        field = Field.objects.get(subfield = fld)
+        candidates = Candidate.objects.filter(field = field)
+
+        print('Processing '+fld)
+        tstart = time.clock()
+
+        # Open the error file:
+        err = open('missingfiles.dat','a')
+
+        for cand in candidates:
+            temp = jpeg2static(cand,err)
+
+        err.close()
+        print('Time for '+fld, time.clock()-tstart)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
