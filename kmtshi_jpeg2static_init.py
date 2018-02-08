@@ -1,6 +1,9 @@
 '''This program goes through the entire database and identified jpeg images that are currently linked to.
 It then copies those files into a similar file structure within the /static stucture of the kmtshi app.
-This will make it possible to host/serve those files from another computer.'''
+This will make it possible to host/serve those files from another computer.
+
+Note: if you initiate the path2static instead, it will update the paths in the ImageFields for the
+database items so that they actually point towards the static area.'''
 
 import os
 import sys
@@ -14,7 +17,7 @@ django.setup()
 
 from kmtshi.models import Candidate,Field,jpegImages
 from kmtshi.base_directories import base_gdrive,jpeg_path
-from jpeg2static import jpeg2static
+from jpeg2static import jpeg2static, path2static
 
 #Copy bit to submit fields from search:
 ###################################################################################
@@ -45,7 +48,7 @@ def main(argv):
         print('fields ',flds,' will be processed')
 
     # Open the error file:
-    errorfile = open('missingfiles.dat','a')
+    #errorfile = open('missingfiles.dat','a')
 
     for fld in flds:
         print('Processing '+fld)
@@ -55,11 +58,12 @@ def main(argv):
         candidates = Candidate.objects.filter(field = field)
 
         for cand in candidates:
-            temp = jpeg2static(cand,errorfile)
+            #temp = jpeg2static(cand,errorfile)
+            temp = path2static(cand)
 
         print('Time for '+fld, time.clock()-tstart)
 
-    errorfile.close()
+    #errorfile.close()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
