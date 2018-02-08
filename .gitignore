@@ -106,6 +106,7 @@ folders_init.py
 kmtshi_pdf2jpg_init.py
 pdf2jpg.py
 missingfiles.dat
+test_spawn.py
 
 #Static jpegs. Don't need those on git
 kmtshi/static/kmtshi/images/ksp/
