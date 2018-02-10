@@ -19,6 +19,7 @@ from astropy.io import fits
 from astropy.time import Time
 import datetime, glob, time
 import numpy as np
+from datetime import timedelta
 
 
 def cphotom(candidate_id):
@@ -141,13 +142,14 @@ def cphotom(candidate_id):
     return out_txt
 
 
-def cphotom_list(candidate_ids,all_dates=False):
+def cphotom_list(candidate_ids,all_dates=False,initial_pass=False):
     '''This will find the photometry for a list of candidates.
     For each catalog file, we will initialize the ra/dec for the contents.
     Then we will iterate through and check for matches for all of the
     candidates at once. This provides a large improvement in time.
 
     :param:candidate_ids: list of candidate ids for event.
+    :param initial_pass: If this is true, then it will only initialize from the 30 days prior to discovery forward
 
     Note: the list of candidate ids must all be in the same field and same quadrant.
     '''
@@ -166,7 +168,10 @@ def cphotom_list(candidate_ids,all_dates=False):
 
     # If pass test, initialize one so field and quandrant can be called:
     c1 = Candidate.objects.get(pk=candidate_ids[0])
-    print('Field = ',flds[0],'Quad = ',quads[0])
+    if initial_pass:
+        print('Field = ',flds[0],'Quad = ',quads[0],' initial pass for new candidates')
+    else:
+        print('Field = ', flds[0], 'Quad = ', quads[0], ' update for existing candidates')
 
     # ###################################################################
     # Set-up places to searh:
@@ -175,6 +180,7 @@ def cphotom_list(candidate_ids,all_dates=False):
 
     # Cycle through filters:
     for filter in filters:
+        tstart = time.clock()
 
         # ########################################################################
         # Initialize a list of reference timestamps for all of the input candidates.
@@ -192,8 +198,14 @@ def cphotom_list(candidate_ids,all_dates=False):
                 timestamps_ref.append(t1[0].obs_date)
             elif all_dates == True:
                 timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
+            elif initial_pass == True:
+                disc_m_30 = c1.date_disc - timedelta(days=30)
+                timestamps_ref.append(disc_m_30)
             else:
                 timestamps_ref.append(datetime.datetime(2015, 8, 1, 00, 00, tzinfo=timezone.utc))
+
+        #Find the earliest reference dates:
+        ref_min = np.min(timestamps_ref)
 
         # Make list of catalog files for this filter:
         if filter == 'Bsub':
@@ -203,7 +215,6 @@ def cphotom_list(candidate_ids,all_dates=False):
 
         # Cycle through catalog files
         for file in files:
-            file_start = time.clock()
 
             # basic splitting:
             t2 = file.split('/')[-1].split('.')
@@ -211,8 +222,12 @@ def cphotom_list(candidate_ids,all_dates=False):
             # determine date from filename:
             timestamp = dates_from_filename('20' + t2[3])
 
+            # if prior to earliest reference, continue:
+            if timestamp < ref_min:
+                continue
+
             # Make a list of pks for candidates need to be checked for this epoch.
-            # Now elimanate cases where objects are classified as either 'junk' or 'bad subtraction'
+            # Now eliminate cases where objects are classified as either 'junk' or 'bad subtraction'
             index = np.where([((timestamps_ref[m] < timestamp) and (classi[m] != 'junk') and (classi[m] != 'bad subtraction')) for m in range(len(timestamps_ref))])
             candidates_to_check = [candidate_ids[x] for x in index[0]]  # list of pks.
 
@@ -228,10 +243,9 @@ def cphotom_list(candidate_ids,all_dates=False):
 
             # open the catalog file, and initialize the ra/dec for objects inside.
             hdulist = fits.open(file)
-            start_t = time.clock()
             ra_cat = [event['X_WORLD'] for event in hdulist[2].data]
             dec_cat = [event['Y_WORLD'] for event in hdulist[2].data]
-            print('Time for initialization of ',t2[3],' ',filter,' catalog ra/dec: ', time.clock() - start_t)
+            # print('Time for initialization of ',t2[3],' ',filter,' catalog ra/dec: ', time.clock() - start_t)
 
             # Now loop over the candidates which need to be check to find matches:
             for j in range(0, len(candidates_to_check)):
@@ -311,7 +325,8 @@ def cphotom_list(candidate_ids,all_dates=False):
 
             # Finished searching candidates for this epoch can close cat file.
             hdulist.close()
-            print('Total time for single file ', time.clock()-file_start)
+            # print('Total time for single file ', time.clock()-file_start)
+        print('Time for filter ',filter,' = ',time.clock()-tstart)
 
     out_txt = 'Photometry has been updated for list of events'
     return out_txt
