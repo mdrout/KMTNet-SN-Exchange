@@ -13,6 +13,7 @@ from kmtshi.models import Candidate,jpegImages,Photometry
 from kmtshi.dates import dates_from_filename
 from kmtshi.coordinates import great_circle_distance,coords_from_filename
 from kmtshi.base_directories import base_data,base_foxtrot,jpeg_path
+from jpeg2static import jpeg2static,path2static
 import datetime,glob,time
 
 
@@ -101,7 +102,11 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
     time to look will be set to 2014,
     :param check_photom: if true reference epoch based on the last bit
     of photometry in the database for that event.
-    Otherwise reference date set by last jpeg image avaliable'''
+    Otherwise reference date set by last jpeg image avaliable
+
+    Feb 2018: Updated to both copy files into the /static area and to point
+    the database to those files in the static area.
+    '''
 
     ########################################################################
     # Check that all of the candidate_ids have same sub-field and quadrant.
@@ -165,6 +170,9 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
         dec_folders = [coords_from_filename(ffname.split('/')[-1].split('.')[5]).dec.deg for ffname in ffnames]
         print('time to init jpeg = ', time.clock()-t_init)
 
+        #Open the errorfile for moving jpegs to static:
+        errorfile = open('/home/mdrout/ksp-django/missingfiles.dat', 'a')
+
         #Cycle over the new candidates:
         for j in range(0,len(candidate_ids)):
             c1=Candidate.objects.get(pk=candidate_ids[j])
@@ -172,6 +180,11 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
 
             #cycle over the jpeg folders:
             for i in range(0,len(ffnames)):
+
+                # Check how many jpegs are already saved. If over 25 don't keep adding.:
+                jpeg_ims = jpegImages.objects.filter(candidate=c1)
+                if len(jpeg_ims) > 24:
+                    break
 
                 #Check the timestamp:
                 if (timestamps_ref[j] > timestamp_folders[i]):
@@ -222,6 +235,12 @@ def cjpeg_list(candidate_ids,check_all=False,check_photom=False):
 
                     ims.save()
                     #count = count+1
+
+            # Run the jpeg2static routines to move and rename these for this candidate:
+            temp1 = jpeg2static(c1,errorfile)
+            temp2 = path2static(c1)
+
+        errorfile.close()
 
             #if count > 0:
             #    print(count)
