@@ -29,7 +29,7 @@ def base_foxtrot():
     #base = '/Users/mdrout/Research/KMTNet/kmtshi_testfiles'
     return base
 
-def jpeg_path(gdrive_pdf,second=False,folder_only=False,static=False):
+def jpeg_path(gdrive_pdf,second=False,folder_only=False,static=False,static_rel=False):
     '''Defines path to a jpeg folder given string with the gdrive s.pdf
     Form = N2223-1.Q2.B.170120_0117.C.062448D724-223052D3.18D962.0D004.0000.pdf'''
 
@@ -58,5 +58,11 @@ def jpeg_path(gdrive_pdf,second=False,folder_only=False,static=False):
             base = '/home/mdrout/ksp-django/kmtshi/static/kmtshi/images/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/' + gdrive_f
         else:
             base = '/home/mdrout/ksp-django/kmtshi/static/kmtshi/images/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/' + gdrive_f + '/' + gdrive_f
+
+    if static_rel:
+        if folder_only:
+            base = 'kmtshi/images/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/' + gdrive_f
+        else:
+            base = 'kmtshi/images/ksp/data/PROCESSED/' + fld + '/' + sfld + '/' + quad + '/B_Filter/Subtraction/JPEG_TV_IMAGES/' + gdrive_f + '/' + gdrive_f
 
     return base

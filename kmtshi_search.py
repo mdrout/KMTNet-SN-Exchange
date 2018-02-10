@@ -3,7 +3,11 @@ This version will call the LC function on all the new candidates within a certai
 field and quadrant together, to avoid multiple reads of the same catalog files.'''
 
 #Django set-up:
-import os,sys,getopt
+import getopt
+import os
+import subprocess
+import sys
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kmtshi.settings")
 import django
 django.setup()
@@ -12,22 +16,19 @@ django.setup()
 from kmtshi.models import Field,Quadrant,Classification,Candidate
 from kmtshi.base_directories import base_foxtrot,base_gdrive,jpeg_path
 from kmtshi.dates import dates_from_filename
-from kmtshi.coordinates import coords_from_filename,great_circle_distance,initialize_duplicates_set
+from kmtshi.coordinates import great_circle_distance,initialize_duplicates_set
 from kmtshi.kmtshi_jpeg import cjpeg_list
-from kmtshi.kmtshi_photom import cphotom_list
 from kmtshi.alphabet import num2alpha
-from django.utils import timezone
 
 #Other set-up
 import glob,time
 import numpy as np
-import datetime
 from datetime import timedelta
 
 ###################################################################################
 def main(argv):
     flds = [] #fields to search
-    nd = 2  #number of detections
+    nd = 3  #number of detections
     dt = 10 #time in days for search
     try:
         opts, args = getopt.getopt(argv,"f:d:t:",["fields=","detect=","days="])
@@ -169,15 +170,27 @@ def main(argv):
 
                         pdf = event_f.split('/')[-1]
 
-                        #Define paths Base this on discovery date:
-                        if epoch_timestamps[i] < datetime.datetime(2016,12,20,00,00,tzinfo=timezone.utc):
-                            path1 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".B-Filter-SOURCE.jpeg")
-                            path2 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".REF.jpeg")
-                            path3 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".SOURCE-REF-*-mag.jpeg")
-                        else:
-                            path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
-                            path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
-                            path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
+                        # Feb 2018: We now tell it to strip the pdf and put the fields in the static area:
+                        # Automatically set path to be in the static area.
+                        # Event_f is path to pdf:
+
+                        initial_setup = 'source activate testenv && python pdf2jpg.py -p '
+                        total_command = initial_setup + event_f
+                        subprocess.call(total_command, shell=True)
+
+                        path1 = [jpeg_path(pdf, static_rel=True) + '.B-Filter-SOURCE.jpeg']
+                        path2 = [jpeg_path(pdf, static_rel=True) + '.REF.jpeg']
+                        path3 = [jpeg_path(pdf, static_rel=True) + '.SOURCE-REF-MMM-mag.jpeg']
+
+                        #OLD: Define paths Base this on discovery date:
+                        #if epoch_timestamps[i] < datetime.datetime(2016,12,20,00,00,tzinfo=timezone.utc):
+                        #    path1 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".B-Filter-SOURCE.jpeg")
+                        #    path2 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".REF.jpeg")
+                        #    path3 = glob.glob(base_foxtrot() + jpeg_path(pdf,second=True) + ".SOURCE-REF-*-mag.jpeg")
+                        #else:
+                        #    path1 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".B-Filter-SOURCE.jpeg")
+                        #    path2 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".REF.jpeg")
+                        #    path3 = glob.glob(base_foxtrot()+jpeg_path(pdf) + ".SOURCE-REF-*-mag.jpeg")
 
                         if not len(path1) > 0:
                             path1 = ['kmtshi/images/nojpeg.jpg']
