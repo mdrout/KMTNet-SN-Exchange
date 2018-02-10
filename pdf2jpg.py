@@ -70,6 +70,12 @@ def pdf2jpg(input_pdf, output_dir):
                 rm_cmmd = 'rm -f ' + output_dir + obj_name + '.jp2'
                 os.system(rm_cmmd)
 
+            # Figure out the flipping. Will it overwrite? Yep!
+            file = output_dir + obj_name + '.jpeg'
+            obj2 = Image.open(file)
+            rot = obj2.transpose(Image.FLIP_TOP_BOTTOM)
+            rot.save(file)
+
     txt_out = 'Success! Probabaly...'
     return txt_out
 
