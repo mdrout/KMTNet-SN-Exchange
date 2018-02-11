@@ -52,6 +52,7 @@ class Candidate(models.Model):
     disc_im = models.ImageField(max_length=1000)
     disc_ref = models.ImageField(max_length=1000)
     disc_sub = models.ImageField(max_length=1000)
+    full_photom = models.BooleanField(default=False)  # True = have gone to full photom history; False = have not.
 
     def __str__(self):
         return self.name
