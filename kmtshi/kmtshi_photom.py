@@ -199,7 +199,7 @@ def cphotom_list(candidate_ids,all_dates=False,initial_pass=False):
             elif all_dates == True:
                 timestamps_ref.append(datetime.datetime(2014, 1, 1, 00, 00, tzinfo=timezone.utc))
             elif initial_pass == True:
-                disc_m_30 = c1.date_disc - timedelta(days=30)
+                disc_m_30 = c1.date_disc - timedelta(days=25)
                 timestamps_ref.append(disc_m_30)
             else:
                 timestamps_ref.append(datetime.datetime(2015, 8, 1, 00, 00, tzinfo=timezone.utc))

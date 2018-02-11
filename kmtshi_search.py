@@ -18,6 +18,7 @@ from kmtshi.base_directories import base_foxtrot,base_gdrive,jpeg_path
 from kmtshi.dates import dates_from_filename
 from kmtshi.coordinates import great_circle_distance,initialize_duplicates_set
 from kmtshi.kmtshi_jpeg import cjpeg_list
+from kmtshi.kmtshi_photom import cphotom_list
 from kmtshi.alphabet import num2alpha
 
 #Other set-up
@@ -243,10 +244,10 @@ def main(argv):
             #update the photom and jpegs for this quadrant
             jpeg = cjpeg_list(pk_quad)
             print(jpeg)
-            #photom = cphotom_list(pk_quad)
-            #print(photom)
+            photom = cphotom_list(pk_quad,initial_pass=True)
+            print(photom)
 
-        print('Total time to update jpeg for ',len(new_cands),' objects = ',time.clock()-time_photom)
+        print('Total time to update jpeg and initial photom for ',len(new_cands),' objects = ',time.clock()-time_photom)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
