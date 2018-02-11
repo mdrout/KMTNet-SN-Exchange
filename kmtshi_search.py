@@ -130,7 +130,7 @@ def main(argv):
                 for k in range(0,len(events_epoch)):
 
 
-                    cand0 = Candidate(ra=ra_epoch[k], dec=dec_epoch[k], date_disc=epoch_timestamps[i])
+                    cand0 = Candidate(ra=ra_epoch[k], dec=dec_epoch[k], date_disc=epoch_timestamps[i], full_photom=False)
 
                     # check if already in db, if it is, then Flag1 = True:
                     # Only check against proper field and quadrant
