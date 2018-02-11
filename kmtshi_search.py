@@ -94,7 +94,7 @@ def main(argv):
             start_epoch = time.clock()
 
             #Compare epoch baseline for this field.
-            if not epoch_timestamps[i] > epoch_ref:
+            if not epoch_timestamps[i] >= epoch_ref:
                 continue
 
             # Previous method: Preload duplicate comparisons for this epoch only:
