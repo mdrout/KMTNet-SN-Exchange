@@ -1,5 +1,5 @@
 from django import forms
-from kmtshi.models import Candidate, Comment
+from kmtshi.models import Candidate, Comment, Classification
 
 class CandidateForm(forms.ModelForm):
 
@@ -22,7 +22,9 @@ class CoordinateForm(forms.Form):
     radius = forms.DecimalField(label='search radius (arcsec)',min_value=0.01,max_value = 120.0)
 
 class SelectCandidatesForm(forms.Form):
+    c1 = Classification.objects.get(name='candidate')
+
     choices = forms.ModelMultipleChoiceField(
-        queryset = Candidate.objects.all(),
+        queryset = Candidate.objects.filter(classification=c1),
         widget = forms.CheckboxSelectMultiple,
     )
