@@ -20,3 +20,9 @@ class CoordinateForm(forms.Form):
     ra = forms.DecimalField(label='RA (decimal deg)',min_value=0.00,max_value=360.00)
     dec = forms.DecimalField(label='DEC (decimal deg)',min_value=-90.00,max_value=90.00)
     radius = forms.DecimalField(label='search radius (arcsec)',min_value=0.01,max_value = 120.0)
+
+class SelectCandidatesForm(forms.Form):
+    choices = forms.ModelMultipleChoiceField(
+        queryset = Candidate.objects.all(),
+        widget = forms.CheckboxSelectMultiple,
+    )
