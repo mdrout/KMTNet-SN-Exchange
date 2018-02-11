@@ -164,7 +164,8 @@ def main(argv):
                         #s2 = Quadrant.objects.get(name=quad_dir)
                         s3 = Classification.objects.get(name="candidate")
 
-                        n1 = Candidate.objects.filter(field=s1).count() + 1
+                        year = epoch_timestamps[i].year
+                        n1 = Candidate.objects.filter(field=s1).filter(date_disc__year=year).count() + 1
                         alpha = num2alpha(n1)
                         obj_name = "KSP-" + fld + "_" + str(epoch_timestamps[i].year) + alpha
 
