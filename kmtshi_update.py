@@ -42,7 +42,7 @@ def main(argv):
         sys.exit(2)
     else:
         if flds == 'all':
-            fld_paths = glob.glob(base_gdrive()+'/*-*')
+            fld_paths = glob.glob(base_gdrive() + '/*-1') + glob.glob(base_gdrive() + '/*-2') + glob.glob(base_gdrive() + '/*-9')
             flds = [f.split('/')[-1] for f in fld_paths]
         else:
             # Sort fields into strings:

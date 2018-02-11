@@ -169,9 +169,9 @@ def cphotom_list(candidate_ids,all_dates=False,initial_pass=False):
     # If pass test, initialize one so field and quandrant can be called:
     c1 = Candidate.objects.get(pk=candidate_ids[0])
     if initial_pass:
-        print('Field = ',flds[0],'Quad = ',quads[0],' initial pass for new candidates')
+        print('Field = ',flds[0],'Quad = ',quads[0],'Objects = ',len(c1),' initial pass for new candidates')
     else:
-        print('Field = ', flds[0], 'Quad = ', quads[0], ' update for existing candidates')
+        print('Field = ', flds[0], 'Quad = ', quads[0],'Objects = ',len(c1),' update for existing candidates')
 
     # ###################################################################
     # Set-up places to searh:

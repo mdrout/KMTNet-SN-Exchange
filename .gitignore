@@ -104,6 +104,7 @@ ENV/
 # Stuff related to early jpeg fixes:
 folders_init.py
 kmtshi_pdf2jpg_init.py
+kmtshi_fullphotom_init.py
 missingfiles.dat
 test_spawn.py
 
