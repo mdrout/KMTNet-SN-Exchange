@@ -21,6 +21,7 @@ from kmtshi import views
 urlpatterns = [url(r'^$', views.index, name='index'),
                url(r'^all-fields/candidates/$', views.candidates, name='candidates'),
                url(r'^(?P<field>[A-Z0-9-]+)/candidates/$', views.candidates_field, name='candidates_field'),
+               url(r'^(?P<field>[A-Z0-9-]+)/candidates_form/$', views.candidates_field_form, name='candidates_field_form'),
                url(r'^all-fields/transients/$', views.transients, name='transients'),
                url(r'^(?P<field>[A-Z0-9-]+)/transients/$', views.transients_field, name='transients_field'),
                url(r'^all-fields/variables/$', views.variables, name='variables'),
