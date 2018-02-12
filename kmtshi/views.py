@@ -95,21 +95,22 @@ def candidates_field_form(request,field):
 
     if request.method == 'POST':
         form = SelectCandidatesForm(request.POST)
+
         if 'junk' in request.POST:
             for item in form.cleaned_data['choices']:
                 item.classification = t_junk
                 item.save()
-            return redirect('candidates_field_form', field=field)
         elif 'bad sub' in request.POST:
             for item in form.cleaned_data['choices']:
                 item.classification = t_bs
                 item.save()
-            return redirect('candidates_field_form', field=field)
         elif 'star/qso' in request.POST:
             for item in form.cleaned_data['choices']:
                 item.classification = t_sq
                 item.save()
-            return redirect('candidates_field_form', field=field)
+
+        return redirect('candidates_field_form', field=field)
+
     else:
         form = SelectCandidatesForm()
 
