@@ -2,7 +2,7 @@ from django.http import HttpResponse,Http404
 from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages
-from kmtshi.forms import CandidateForm,CommentForm,NameForm,CoordinateForm
+from kmtshi.forms import CandidateForm,CommentForm,NameForm,CoordinateForm, SelectCandidatesForm
 from django.utils import timezone
 from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
@@ -81,6 +81,42 @@ def candidates_field(request,field):
     num = len(candidate_list)
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
+
+def candidates_field_form(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    num = len(candidate_list)
+
+    t_junk = Classification.objects.get(name='junk')
+    t_bs = Classification.objects.get(name='bad subtraction')
+    t_sq = Classification.objects.get(name='unsorted star/qso')
+
+
+    if request.method == 'POST':
+        form = SelectCandidatesForm(request.POST)
+        if 'junk' in request.POST:
+            for item in form.cleaned_data['choices']:
+                item.classification = t_junk
+                item.save()
+            return redirect('candidates_field_form', field=field)
+        elif 'bad sub' in request.POST:
+            for item in form.cleaned_data['choices']:
+                item.classification = t_bs
+                item.save()
+            return redirect('candidates_field_form', field=field)
+        elif 'star/qso' in request.POST:
+            for item in form.cleaned_data['choices']:
+                item.classification = t_sq
+                item.save()
+            return redirect('candidates_field_form', field=field)
+    else:
+        form = SelectCandidatesForm()
+
+
+    context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form}
+    return render(request, 'kmtshi/candidates_field_form.html', context)
+
 
 def transients(request):
     t1=Classification.objects.get(name="real transient")
