@@ -94,17 +94,17 @@ def candidates_field_form(request,field):
 
 
     if request.method == 'POST':
-        form = SelectCandidatesForm(request.POST)
+        form = SelectCandidatesForm(request.POST, queryset=candidate_list)
 
         if 'junk' in request.POST:
             for item in form.cleaned_data['choices']:
                 item.classification = t_junk
                 item.save()
-        elif 'bad sub' in request.POST:
+        elif 'bad-sub' in request.POST:
             for item in form.cleaned_data['choices']:
                 item.classification = t_bs
                 item.save()
-        elif 'star/qso' in request.POST:
+        elif 'star-qso' in request.POST:
             for item in form.cleaned_data['choices']:
                 item.classification = t_sq
                 item.save()
@@ -112,7 +112,7 @@ def candidates_field_form(request,field):
         return redirect('candidates_field_form', field=field)
 
     else:
-        form = SelectCandidatesForm()
+        form = SelectCandidatesForm(queryset=candidate_list)
 
 
     context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form}

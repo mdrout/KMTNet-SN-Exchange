@@ -22,9 +22,11 @@ class CoordinateForm(forms.Form):
     radius = forms.DecimalField(label='search radius (arcsec)',min_value=0.01,max_value = 120.0)
 
 class SelectCandidatesForm(forms.Form):
-    c1 = Classification.objects.get(name='candidate')
-
     choices = forms.ModelMultipleChoiceField(
-        queryset = Candidate.objects.filter(classification=c1),
+        queryset = None,
         widget = forms.CheckboxSelectMultiple,
     )
+
+    def __init__(self, *args, queryset=None, **kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['choices'].queryset = queryset

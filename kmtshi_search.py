@@ -244,8 +244,8 @@ def main(argv):
             #update the photom and jpegs for this quadrant
             jpeg = cjpeg_list(pk_quad)
             print(jpeg)
-            photom = cphotom_list(pk_quad,initial_pass=True)
-            print(photom)
+            #photom = cphotom_list(pk_quad,initial_pass=True)
+            #print(photom)
 
         print('Total time to update jpeg and initial photom for ',len(new_cands),' objects = ',time.clock()-time_photom)
 
