@@ -1,11 +1,13 @@
 {% load static %}
 {% load format5d %}
+{% load index %}
 <html>
     <head>
         <title>kmtshi: candidates</title>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static 'kmtshi/css/kmtshi.css' %}">
     </head>
     <body>
     <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
@@ -15,10 +17,29 @@
     <hr>
 
         <form method="POST" class="post-form">{% csrf_token %}
-            {{ form }}
+            {% if candidate_list %}
+                {% for candidate in candidate_list %}
+                    <div>
+                        <h4>{{ form.choices|index:forloop.counter0 }}<a href=" {% url 'detail' candidate.id %}"> (detail) </a></h4>
+                        <p>FIELD: {{candidate.field}} {{candidate.quadrant}} <br />
+                        ra={{candidate.ra|format5d}}, dec={{candidate.dec|format5d}}<br />
+                        Discovery Date: {{candidate.date_disc}}<br />
+                        Classification: {{candidate.classification}} </p>
+                        <p>
+                            <img src="{% static candidate.disc_im %}"/>
+                            <img src="{% static candidate.disc_ref %}"/>
+                            <img src="{% static candidate.disc_sub %}"/>
+                        </p>
+                    </div>
+                    <hr>
+                {% endfor %}
+
             <button type="submit" class="save btn btn-default" name="junk">junk</button>
             <button type="submit" class="save btn btn-default" name="bad-sub">bad-sub</button>
             <button type="submit" class="save btn btn-default" name="star-qso">star/qso</button>
+            {% else %}
+                <p>No candidates need vetting.</p>
+            {% endif %}
         </form>
 
     <!--
