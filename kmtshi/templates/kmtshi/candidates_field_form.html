@@ -21,15 +21,22 @@
                 {% for candidate in candidate_list %}
                     <div>
                         <h4>{{ form.choices|index:forloop.counter0 }}<a href=" {% url 'detail' candidate.id %}"> (detail) </a></h4>
-                        <p>FIELD: {{candidate.field}} {{candidate.quadrant}} <br />
-                        ra={{candidate.ra|format5d}}, dec={{candidate.dec|format5d}}<br />
-                        Discovery Date: {{candidate.date_disc}}<br />
-                        Classification: {{candidate.classification}} </p>
-                        <p>
-                            <img src="{% static candidate.disc_im %}"/>
-                            <img src="{% static candidate.disc_ref %}"/>
-                            <img src="{% static candidate.disc_sub %}"/>
-                        </p>
+                        <table>
+                            <tr>
+                                <td>
+                                    FIELD: {{candidate.field}} {{candidate.quadrant}} <br />
+                                    ra={{candidate.ra|format5d}}, dec={{candidate.dec|format5d}}<br />
+                                    Discovery Date: {{candidate.date_disc}}<br />
+                                    Classification: {{candidate.classification}}
+                                </td>
+                                <td>
+                                    <img src="{% static candidate.disc_im %}"/>
+                                    <img src="{% static candidate.disc_ref %}"/>
+                                    <img src="{% static candidate.disc_sub %}"/>
+                                </td>
+
+                            </tr>
+                        </table>
                     </div>
                     <hr>
                 {% endfor %}
