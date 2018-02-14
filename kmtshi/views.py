@@ -96,18 +96,19 @@ def candidates_field_form(request,field):
     if request.method == 'POST':
         form = SelectCandidatesForm(request.POST, queryset=candidate_list)
 
-        if 'junk' in request.POST:
-            for item in form.cleaned_data['choices']:
-                item.classification = t_junk
-                item.save()
-        elif 'bad-sub' in request.POST:
-            for item in form.cleaned_data['choices']:
-                item.classification = t_bs
-                item.save()
-        elif 'star-qso' in request.POST:
-            for item in form.cleaned_data['choices']:
-                item.classification = t_sq
-                item.save()
+        if form.is_valid():
+            if 'junk' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_junk
+                    item.save()
+            elif 'bad-sub' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_bs
+                    item.save()
+            elif 'star-qso' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_sq
+                    item.save()
 
         return redirect('candidates_field_form', field=field)
 
