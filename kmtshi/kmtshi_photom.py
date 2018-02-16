@@ -228,7 +228,8 @@ def cphotom_list(candidate_ids,all_dates=False,initial_pass=False):
 
             # Make a list of pks for candidates need to be checked for this epoch.
             # Now eliminate cases where objects are classified as either 'junk' or 'bad subtraction'
-            index = np.where([((timestamps_ref[m] < timestamp) and (classi[m] != 'junk') and (classi[m] != 'bad subtraction')) for m in range(len(timestamps_ref))])
+            index = np.where([((timestamps_ref[m] < timestamp) and (classi[m] != 'junk') and (classi[m] != 'bad subtraction') and (classi[m] != 'stellar source: general'))
+                              for m in range(len(timestamps_ref))])
             candidates_to_check = [candidate_ids[x] for x in index[0]]  # list of pks.
 
             # If there are no candidates in list that need to be checked
