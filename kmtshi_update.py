@@ -55,7 +55,12 @@ def main(argv):
     # List of candidates, pks. for each field:
     for fld in flds:
         f1 = Field.objects.get(subfield=fld)
-        c1 = Candidate.objects.filter(field=f1)
+        class1 = Classification.objects.get(name='bad subtraction')
+        class2 = Classification.objects.get(name='junk')
+        class3 = Classification.objects.get(name='stellar source: general')
+
+
+        c1 = Candidate.objects.filter(field=f1).exclude(classification=class1).exclude(classification=class2).exclude(classification=class3)
         new_cands = [c.pk for c in c1]
 
         # ################################################################################
@@ -77,7 +82,7 @@ def main(argv):
             #update the photom and jpegs for this quadrant
             #jpeg = cjpeg_list(pk_quad,check_all=True)
             #print(jpeg)
-            photom = cphotom_list(pk_quad)
+            photom = cphotom_list(pk_quad,initial_pass=True)
             print(photom)
 
         print('Total time to update photom for ',fld,' objects = ',time.clock()-time_photom)
