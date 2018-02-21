@@ -8,8 +8,8 @@ from bokeh.layouts import gridplot
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages,Photometry
 
 import numpy as np
-from astropy.stats import LombScargle
-import math
+#from astropy.stats import LombScargle
+#import math
 
 ################################################################################################
 
