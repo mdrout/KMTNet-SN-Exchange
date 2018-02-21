@@ -34,7 +34,11 @@
                                     <img src="{% static candidate.disc_ref %}"/>
                                     <img src="{% static candidate.disc_sub %}"/>
                                 </td>
-
+                                <td>
+                                    Simbad object within 5 arcseconds: <br />
+                                    Object Type: {{types|index:forloop.counter0}} <br />
+                                    Distance (arcsec) = {{distances|index:forloop.counter0|format5d}}
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -43,7 +47,8 @@
 
             <button type="submit" class="save btn btn-default" name="junk">junk</button>
             <button type="submit" class="save btn btn-default" name="bad-sub">bad-sub</button>
-            <button type="submit" class="save btn btn-default" name="star-qso">star/qso</button>
+            <button type="submit" class="save btn btn-default" name="var-star">variable star</button>
+            <button type="submit" class="save btn btn-default" name="star-qso">unsorted star/qso</button>
             {% else %}
                 <p>No candidates need vetting.</p>
             {% endif %}

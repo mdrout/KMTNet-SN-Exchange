@@ -8,7 +8,7 @@ from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
 from kmtshi.dates import dates_from_filename,filename_from_dates
 from kmtshi.coordinates import great_circle_distance
-from kmtshi.queries import simbad_query, ned_query
+from kmtshi.queries import simbad_query, ned_query, simbad_query_list
 import numpy as np
 
 
@@ -91,7 +91,12 @@ def candidates_field_form(request,field):
     t_junk = Classification.objects.get(name='junk')
     t_bs = Classification.objects.get(name='bad subtraction')
     t_sq = Classification.objects.get(name='unsorted star/qso')
+    t_vars = Classification.objects.get(name='stellar source: variable')
 
+    ras = [c1.ra for c1 in candidate_list]
+    decs = [c1.dec for c1 in candidate_list]
+    radius = 3
+    distances, types = simbad_query_list(ras, decs, radius)
 
     if request.method == 'POST':
         form = SelectCandidatesForm(request.POST, queryset=candidate_list)
@@ -109,6 +114,10 @@ def candidates_field_form(request,field):
                 for item in form.cleaned_data['choices']:
                     item.classification = t_sq
                     item.save()
+            elif 'var-star' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_vars
+                    item.save()
 
         return redirect('candidates_field_form', field=field)
 
@@ -116,7 +125,7 @@ def candidates_field_form(request,field):
         form = SelectCandidatesForm(queryset=candidate_list)
 
 
-    context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form}
+    context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form, 'distances':distances, 'types':types}
     return render(request, 'kmtshi/candidates_field_form.html', context)
 
 
