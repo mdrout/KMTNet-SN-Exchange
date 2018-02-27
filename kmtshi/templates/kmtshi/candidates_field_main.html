@@ -14,11 +14,15 @@
     <h1> <b>KMTSHI: The KMTNet Supernova Hunter's Interface </b></h1>
     <h2> <b>Candidates for vetting: {{field}} </b></h2>
 
-    <b>Candidates with known Simbad/Ned counterparts ({{ num }}):</b> <br/>
-    <a href=" {% url 'candidates_field_known' field %}">candidate page</a> <br/>
-    <a href=" {% url 'candidates_field_form_known' field %}">candidate form page</a> <br/>
+    <b>Candidates with Simbad counterparts ({{ num }}):</b> <br/>
+    <a href=" {% url 'candidates_field_simbad' field %}">candidate page</a> <br/>
+    <a href=" {% url 'candidates_field_form_simbad' field %}">candidate form page</a> <br/>
     <br/>
-    <b>Candidates without known Simbad/Ned counterparts ({{num2}}):</b> <br/>
+    <b>Candidates with NED (but no Simbad) counterparts ({{ num2 }}):</b> <br/>
+    <a href=" {% url 'candidates_field_ned' field %}">candidate page</a> <br/>
+    <a href=" {% url 'candidates_field_form_ned' field %}">candidate form page</a> <br/>
+    <br/>
+    <b>Candidates without known Simbad/NED counterparts ({{num3}}):</b> <br/>
     <a href=" {% url 'candidates_field' field %}">candidate page</a> <br/>
     <a href=" {% url 'candidates_field_form' field %}">candidate form page</a>
 

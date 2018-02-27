@@ -100,6 +100,37 @@ def ned_query(ra, dec, radius):
 
     return result_table,result_table2
 
+def ned_query_list(ra, dec, radius):
+    '''Ned astroquery around a set of coordinates.
+
+    :param ra: Right Ascension of point  (degrees)
+    :param dec: Declination of point  (degrees)
+    :param radius: Radius around point for cone search (arcsec)
+    '''
+    distances = []
+    types = []
+
+    for x in range(len(ra)):
+        # Create coordinate object
+        c = coordinates.SkyCoord(ra[x], dec[x], unit='deg')
+        r = radius * u.arcsecond
+        try:
+            result_table = Ned.query_region(c, radius=r)
+
+            distance = result_table['Distance (arcmin)']*60. # Now in arcseconds
+            type = result_table['Type']
+
+
+        except:
+            distance = [0.]
+            type = ['----']
+
+        distances.append(distance[0])
+        types.append(type[0])
+
+
+    return distances, types
+
 
 def ned_query_tf(ra, dec, radius):
     '''Ned astroquery around a set of coordinates.

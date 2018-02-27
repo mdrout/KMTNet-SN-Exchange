@@ -93,11 +93,13 @@ def candidates(request):
 def candidates_field_main(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
-    candidate_list2 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=False).filter(simbad_flag=False).order_by('-date_disc')
-    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(Q(ned_flag=True) | Q(simbad_flag=True)).order_by('-date_disc')
+    candidate_list3 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=False).filter(simbad_flag=False).order_by('-date_disc')
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).order_by('-date_disc')
+    candidate_list2 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=True).filter(simbad_flag=False).order_by('-date_disc')
+    num3 = len(candidate_list3)
     num2 = len(candidate_list2)
     num = len(candidate_list)
-    context = {'field':field,  'num':num, 'num2':num2}
+    context = {'field':field,  'num':num, 'num2':num2, 'num3':num3}
     return render(request, 'kmtshi/candidates_field_main.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')
@@ -153,19 +155,20 @@ def candidates_field_form(request,field):
     return render(request, 'kmtshi/candidates_field_form2.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')
-def candidates_field_known(request,field):
+def candidates_field_simbad(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
-    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(Q(ned_flag=True) | Q(simbad_flag=True)).order_by('-date_disc')
+    #candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(Q(ned_flag=True) | Q(simbad_flag=True)).order_by('-date_disc')
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).order_by('-date_disc')
     num = len(candidate_list)
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')
-def candidates_field_form_known(request,field):
+def candidates_field_form_simbad(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
-    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(Q(ned_flag=True) | Q(simbad_flag=True)).order_by('-date_disc')
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).order_by('-date_disc')
     num = len(candidate_list)
 
     t_junk = Classification.objects.get(name='junk')
@@ -175,7 +178,7 @@ def candidates_field_form_known(request,field):
 
     ras = [c1.ra for c1 in candidate_list]
     decs = [c1.dec for c1 in candidate_list]
-    radius = 3
+    radius = 5
     distances, types = simbad_query_list(ras, decs, radius)
 
     if request.method == 'POST':
@@ -199,7 +202,63 @@ def candidates_field_form_known(request,field):
                     item.classification = t_vars
                     item.save()
 
-        return redirect('candidates_field_form', field=field)
+        return redirect('candidates_field_form_simbad', field=field)
+
+    else:
+        form = SelectCandidatesForm(queryset=candidate_list)
+
+
+    context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form, 'distances':distances, 'types':types}
+    return render(request, 'kmtshi/candidates_field_form.html', context)
+
+@login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_ned(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=True).filter(simbad_flag=False).order_by('-date_disc')
+    num = len(candidate_list)
+    context = {'candidate_list': candidate_list,'field':field,  'number':num}
+    return render(request, 'kmtshi/candidates_field.html', context)
+
+@login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_form_ned(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=True).filter(simbad_flag=False).order_by('-date_disc')
+    num = len(candidate_list)
+
+    t_junk = Classification.objects.get(name='junk')
+    t_bs = Classification.objects.get(name='bad subtraction')
+    t_sq = Classification.objects.get(name='unsorted star/qso')
+    t_vars = Classification.objects.get(name='stellar source: variable')
+
+    ras = [c1.ra for c1 in candidate_list]
+    decs = [c1.dec for c1 in candidate_list]
+    radius = 5
+    distances, types = simbad_query_list(ras, decs, radius)
+
+    if request.method == 'POST':
+        form = SelectCandidatesForm(request.POST, queryset=candidate_list)
+
+        if form.is_valid():
+            if 'junk' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_junk
+                    item.save()
+            elif 'bad-sub' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_bs
+                    item.save()
+            elif 'star-qso' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_sq
+                    item.save()
+            elif 'var-star' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_vars
+                    item.save()
+
+        return redirect('candidates_field_form_ned', field=field)
 
     else:
         form = SelectCandidatesForm(queryset=candidate_list)
