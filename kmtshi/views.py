@@ -49,6 +49,7 @@ def index(request):
     context = {'field_list': field_list, 'field_list2': field_list_2,'name_form':name_form, 'coord_form':coord_form}
     return render(request,'kmtshi/index.html', context)
 
+@login_required(login_url='/login',redirect_field_name='/')
 def search_name(request,sname):
     #Search databased to select names that *contain* the name in the search:
     candidate_list = Candidate.objects.filter(name__icontains=sname)
@@ -56,6 +57,7 @@ def search_name(request,sname):
     context = {'sname':sname, 'candidate_list': candidate_list}
     return render(request,'kmtshi/search_name.html', context)
 
+@login_required(login_url='/login',redirect_field_name='/')
 def search_coord(request,ra,dec,radius):
     # Perform cone search on the candidates in the database.
     # Initial filter down to things that are close:
@@ -79,13 +81,14 @@ def search_coord(request,ra,dec,radius):
     context = {'ra':ra, 'dec':dec, 'radius':radius, 'scombo':scombo}
     return render(request,'kmtshi/search_coord.html', context)
 
+@login_required(login_url='/login',redirect_field_name='/')
 def candidates(request):
     t1=Classification.objects.get(name="candidate")
     candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def candidates_field(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
@@ -94,6 +97,7 @@ def candidates_field(request,field):
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
+@login_required(login_url='/login',redirect_field_name='/')
 def candidates_field_form(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
@@ -140,14 +144,14 @@ def candidates_field_form(request,field):
     context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form, 'distances':distances, 'types':types}
     return render(request, 'kmtshi/candidates_field_form.html', context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def transients(request):
     t1=Classification.objects.get(name="real transient")
     candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def transients_field(request,field):
     t1=Classification.objects.get(name="real transient")
     f1=Field.objects.get(subfield=field)
@@ -156,13 +160,14 @@ def transients_field(request,field):
     context = {'candidate_list': candidate_list,'field':field, 'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
+@login_required(login_url='/login',redirect_field_name='/')
 def variables(request):
     t1=Classification.objects.get(name="stellar source: variable")
     candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def variables_field(request,field):
     t1=Classification.objects.get(name="stellar source: variable")
     f1=Field.objects.get(subfield=field)
@@ -171,13 +176,14 @@ def variables_field(request,field):
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
+@login_required(login_url='/login',redirect_field_name='/')
 def galaxies(request):
     t1=Classification.objects.get(name="galaxy: variable")
     candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def galaxies_field(request,field):
     t1=Classification.objects.get(name="galaxy: variable")
     f1=Field.objects.get(subfield=field)
@@ -186,7 +192,7 @@ def galaxies_field(request,field):
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def candidate_date(request,field,quadrant,date):
     """The date will be in the form 170125_2045 y,m,d,_h,m"""
     f1=Field.objects.get(subfield=field)
@@ -215,7 +221,7 @@ def candidate_date(request,field,quadrant,date):
                'number': num,'date': date}
     return render(request, 'kmtshi/candidates_date.html', context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def detail(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
 
@@ -266,7 +272,7 @@ def detail(request, candidate_id):
 
     return render(request, 'kmtshi/detail.html',context)
 
-
+@login_required(login_url='/login',redirect_field_name='/')
 def classification_edit(request, candidate_id):
     candidate = get_object_or_404(Candidate, pk=candidate_id)
     field=candidate.field.subfield
@@ -281,6 +287,7 @@ def classification_edit(request, candidate_id):
         form = CandidateForm(instance=candidate)
     return render(request, 'kmtshi/class_edit.html', {'form': form, 'candidate': candidate})
 
+@login_required(login_url='/login',redirect_field_name='/')
 def classification_bulkedit(request, field,quadrant,date):
     """The date will be in the form 170125_2045 y,m,d,_h,m"""
     f1=Field.objects.get(subfield=field)
