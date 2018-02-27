@@ -168,6 +168,21 @@ def variables_field(request,field):
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
 
+def galaxies(request):
+    t1=Classification.objects.get(name="galaxy: variable")
+    candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
+    context = {'candidate_list': candidate_list}
+    return render(request, 'kmtshi/candidates.html', context)
+
+
+def galaxies_field(request,field):
+    t1=Classification.objects.get(name="galaxy: variable")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    num = len(candidate_list)
+    context = {'candidate_list': candidate_list,'field':field,  'number':num}
+    return render(request, 'kmtshi/candidates_field.html', context)
+
 
 def candidate_date(request,field,quadrant,date):
     """The date will be in the form 170125_2045 y,m,d,_h,m"""

@@ -31,10 +31,11 @@
     <h4><u>Active Fields (observed within the last 14 days)</u></h4>
     {% if field_list %}
         {% for field in field_list %}
-    <p> <i><b>{{field.subfield}}</b></i>. last date searched = {{field.last_date}}.
+        <p> <i><b>{{field.subfield}}</b></i>. last date searched = {{field.last_date}}.
                 <a href=" {% url 'candidates_field' field.subfield %}">candidates</a>
                 <a href=" {% url 'transients_field' field.subfield %}">transients</a>
                 <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
+                <a href=" {% url 'galaxies_field' field.subfield %}">var_galaxies</a>
             </p>
         {% endfor %}
     {% else %}
@@ -48,6 +49,7 @@
                 <a href=" {% url 'candidates_field' field.subfield %}">candidates</a>
                 <a href=" {% url 'transients_field' field.subfield %}">transients</a>
                 <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
+                <a href=" {% url 'galaxies_field' field.subfield %}">var_galaxies</a>
             </p>
         {% endfor %}
     {% else %}
