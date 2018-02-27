@@ -20,6 +20,7 @@ from kmtshi.coordinates import great_circle_distance,initialize_duplicates_set
 from kmtshi.kmtshi_jpeg import cjpeg_list
 from kmtshi.kmtshi_photom import cphotom_list
 from kmtshi.alphabet import num2alpha
+from kmtshi.queries import ned_query_tf,simbad_query_tf
 
 #Other set-up
 import glob,time
@@ -171,6 +172,14 @@ def main(argv):
                         obj_name = "KSP-" + fld + "_" + str(epoch_timestamps[i].year) + alpha
 
                         pdf = event_f.split('/')[-1]
+
+                        #Add in flags for known sources within 5". I want to be quiet...
+                        radius = 5
+                        ned = ned_query_tf(ra_epoch[k], dec_epoch[k], radius)
+                        sim = simbad_query_tf(ra_epoch[k], dec_epoch[k], radius)
+                        cand0.ned_flag = ned
+                        cand0.simbad_flag = sim
+
 
                         # Feb 2018: We now tell it to strip the pdf and put the fields in the static area:
                         # Automatically set path to be in the static area.
