@@ -11,49 +11,53 @@
     <h1> <b> KMTSHI: The KMTNet Supernova Hunter's Interface </b> </h1>
     <h2> <b>Index</b> </h2>
     <hr>
+    {% if user.is_authenticated %}
     <hr>
-    <h3> <u>Database Search:</u> </h3>
-    <hr>
-    <h4> Search by Name: </h4>
-        <form method="POST" class="post-form">{% csrf_token %}
-            {{ name_form }}
-            <button type="submit" class="save btn btn-default" name="name-form">Search</button>
-        </form>
-    <p>Naming convention is KSP-[Field]_[Year][Letter]. Example: KSP-E489-1_2016ad </p>
-    <hr>
-    <h4> Search by Coordinates: </h4>
-        <form method="POST" class="post-form">{% csrf_token %}
-            {{ coord_form.as_p }}
-            <button type="submit" class="save btn btn-default" name="coord-form">Search</button>
-        </form>
-    <hr>
-    <hr>
-    <h4><u>Active Fields (observed within the last 14 days)</u></h4>
-    {% if field_list %}
-        {% for field in field_list %}
-        <p> <i><b>{{field.subfield}}</b></i>. last date searched = {{field.last_date}}.
-                <a href=" {% url 'candidates_field' field.subfield %}">candidates</a>
-                <a href=" {% url 'transients_field' field.subfield %}">transients</a>
-                <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
-                <a href=" {% url 'galaxies_field' field.subfield %}">var_galaxies</a>
-            </p>
-        {% endfor %}
-    {% else %}
-        There are no active fields in the database...
-    {% endif %}
-    <hr>
-    <h4><u>Non-Active Fields</u></h4>
-    {% if field_list2 %}
-        {% for field in field_list2 %}
+        <h3> <u>Database Search:</u> </h3>
+        <hr>
+        <h4> Search by Name: </h4>
+            <form method="POST" class="post-form">{% csrf_token %}
+                {{ name_form }}
+                <button type="submit" class="save btn btn-default" name="name-form">Search</button>
+            </form>
+        <p>Naming convention is KSP-[Field]_[Year][Letter]. Example: KSP-E489-1_2016ad </p>
+        <hr>
+        <h4> Search by Coordinates: </h4>
+            <form method="POST" class="post-form">{% csrf_token %}
+                {{ coord_form.as_p }}
+                <button type="submit" class="save btn btn-default" name="coord-form">Search</button>
+            </form>
+        <hr>
+        <hr>
+        <h4><u>Active Fields (observed within the last 14 days)</u></h4>
+        {% if field_list %}
+            {% for field in field_list %}
             <p> <i><b>{{field.subfield}}</b></i>. last date searched = {{field.last_date}}.
-                <a href=" {% url 'candidates_field' field.subfield %}">candidates</a>
-                <a href=" {% url 'transients_field' field.subfield %}">transients</a>
-                <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
-                <a href=" {% url 'galaxies_field' field.subfield %}">var_galaxies</a>
-            </p>
-        {% endfor %}
+                    <a href=" {% url 'candidates_field' field.subfield %}">candidates</a>
+                    <a href=" {% url 'transients_field' field.subfield %}">transients</a>
+                    <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
+                    <a href=" {% url 'galaxies_field' field.subfield %}">var_galaxies</a>
+                </p>
+            {% endfor %}
+        {% else %}
+            There are no active fields in the database...
+        {% endif %}
+        <hr>
+        <h4><u>Non-Active Fields</u></h4>
+        {% if field_list2 %}
+            {% for field in field_list2 %}
+                <p> <i><b>{{field.subfield}}</b></i>. last date searched = {{field.last_date}}.
+                    <a href=" {% url 'candidates_field' field.subfield %}">candidates</a>
+                    <a href=" {% url 'transients_field' field.subfield %}">transients</a>
+                    <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
+                    <a href=" {% url 'galaxies_field' field.subfield %}">var_galaxies</a>
+                </p>
+            {% endfor %}
+        {% else %}
+            There are no non-active fields in the database...
+        {% endif %}
     {% else %}
-        There are no non-active fields in the database...
+    Please Login
     {% endif %}
     </body>
 </html>

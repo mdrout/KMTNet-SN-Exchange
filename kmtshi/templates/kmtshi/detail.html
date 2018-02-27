@@ -20,7 +20,7 @@
         <style>table,th,td {padding: 5px;} </style>
     </head>
     <body>
-
+    {% if user.is_authenticated %}
         <h1> <b>KMTSHI: The KMTNet Supernova Hunter's Interface </b></h1>
         <h2> <b>Details for {{candidate}} </b></h2>
         <hr>
@@ -45,7 +45,7 @@
                 <button type="submit" class="save btn btn-default" name="comment-form">Save</button>
             </form>
         <hr>
-        {% if user.is_authenticated %}
+
         <div>
             <h3><u>Edit the Classification for {{candidate}}</u></h3>
             <form method="POST" class="post-form">{% csrf_token %}
@@ -55,7 +55,7 @@
                 <button type="submit" class="save btn btn-default" name="class-form">Save</button>
             </form>
         </div>
-        {% endif %}
+
         <hr>
         <div><h3><u>Aladin Image</u></h3></div>
         <!-- insert this snippet where you want Aladin Lite viewer to appear and after the loading of jQuery -->
@@ -151,7 +151,9 @@
             {% endif %}
         </div>
 
-
+    {% else %}
+    Please login
+    {% endif %}
     </body>
 </html>
 

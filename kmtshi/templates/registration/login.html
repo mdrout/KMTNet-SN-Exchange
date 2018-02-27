@@ -1,0 +1,20 @@
+{% load static %}
+<html>
+    <head>
+        <title>kmtshi: candidates</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static 'kmtshi/css/kmtshi.css' %}">
+    </head>
+    <body>
+    <h1> <b> KMTSHI: The KMTNet Supernova Hunter's Interface </b> </h1>
+
+    <h2><b>Login</b></h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
+    </body>
+</html>

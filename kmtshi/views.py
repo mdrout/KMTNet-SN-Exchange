@@ -1,6 +1,8 @@
 from django.http import HttpResponse,Http404
 from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages
 from kmtshi.forms import CandidateForm,CommentForm,NameForm,CoordinateForm, SelectCandidatesForm
 from django.utils import timezone
@@ -13,6 +15,7 @@ import numpy as np
 from datetime import timedelta, datetime
 
 
+@login_required(login_url='/login',redirect_field_name='/')
 def index(request):
 
     tstamp = datetime.today()
