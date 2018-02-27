@@ -4,15 +4,17 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static 'kmtshi/css/kmtshi.css' %}">
+        <style>table,th,td {padding: 15px;} </style>
     </head>
     <body>
 
 
-        <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
+        <h1> <b>KMTSHI: The KMTNet Supernova Hunter's Interface</b> </h1>
         <hr>
         <hr>
         {% if user.is_authenticated %}
-        <h3> Edit Classification for {{ candidate }} </h3>
+        <h3> <b>Edit Classification for {{ candidate }}</b> </h3>
         <form method="POST" class="post-form">{% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="save btn btn-default">Save</button>

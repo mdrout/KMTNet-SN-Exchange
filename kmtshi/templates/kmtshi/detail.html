@@ -16,15 +16,16 @@
         <style> .embed-wrapper2 {width: 50%; height: 725px; margin: 20px;} </style>
         <link rel="stylesheet" href="//aladin.u-strasbg.fr/AladinLite/api/v2/latest/aladin.min.css" />
         <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="{% static 'kmtshi/css/kmtshi.css' %}">
         <style>table,th,td {padding: 5px;} </style>
     </head>
     <body>
 
-        <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
-        <h2> Details for {{candidate}} </h2>
+        <h1> <b>KMTSHI: The KMTNet Supernova Hunter's Interface </b></h1>
+        <h2> <b>Details for {{candidate}} </b></h2>
         <hr>
         <hr>
-        <h3>Basic Information</h3>
+        <h3><b>Basic Information</b></h3>
         <ul>
             <li> Field: <a href=" {% url 'candidates_field' candidate.field.subfield %}"> {{candidate.field}}</a> {{candidate.quadrant}} </li>
             <li> Discovery Date: <a href="{% url 'candidates_date' candidate.field.subfield candidate.quadrant.name date_txt%}">{{candidate.date_disc}} </a> </li>
@@ -32,7 +33,7 @@
             <li> Classification: {{candidate.classification}} </li>
         </ul>
         <hr>
-        <h3>Comments:</h3>
+        <h3><u>Comments:</u></h3>
         {% for comment in comments_list %}
             <p><b>{{comment.pub_date}}</b> <i>{{comment.author}}</i>: {{comment.text}} </p>
         {% endfor %}
@@ -46,7 +47,7 @@
         <hr>
         {% if user.is_authenticated %}
         <div>
-            <h3>Edit the Classification for {{candidate}}</h3>
+            <h3><u>Edit the Classification for {{candidate}}</u></h3>
             <form method="POST" class="post-form">{% csrf_token %}
                 {{ class_form }}
                 <!--<input type="hidden" name="form_type" value="class-form"/>
@@ -56,7 +57,7 @@
         </div>
         {% endif %}
         <hr>
-        <div><h3>Aladin Image</h3></div>
+        <div><h3><u>Aladin Image</u></h3></div>
         <!-- insert this snippet where you want Aladin Lite viewer to appear and after the loading of jQuery -->
         <div id="aladin-lite-div" style="width:400px;height:400px;"></div>
         <input id="DSS" type="radio" name="survey" value="P/DSS2/color"><label for="DSS">DSS</label>
@@ -70,7 +71,7 @@
             $('input[name=survey]').change(function() {aladin.setImageSurvey($(this).val());});
         </script>
         <hr>
-        <div><h3>Simbad Query</h3></div>
+        <div><h3><u>Simbad Query</u></h3></div>
         {% if simbad_q %}
             <table >
                 <tr>
@@ -97,7 +98,7 @@
         {% else %}
             No Simbad objects with {{radius}} arcseconds.
         {% endif %}
-        <div><h3>NED Query</h3></div>
+        <div><h3><u>NED Query</u></h3></div>
         {% if ned_q %}
             <table >
                 <tr>
@@ -124,7 +125,7 @@
         {% endif %}
         <hr>
         <div>
-            <h3>Light Curve Plots</h3>
+            <h3><u>Light Curve Plots</u></h3>
         </div>
         <div class="embed-wrapper1">
             {{the_div|safe}}
@@ -134,7 +135,7 @@
         </div>
         <hr>
         <div>
-            <h3>Postage Stamp Images</h3>
+            <h3><u>Postage Stamp Images</u></h3>
             {% if png_list %}
                 {% for png in png_list %}
                     <p>{{png.date_txt}} ({{png.obs_date}})</p>

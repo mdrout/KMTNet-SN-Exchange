@@ -6,16 +6,18 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static 'kmtshi/css/kmtshi.css' %}">
+        <style>table,th,td {padding: 15px;} </style>
     </head>
     <body>
 
 
-        <h1> KMTSHI: The KMTNet Supernova Hunter's Interface </h1>
+        <h1> <b>KMTSHI: The KMTNet Supernova Hunter's Interface</b> </h1>
         <hr>
         <hr>
         {% if user.is_authenticated %}
-        <h3> Edit Classification for {{ field }} {{quad}} {{date}} </h3>
-        <h4>Caution! This will update ALL candidates in this field/quad that were discovered on this date (See below)</h4>
+        <h3> <b>Edit Classification for {{ field }} {{quad}} {{date}}</b> </h3>
+        <h4><b>Caution! This will update ALL candidates in this field/quad that were discovered on this date (See below)</b></h4>
         <form method="POST" class="post-form">{% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="save btn btn-default">Save</button>
@@ -25,19 +27,25 @@
         {% if candidate_list %}
             {% for candidate in candidate_list %}
                 <div>
-                    <h4><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></h4>
-                    <p>FIELD: {{candidate.field}} {{candidate.quadrant}} </p>
-                    <p>ra={{candidate.ra|format5d}}, dec={{candidate.dec|format5d}}</p>
-                    <p>Classification: {{candidate.classification}}
-                        {% if user.is_authenticated %}
-                        <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
-                        {% endif %}
-                    </p>
-                    <p>
-                        <img src="{% static candidate.disc_im %}"/>
-                        <img src="{% static candidate.disc_ref %}"/>
-                        <img src="{% static candidate.disc_sub %}"/>
-                    </p>
+                <h4><b><a href=" {% url 'detail' candidate.id %}">{{ candidate.name }}</a></b></h4>
+                <table>
+                    <tr>
+                        <td>
+                            FIELD: {{candidate.field}} {{candidate.quadrant}} <br />
+                            ra={{candidate.ra|format5d}}, dec={{candidate.dec|format5d}}<br />
+                            Discovery Date: {{candidate.date_disc}}<br />
+                            Classification: {{candidate.classification}}
+                            {% if user.is_authenticated %}
+                            <a class="btn btn-default" href="{% url 'classification_edit' candidate.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <img src="{% static candidate.disc_im %}"/>
+                            <img src="{% static candidate.disc_ref %}"/>
+                            <img src="{% static candidate.disc_sub %}"/>
+                        </td>
+                    </tr>
+                </table>
                 </div>
                 <hr>
             {% endfor %}
