@@ -23,6 +23,7 @@
     {% if user.is_authenticated %}
         <h1> <b>KMTSHI: The KMTNet Supernova Hunter's Interface </b></h1>
         <h2> <b>Details for {{candidate}} </b></h2>
+        <p><b><a href=" {% url 'logout' %}">Logout</a></b></p>
         <hr>
         <hr>
         <h3><b>Basic Information</b></h3>
