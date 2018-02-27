@@ -11,7 +11,7 @@ from django.forms import modelformset_factory
 from kmtshi.plots import MagAuto_FiltersPlot,Mag_FiltersLinkPlot
 from kmtshi.dates import dates_from_filename,filename_from_dates
 from kmtshi.coordinates import great_circle_distance
-from kmtshi.queries import simbad_query, ned_query, simbad_query_list
+from kmtshi.queries import simbad_query, ned_query, simbad_query_list, ned_query_list
 import numpy as np
 from datetime import timedelta, datetime
 
@@ -235,7 +235,7 @@ def candidates_field_form_ned(request,field):
     ras = [c1.ra for c1 in candidate_list]
     decs = [c1.dec for c1 in candidate_list]
     radius = 5
-    distances, types = simbad_query_list(ras, decs, radius)
+    distances, types = ned_query_list(ras, decs, radius)
 
     if request.method == 'POST':
         form = SelectCandidatesForm(request.POST, queryset=candidate_list)
