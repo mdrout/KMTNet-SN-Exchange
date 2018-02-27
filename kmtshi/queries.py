@@ -99,3 +99,50 @@ def ned_query(ra, dec, radius):
         result_table2 = result_table
 
     return result_table,result_table2
+
+
+def ned_query_tf(ra, dec, radius):
+    '''Ned astroquery around a set of coordinates.
+
+    :param ra: Right Ascension of point  (degrees)
+    :param dec: Declination of point  (degrees)
+    :param radius: Radius around point for cone search (arcsec)
+    '''
+
+    # Create coordinate object
+    c = coordinates.SkyCoord(ra, dec, unit='deg')
+    r = radius * u.arcsecond
+
+
+    result = True
+    try:
+        result_tab = Ned.query_region(c, radius=r)
+
+    except:
+        result = False
+
+    return result
+
+def simbad_query_tf(ra, dec, radius):
+    '''Simbad astroquery around a set of coordinates.
+
+    :param ra: Right Ascension of point  (degrees)
+    :param dec: Declination of point  (degrees)
+    :param radius: Radius around point for cone search (arcsec)
+    '''
+
+    # Set-up output columns
+    customSimbad = Simbad()
+
+    # Create coordinate object
+    c = coordinates.SkyCoord(ra, dec, unit='deg')
+    r = radius * u.arcsecond
+    result_table = customSimbad.query_region(c, radius=r)
+
+    # Calculate the distance between the objects and our coordinates:
+    if result_table:
+        result = True
+    else:
+        result = False
+
+    return result
