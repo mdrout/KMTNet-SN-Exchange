@@ -3,6 +3,7 @@ from django.template import loader
 from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from kmtshi.models import Field,Quadrant,Classification,Candidate,Comment,jpegImages
 from kmtshi.forms import CandidateForm,CommentForm,NameForm,CoordinateForm, SelectCandidatesForm
 from django.utils import timezone
@@ -89,10 +90,21 @@ def candidates(request):
     return render(request, 'kmtshi/candidates.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_main(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list2 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=False).filter(simbad_flag=False).order_by('-date_disc')
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(Q(ned_flag=True) | Q(simbad_flag=True)).order_by('-date_disc')
+    num2 = len(candidate_list2)
+    num = len(candidate_list)
+    context = {'field':field,  'num':num, 'num2':num2}
+    return render(request, 'kmtshi/candidates_field_main.html', context)
+
+@login_required(login_url='/login',redirect_field_name='/')
 def candidates_field(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
-    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=False).filter(simbad_flag=False).order_by('-date_disc')
     num = len(candidate_list)
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)
@@ -101,7 +113,59 @@ def candidates_field(request,field):
 def candidates_field_form(request,field):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
-    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    candidate_list = Candidate.objects.filter(classification=t1).filter(ned_flag=False).filter(simbad_flag=False).filter(field=f1).order_by('-date_disc')
+    num = len(candidate_list)
+
+    t_junk = Classification.objects.get(name='junk')
+    t_bs = Classification.objects.get(name='bad subtraction')
+    t_sq = Classification.objects.get(name='unsorted star/qso')
+    t_vars = Classification.objects.get(name='stellar source: variable')
+
+
+    if request.method == 'POST':
+        form = SelectCandidatesForm(request.POST, queryset=candidate_list)
+
+        if form.is_valid():
+            if 'junk' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_junk
+                    item.save()
+            elif 'bad-sub' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_bs
+                    item.save()
+            elif 'star-qso' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_sq
+                    item.save()
+            elif 'var-star' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_vars
+                    item.save()
+
+        return redirect('candidates_field_form', field=field)
+
+    else:
+        form = SelectCandidatesForm(queryset=candidate_list)
+
+
+    context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form}
+    return render(request, 'kmtshi/candidates_field_form2.html', context)
+
+@login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_known(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(Q(ned_flag=True) | Q(simbad_flag=True)).order_by('-date_disc')
+    num = len(candidate_list)
+    context = {'candidate_list': candidate_list,'field':field,  'number':num}
+    return render(request, 'kmtshi/candidates_field.html', context)
+
+@login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_form_known(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(Q(ned_flag=True) | Q(simbad_flag=True)).order_by('-date_disc')
     num = len(candidate_list)
 
     t_junk = Classification.objects.get(name='junk')
@@ -143,6 +207,7 @@ def candidates_field_form(request,field):
 
     context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form, 'distances':distances, 'types':types}
     return render(request, 'kmtshi/candidates_field_form.html', context)
+
 
 @login_required(login_url='/login',redirect_field_name='/')
 def transients(request):
