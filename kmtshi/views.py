@@ -10,10 +10,19 @@ from kmtshi.dates import dates_from_filename,filename_from_dates
 from kmtshi.coordinates import great_circle_distance
 from kmtshi.queries import simbad_query, ned_query, simbad_query_list
 import numpy as np
+from datetime import timedelta, datetime
 
 
 def index(request):
-    field_list = Field.objects.all().order_by('-last_date')
+
+    tstamp = datetime.today()
+    t_ref = tstamp - timedelta(days=15)
+    t_ref2 = datetime(2015,1,1,00,00)
+    # Make list only of last 15 days
+    field_list = Field.objects.filter(last_date__gte=t_ref).order_by('-last_date')
+    # Make list of other fields that have ANY data by not those.
+    field_list_2 = Field.objects.filter(last_date__lte=t_ref).filter(last_date__gte=t_ref2).order_by('-last_date')
+
 
     if request.method == "POST":
         if 'name-form' in request.POST:
@@ -34,7 +43,7 @@ def index(request):
         name_form = NameForm()
         coord_form = CoordinateForm()
 
-    context = {'field_list': field_list, 'name_form':name_form, 'coord_form':coord_form}
+    context = {'field_list': field_list, 'field_list2': field_list_2,'name_form':name_form, 'coord_form':coord_form}
     return render(request,'kmtshi/index.html', context)
 
 def search_name(request,sname):
