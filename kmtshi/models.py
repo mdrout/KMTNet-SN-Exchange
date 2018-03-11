@@ -55,6 +55,10 @@ class Candidate(models.Model):
     full_photom = models.BooleanField(default=False)  # True = have gone to full photom history; False = have not.
     simbad_flag = models.BooleanField(default=False)
     ned_flag = models.BooleanField(default=False)
+    Bmag = models.FloatField(default=0.0)
+    Vmag = models.FloatField(default=0.0)
+    Imag = models.FloatField(default=0.0)
+    Bstddev = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.name

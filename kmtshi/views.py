@@ -96,10 +96,23 @@ def candidates_field_main(request,field):
     candidate_list3 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=False).filter(simbad_flag=False).order_by('-date_disc')
     candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).order_by('-date_disc')
     candidate_list2 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=True).filter(simbad_flag=False).order_by('-date_disc')
+
+    candidate_list4 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).filter(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06)
+    candidate_list5= Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).filter(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.06).filter(Bstddev__gt=0.02)
+    candidate_list6 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).filter(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02)
+
     num3 = len(candidate_list3)
     num2 = len(candidate_list2)
     num = len(candidate_list)
-    context = {'field':field,  'num':num, 'num2':num2, 'num3':num3}
+
+    num4 = len(candidate_list4)
+    num5 = len(candidate_list5)
+    num6 = len(candidate_list6)
+
+    context = {'field':field,  'num':num, 'num2':num2, 'num3':num3, 'num4':num4, 'num5':num5, 'num6':num6}
     return render(request, 'kmtshi/candidates_field_main.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')

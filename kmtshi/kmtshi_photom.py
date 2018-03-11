@@ -15,6 +15,7 @@ from kmtshi.models import Candidate, Photometry, Field, Quadrant
 from kmtshi.dates import dates_from_filename
 from kmtshi.coordinates import great_circle_distance
 from kmtshi.base_directories import base_data, base_foxtrot
+from kmtshi.kmtshi_photom_props import photom_props_db
 from astropy.io import fits
 from astropy.time import Time
 import datetime, glob, time
@@ -328,6 +329,10 @@ def cphotom_list(candidate_ids,all_dates=False,initial_pass=False):
             hdulist.close()
             # print('Total time for single file ', time.clock()-file_start)
         print('Time for filter ',filter,' = ',time.clock()-tstart)
+
+    cands = [Candidate.objects.get(pk=x) for x in candidate_ids]
+    update = photom_props_db(cands)
+    print('Updated mean mags for list of events')
 
     out_txt = 'Photometry has been updated for list of events'
     return out_txt
