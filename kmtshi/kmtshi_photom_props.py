@@ -73,9 +73,9 @@ def photom_props_db(candidate_list):
 
 
     for cand in candidate_list:
-        B_photom = Photometry.objects.filter(candidate=cand).filter(filter='B')
-        V_photom = Photometry.objects.filter(candidate=cand).filter(filter='V')
-        I_photom = Photometry.objects.filter(candidate=cand).filter(filter='I')
+        B_photom = Photometry.objects.filter(candidate=cand).filter(filter='B').exclude(flag=False)
+        V_photom = Photometry.objects.filter(candidate=cand).filter(filter='V').exclude(flag=False)
+        I_photom = Photometry.objects.filter(candidate=cand).filter(filter='I').exclude(flag=False)
 
         #print(cand)
 
@@ -93,20 +93,20 @@ def photom_props_db(candidate_list):
                 Bmag = np.nanmean(list_new)
                 Bstddev = np.nanstd(list_new)
         else:
-            Bmag = 0.
+            Bmag = 99.9
             Bstddev = 0.
 
         if len(V_photom) > 0:
             list = [x.mag_auto for x in V_photom]
             Vmag = np.nanmean(list)
         else:
-            Vmag = 0.
+            Vmag = 99.9
 
         if len(I_photom) > 0:
             list = [x.mag_auto for x in I_photom]
             Imag = np.nanmean(list)
         else:
-            Imag = 0.
+            Imag = 99.9
 
         #print(cand,Bmag,Vmag,Imag,Bstddev)
 

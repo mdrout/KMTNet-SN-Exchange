@@ -102,7 +102,7 @@ def candidates_field_main(request,field):
     candidate_list5= Candidate.objects.filter(classification=t1).filter(field=f1).filter(
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.06).filter(Bstddev__gt=0.02)
     candidate_list6 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
-        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02)
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).filter(Bstddev__gt=0.00)
 
     num3 = len(candidate_list3)
     num2 = len(candidate_list2)
@@ -186,7 +186,7 @@ def candidates_field_form_var(request,field,flag):
         text = 'Bright Quiescent Sources with Medium Variability (0.06 mag > stddev > 0.02 mag)'
     if flag == 'L':
         candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
-        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).order_by('-Bstddev')
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).filter(Bstddev__gt=0.00).order_by('-Bstddev')
         text = 'Bright Quiescent Sources with Low Variability (0.02 mag > stddev)'
 
     num = len(candidate_list)
