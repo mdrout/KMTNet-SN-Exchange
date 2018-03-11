@@ -24,7 +24,12 @@
     <br/>
     <b>Candidates without known Simbad/NED counterparts ({{num3}}):</b> <br/>
     <a href=" {% url 'candidates_field' field %}">candidate page</a> <br/>
-    <a href=" {% url 'candidates_field_form' field %}">candidate form page</a>
+    <a href=" {% url 'candidates_field_form' field %}">candidate form page</a> <br/>
+    <br/>
+    <b>Candidates with bright (m < 16.0 mag) quiescent counterparts:</b> <br/>
+    High variability (stddev > 0.06 mag; {{num4}}): <a href=" {% url 'candidates_field_form_var' field 'H' %}"> candidate form page </a><br/>
+    Medium variability (0.06 mag > stddev > 0.02 mag; {{num5}}): <a href=" {% url 'candidates_field_form_var' field 'M' %}"> candidate form page </a><br/>
+    High variability (0.02 mag> stddev ; {{num6}}): <a href=" {% url 'candidates_field_form_var' field 'L' %}">candidate form page </a><br/>
 
     </body>
 </html>

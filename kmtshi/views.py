@@ -97,11 +97,11 @@ def candidates_field_main(request,field):
     candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).order_by('-date_disc')
     candidate_list2 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(ned_flag=True).filter(simbad_flag=False).order_by('-date_disc')
 
-    candidate_list4 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).filter(
+    candidate_list4 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06)
-    candidate_list5= Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).filter(
+    candidate_list5= Candidate.objects.filter(classification=t1).filter(field=f1).filter(
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.06).filter(Bstddev__gt=0.02)
-    candidate_list6 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(simbad_flag=True).filter(
+    candidate_list6 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02)
 
     num3 = len(candidate_list3)
@@ -166,6 +166,72 @@ def candidates_field_form(request,field):
 
     context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form}
     return render(request, 'kmtshi/candidates_field_form2.html', context)
+
+@login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_form_var(request,field,flag):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06).order_by('-Bstddev')
+    text = 'Bright Quiescent Sources with High Variability (stddev > 0.06 mag)'
+
+    if flag == 'H':
+        candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
+            Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06).order_by('-Bstddev')
+        text = 'Bright Quiescent Sources with High Variability (stddev > 0.06 mag)'
+    if flag == 'M':
+        candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.06).filter(Bstddev__gt=0.02).order_by('-Bstddev')
+        text = 'Bright Quiescent Sources with Medium Variability (0.06 mag > stddev > 0.02 mag)'
+    if flag == 'L':
+        candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).order_by('-Bstddev')
+        text = 'Bright Quiescent Sources with Low Variability (0.02 mag > stddev)'
+
+    num = len(candidate_list)
+
+    t_junk = Classification.objects.get(name='junk')
+    t_bs = Classification.objects.get(name='bad subtraction')
+    t_sq = Classification.objects.get(name='unsorted star/qso')
+    t_vars = Classification.objects.get(name='stellar source: variable')
+    t_gen = Classification.objects.get(name='stellar source: general')
+
+    if request.method == 'POST':
+        form = SelectCandidatesForm(request.POST, queryset=candidate_list)
+
+        if form.is_valid():
+            if 'junk' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_junk
+                    item.save()
+            elif 'bad-sub' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_bs
+                    item.save()
+            elif 'star-qso' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_sq
+                    item.save()
+            elif 'var-star' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_vars
+                    item.save()
+            elif 'gen-star' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_gen
+                    item.save()
+
+
+        return redirect('candidates_field_form_var', field=field, flag=flag)
+
+    else:
+        form = SelectCandidatesForm(queryset=candidate_list)
+
+
+    context = {'candidate_list': candidate_list,'field':field,  'number':num, 'text':text, 'form': form}
+    return render(request, 'kmtshi/candidates_field_form_var.html', context)
+
 
 @login_required(login_url='/login',redirect_field_name='/')
 def candidates_field_simbad(request,field):
