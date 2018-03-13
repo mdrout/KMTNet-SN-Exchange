@@ -104,6 +104,18 @@ def candidates_field_main(request,field):
     candidate_list6 = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).filter(Bstddev__gt=0.00)
 
+    candidate_list7 = Candidate.objects.filter(classification=t1).filter(field=f1).exclude(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06).order_by('-Bstddev')
+    candidate_list8 = Candidate.objects.filter(classification=t1).filter(field=f1).exclude(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.06).filter(
+        Bstddev__gt=0.02).order_by('-Bstddev')
+    candidate_list9 = Candidate.objects.filter(classification=t1).filter(field=f1).exclude(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).filter(
+        Bstddev__gt=0.00).order_by('-Bstddev')
+
+
+
+
     num3 = len(candidate_list3)
     num2 = len(candidate_list2)
     num = len(candidate_list)
@@ -112,7 +124,11 @@ def candidates_field_main(request,field):
     num5 = len(candidate_list5)
     num6 = len(candidate_list6)
 
-    context = {'field':field,  'num':num, 'num2':num2, 'num3':num3, 'num4':num4, 'num5':num5, 'num6':num6}
+    num7 = len(candidate_list7)
+    num8 = len(candidate_list8)
+    num9 = len(candidate_list9)
+
+    context = {'field':field,  'num':num, 'num2':num2, 'num3':num3, 'num4':num4, 'num5':num5, 'num6':num6, 'num7':num7, 'num8':num8, 'num9':num9}
     return render(request, 'kmtshi/candidates_field_main.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')
@@ -168,6 +184,61 @@ def candidates_field_form(request,field):
     return render(request, 'kmtshi/candidates_field_form2.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_all(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    num = len(candidate_list)
+    context = {'candidate_list': candidate_list,'field':field,  'number':num}
+    return render(request, 'kmtshi/candidates_field.html', context)
+
+@login_required(login_url='/login',redirect_field_name='/')
+def candidates_field_form_all(request,field):
+    t1=Classification.objects.get(name="candidate")
+    f1=Field.objects.get(subfield=field)
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    num = len(candidate_list)
+
+    t_junk = Classification.objects.get(name='junk')
+    t_bs = Classification.objects.get(name='bad subtraction')
+    t_sq = Classification.objects.get(name='unsorted star/qso')
+    t_vars = Classification.objects.get(name='stellar source: variable')
+
+
+    if request.method == 'POST':
+        form = SelectCandidatesForm(request.POST, queryset=candidate_list)
+
+        if form.is_valid():
+            if 'junk' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_junk
+                    item.save()
+            elif 'bad-sub' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_bs
+                    item.save()
+            elif 'star-qso' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_sq
+                    item.save()
+            elif 'var-star' in request.POST:
+                for item in form.cleaned_data['choices']:
+                    item.classification = t_vars
+                    item.save()
+
+        return redirect('candidates_field_form_all', field=field)
+
+    else:
+        form = SelectCandidatesForm(queryset=candidate_list)
+
+
+    context = {'candidate_list': candidate_list,'field':field,  'number':num, 'form': form}
+    return render(request, 'kmtshi/candidates_field_form2.html', context)
+
+
+
+
+@login_required(login_url='/login',redirect_field_name='/')
 def candidates_field_form_var(request,field,flag):
     t1=Classification.objects.get(name="candidate")
     f1=Field.objects.get(subfield=field)
@@ -176,18 +247,33 @@ def candidates_field_form_var(request,field,flag):
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06).order_by('-Bstddev')
     text = 'Bright Quiescent Sources with High Variability (stddev > 0.06 mag)'
 
-    if flag == 'H':
+    if flag == 'BH':
         candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
             Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06).order_by('-Bstddev')
         text = 'Bright Quiescent Sources with High Variability (stddev > 0.06 mag)'
-    if flag == 'M':
+    if flag == 'BM':
         candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.06).filter(Bstddev__gt=0.02).order_by('-Bstddev')
         text = 'Bright Quiescent Sources with Medium Variability (0.06 mag > stddev > 0.02 mag)'
-    if flag == 'L':
+    if flag == 'BL':
         candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).filter(
         Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).filter(Bstddev__gt=0.00).order_by('-Bstddev')
         text = 'Bright Quiescent Sources with Low Variability (0.02 mag > stddev)'
+
+    if flag == 'FH':
+        candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).exclude(
+            Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__gt=0.06).order_by('-Bstddev')
+        text = 'Fainter Quiescent Sources with High Variability (stddev > 0.06 mag)'
+    if flag == 'FM':
+        candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).exclude(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.06).filter(Bstddev__gt=0.02).order_by('-Bstddev')
+        text = 'Fainter Quiescent Sources with Medium Variability (0.06 mag > stddev > 0.02 mag)'
+    if flag == 'FL':
+        candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).exclude(
+        Q(Bmag__lt=16.0) | Q(Vmag__lt=16.0) | Q(Imag__lt=16.0)).filter(Bstddev__lt=0.02).filter(Bstddev__gt=0.00).order_by('-Bstddev')
+        text = 'Fainter Quiescent Sources with Low Variability (0.02 mag > stddev)'
+
+
 
     num = len(candidate_list)
 

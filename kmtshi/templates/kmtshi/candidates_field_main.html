@@ -14,6 +14,10 @@
     <h1> <b>KMTSHI: The KMTNet Supernova Hunter's Interface </b></h1>
     <h2> <b>Candidates for vetting: {{field}} </b></h2>
 
+    <b>All Candidates:</b> <br/>
+    <a href=" {% url 'candidates_field_all' field %}">candidate page</a> <br/>
+    <a href=" {% url 'candidates_field_form_all' field %}">candidate form page</a> <br/>
+    <br/>
     <b>Candidates with Simbad counterparts ({{ num }}):</b> <br/>
     <a href=" {% url 'candidates_field_simbad' field %}">candidate page</a> <br/>
     <a href=" {% url 'candidates_field_form_simbad' field %}">candidate form page</a> <br/>
@@ -27,9 +31,14 @@
     <a href=" {% url 'candidates_field_form' field %}">candidate form page</a> <br/>
     <br/>
     <b>Candidates with bright (m < 16.0 mag) quiescent counterparts:</b> <br/>
-    High variability (stddev > 0.06 mag; {{num4}}): <a href=" {% url 'candidates_field_form_var' field 'H' %}"> candidate form page </a><br/>
-    Medium variability (0.06 mag > stddev > 0.02 mag; {{num5}}): <a href=" {% url 'candidates_field_form_var' field 'M' %}"> candidate form page </a><br/>
-    High variability (0.02 mag> stddev ; {{num6}}): <a href=" {% url 'candidates_field_form_var' field 'L' %}">candidate form page </a><br/>
+    High variability ({{num4}}): <a href=" {% url 'candidates_field_form_var' field 'BH' %}"> candidate form page </a><br/>
+    Medium variability ({{num5}}): <a href=" {% url 'candidates_field_form_var' field 'BM' %}"> candidate form page </a><br/>
+    Low variability ({{num6}}): <a href=" {% url 'candidates_field_form_var' field 'BL' %}">candidate form page </a><br/>
+    <br/>
+    <b>Candidates with fainter (m > 16.0 mag) quiescent counterparts:</b> <br/>
+    High variability ({{num7}}): <a href=" {% url 'candidates_field_form_var' field 'FH' %}"> candidate form page </a><br/>
+    Medium variability ({{num8}}): <a href=" {% url 'candidates_field_form_var' field 'FM' %}"> candidate form page </a><br/>
+    Low variability ({{num9}}): <a href=" {% url 'candidates_field_form_var' field 'FL' %}">candidate form page </a><br/>
 
     </body>
 </html>
