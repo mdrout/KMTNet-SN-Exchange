@@ -23,10 +23,16 @@ def index(request):
     t_ref = tstamp - timedelta(days=15)
     t_ref2 = datetime(2015,1,1,00,00)
     # Make list only of last 15 days
-    field_list = Field.objects.filter(last_date__gte=t_ref).order_by('-last_date')
+    field_list = Field.objects.filter(last_date__gte=t_ref).order_by('-last_date').exclude(
+        subfield='N2559-1').exclude(subfield='ESO494-1').exclude(subfield='N2280-1').exclude(
+        subfield='N2380-1').exclude(subfield='N2325-1').exclude(subfield='N2283-1').exclude(subfield='CGMW1-1')
     # Make list of other fields that have ANY data by not those.
-    field_list_2 = Field.objects.filter(last_date__lte=t_ref).filter(last_date__gte=t_ref2).order_by('-last_date')
-
+    field_list_2 = Field.objects.filter(last_date__lte=t_ref).filter(last_date__gte=t_ref2).order_by('-last_date').exclude(
+        subfield='N2559-1').exclude(subfield='ESO494-1').exclude(subfield='N2280-1').exclude(
+        subfield='N2380-1').exclude(subfield='N2325-1').exclude(subfield='N2283-1').exclude(subfield='CGMW1-1')
+    field_list_3 = Field.objects.filter(Q(subfield='N2559-1') | Q(subfield='ESO494-1') | Q(subfield='N2280-1') | Q(
+        subfield='N2380-1') | Q(subfield='N2325-1') | Q(subfield='N2283-1') | Q(subfield='CGMW1-1')).order_by(
+        '-last_date')
 
     if request.method == "POST":
         if 'name-form' in request.POST:
@@ -47,7 +53,7 @@ def index(request):
         name_form = NameForm()
         coord_form = CoordinateForm()
 
-    context = {'field_list': field_list, 'field_list2': field_list_2,'name_form':name_form, 'coord_form':coord_form}
+    context = {'field_list': field_list, 'field_list2': field_list_2, 'field_list3':field_list_3,'name_form':name_form, 'coord_form':coord_form}
     return render(request,'kmtshi/index.html', context)
 
 @login_required(login_url='/login',redirect_field_name='/')

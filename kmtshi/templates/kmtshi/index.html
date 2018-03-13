@@ -44,6 +44,20 @@
             There are no active fields in the database...
         {% endif %}
         <hr>
+        <h4><u>Semi-Problematic Fields (many candidates, photom not fully calculated)</u></h4>
+        {% if field_list3 %}
+            {% for field in field_list3 %}
+                <p> <i><b>{{field.subfield}}</b></i>. last date searched = {{field.last_date}}.
+                    <a href=" {% url 'candidates_field_main' field.subfield %}">candidates</a>
+                    <a href=" {% url 'transients_field' field.subfield %}">transients</a>
+                    <a href=" {% url 'variables_field' field.subfield %}">var_stars</a>
+                    <a href=" {% url 'galaxies_field' field.subfield %}">var_galaxies</a>
+                </p>
+            {% endfor %}
+        {% else %}
+            There are no problematic fields in the database...
+        {% endif %}
+        <hr>
         <h4><u>Non-Active Fields</u></h4>
         {% if field_list2 %}
             {% for field in field_list2 %}
