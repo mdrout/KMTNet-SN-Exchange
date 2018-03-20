@@ -458,7 +458,7 @@ def transients_field(request,field):
 @login_required(login_url='/login',redirect_field_name='/')
 def variables(request):
     t1=Classification.objects.get(name="stellar source: variable")
-    candidate_list = t1.candidate_set.all().order_by('-date_disc') #puts most recent first
+    candidate_list = t1.candidate_set.all().order_by('-Bstddev') #puts most recent first
     context = {'candidate_list': candidate_list}
     return render(request, 'kmtshi/candidates.html', context)
 
@@ -466,7 +466,7 @@ def variables(request):
 def variables_field(request,field):
     t1=Classification.objects.get(name="stellar source: variable")
     f1=Field.objects.get(subfield=field)
-    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-date_disc')
+    candidate_list = Candidate.objects.filter(classification=t1).filter(field=f1).order_by('-Bstddev')
     num = len(candidate_list)
     context = {'candidate_list': candidate_list,'field':field,  'number':num}
     return render(request, 'kmtshi/candidates_field.html', context)

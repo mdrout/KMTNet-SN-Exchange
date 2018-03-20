@@ -37,6 +37,12 @@
                             <img src="{% static candidate.disc_ref %}"/>
                             <img src="{% static candidate.disc_sub %}"/>
                         </td>
+                        <td>
+                            B_mag = {{candidate.Bmag|format5d}} mag <br />
+                            V_mag = {{candidate.Vmag|format5d}} mag <br />
+                            I_mag = {{candidate.Imag|format5d}} mag <br />
+                            B_stddev = {{candidate.Bstddev|format5d}} mag <br />
+                        </td>
                     </tr>
                 </table>
             </div>
