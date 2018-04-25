@@ -23,7 +23,6 @@
         <form method="POST" class="post-form">{% csrf_token %}
             <button rel="group_1" id="all-btn">Select All</button>
             <button rel="group_1" id="none-btn">Select None</button>
-            <button rel="group_1" id="invert-btn">Invert Selection</button>
             {% if candidate_list %}
                 <fieldset id="group_1">
                 {% for candidate in candidate_list %}
