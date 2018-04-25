@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{% static 'kmtshi/css/kmtshi.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="{% static 'kmtshi/js/rango-jquery.js' %}"></script>
         <style>table,th,td {padding: 10px;} </style>
     </head>
     <body>
@@ -19,7 +21,11 @@
     <hr>
 
         <form method="POST" class="post-form">{% csrf_token %}
+            <button rel="group_1" id="all-btn">Select All</button>
+            <button rel="group_1" id="none-btn">Select None</button>
+            <button rel="group_1" id="invert-btn">Invert Selection</button>
             {% if candidate_list %}
+                <fieldset id="group_1">
                 {% for candidate in candidate_list %}
                     <div>
                         <h4>{{ form.choices|index:forloop.counter0 }}<a href=" {% url 'detail' candidate.id %}"> (detail) </a></h4>
@@ -46,6 +52,7 @@
                     </div>
                     <hr>
                 {% endfor %}
+                </fieldset>
 
             <button type="submit" class="save btn btn-default" name="junk">junk</button>
             <button type="submit" class="save btn btn-default" name="bad-sub">bad-sub</button>
